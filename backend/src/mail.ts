@@ -1,4 +1,6 @@
+import { request } from "node:https";
 import { config } from "./config.js";
+import { validateRelayDestination, resolvePublicRelayAddress } from "./domain/mailRelaySecurity.js";
 
 type Purpose = "verify_email" | "reset_password";
 type MailMessage = { to: string; purpose: Purpose; token: string; url: string };
@@ -15,10 +17,11 @@ export function getTestMail(to: string, purpose: Purpose): MailMessage | undefin
 
 export function mailConfigured(): boolean {
   if (config.nodeEnv === "test") return true;
-  if (!config.mailRelayUrl || !config.mailRelayBearerToken || !config.mailFrom) return false;
+  if (!config.mailRelayUrl || !config.mailRelayAllowedHost ||
+      !config.mailRelayBearerToken || !config.mailFrom) return false;
   try {
-    const url = new URL(config.mailRelayUrl);
-    return url.protocol === "https:" && !url.username && !url.password && !url.hash;
+    validateRelayDestination(config.mailRelayUrl, config.mailRelayAllowedHost);
+    return true;
   } catch { return false; }
 }
 
@@ -43,21 +46,42 @@ export async function sendActionMail(to: string, purpose: Purpose, token: string
     return;
   }
   if (!mailConfigured()) throw new Error("mail_not_configured");
-  const response = await fetch(config.mailRelayUrl, {
-    method: "POST",
-    redirect: "error",
-    signal: AbortSignal.timeout(8000),
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": "Bearer " + config.mailRelayBearerToken
-    },
-    body: JSON.stringify({
-      from: config.mailFrom,
-      to,
-      subject,
-      text,
-      category: purpose === "verify_email" ? "account-verification" : "password-recovery"
-    })
+  const url = validateRelayDestination(config.mailRelayUrl, config.mailRelayAllowedHost);
+  // All DNS answers must be routable; the returned IP is pinned into the
+  // connection below so the HTTP client cannot resolve the hostname again.
+  const ip = await resolvePublicRelayAddress(url.hostname);
+  const body = JSON.stringify({
+    from: config.mailFrom,
+    to,
+    subject,
+    text,
+    category: purpose === "verify_email" ? "account-verification" : "password-recovery"
   });
-  if (!response.ok) throw new Error("mail_delivery_failed");
+  await new Promise<void>((resolve, reject) => {
+    const req = request({
+      hostname: ip.address,  // Connect directly to validated IP; no DNS rebinding.
+      port: 443,
+      method: "POST",
+      path: url.pathname + url.search,
+      servername: url.hostname, // TLS SNI AND certificate hostname validation.
+      rejectUnauthorized: true,
+      agent: false,
+      headers: {
+        "Host": url.hostname,
+        "Content-Type": "application/json",
+        "Content-Length": Buffer.byteLength(body),
+        "Authorization": "Bearer " + config.mailRelayBearerToken
+      }
+    }, (response) => {
+      response.once("error", reject);
+      response.once("end", () => {
+        if ((response.statusCode ?? 0) >= 200 && (response.statusCode ?? 0) < 300) resolve();
+        else reject(new Error("mail_delivery_failed"));
+      });
+      response.resume();
+    });
+    req.once("error", reject);
+    req.setTimeout(8000, () => req.destroy(new Error("mail_delivery_timeout")));
+    req.end(body);
+  });
 }

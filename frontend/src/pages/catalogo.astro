@@ -27,6 +27,21 @@ import SiteLayout from "../layouts/SiteLayout.astro";
   const mode = document.querySelector<HTMLSelectElement>("#mode");
   let products: SiteProduct[] = [];
   let demo = false;
+  const selectionKey = "vivaion-empresas-selection-v1";
+  type SelectedItem = { productId: string; quantity: number };
+  function readSelection(): SelectedItem[] {
+    try {
+      const value = JSON.parse(localStorage.getItem(selectionKey) ?? "[]");
+      return Array.isArray(value) ? value.filter((v): v is SelectedItem => v && typeof v.productId === "string" && Number.isInteger(v.quantity) && v.quantity > 0 && v.quantity <= 1000) : [];
+    } catch { return []; }
+  }
+  function addSelection(id: string) {
+    const selected = readSelection();
+    const existing = selected.find((item) => item.productId === id);
+    if (existing) existing.quantity = Math.min(1000, existing.quantity + 1);
+    else selected.push({ productId: id, quantity: 1 });
+    localStorage.setItem(selectionKey, JSON.stringify(selected));
+  }
   const kinds: Record<string, string> = { pos: "Pós-graduação", formacao: "Formação", "curso-livre": "Curso livre" };
   const modes: Record<string, string> = { recorded: "Gravada", live: "Ao vivo", online: "Online", hybrid: "Híbrida", "in-person": "Presencial", unspecified: "Modalidade a confirmar" };
   const stages: Record<string, string> = { available: "Catálogo público", prelaunch: "Pré-lançamento", closed: "Inscrições encerradas" };
@@ -43,7 +58,7 @@ import SiteLayout from "../layouts/SiteLayout.astro";
       return haystack.includes(query) && (!kind?.value || item.kind === kind.value) && (!mode?.value || item.deliveryMode === mode.value);
     });
     grid?.replaceChildren();
-    count && (count.textContent = filtered.length + (filtered.length === 1 ? " formação encontrada" : " formações encontradas") + (demo ? " · exemplos demonstrativos" : ""));
+    count && (count.textContent = filtered.length + (filtered.length === 1 ? " formação encontrada" : " formações encontradas") + (demo ? " · exemplos demonstrativos" : "") + (!demo && readSelection().length ? " · " + readSelection().length + " curso(s) na seleção" : ""));
     if (empty) empty.hidden = filtered.length !== 0;
     for (const item of filtered) {
       const article = node("article", "course-card", "");
@@ -59,7 +74,16 @@ import SiteLayout from "../layouts/SiteLayout.astro";
       link.target = "_blank";
       link.rel = "noopener noreferrer";
       foot.append(link);
-      article.append(top, title, text, foot);
+      const button = node("button", "button button--outline button--small", demo ? "Proposta após integração" : item.commercialStage !== "available" ? "Consultar disponibilidade" : "Selecionar para proposta +");
+      button.type = "button";
+      button.disabled = demo || item.commercialStage !== "available";
+      button.addEventListener("click", () => {
+        addSelection(item.id);
+        button.textContent = "Adicionado! Acessar painel ↗";
+        button.addEventListener("click", () => window.location.assign("/painel/#pedido-proposta"), { once: true });
+        if (count) count.textContent = filtered.length + " formações encontradas · " + readSelection().length + " curso(s) na seleção";
+      }, { once: true });
+      article.append(top, title, text, foot, button);
       grid?.append(article);
     }
   }

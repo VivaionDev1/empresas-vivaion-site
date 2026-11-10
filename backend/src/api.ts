@@ -110,17 +110,24 @@ apiRouter.post("/proposals", requireAuth, requireRoles("administrator", "manager
     res.status(400).json({ error: "invalid_items", message: "Selecione cursos distintos e quantidades válidas." }); return;
   }
   try {
+    const auth = (req as AuthRequest).auth!;
+    if (auth.companyStatus === "rejected") { res.status(403).json({ error: "company_rejected", message: "Cadastro empresarial recusado. Contate a Vivaion." }); return; }
     const ids = input.data.items.map((item) => item.productId);
     const found = await pool.query<{id:string}>("SELECT id FROM catalog_products WHERE id = ANY($1::text[]) AND active=TRUE", [ids]);
     if (found.rows.length !== ids.length) { res.status(409).json({ error: "catalog_pending", message: "Alguns cursos não estão no catálogo institucional sincronizado." }); return; }
-    const auth = (req as AuthRequest).auth!;
-    const result = await pool.query<{id:string}>(`
-      INSERT INTO proposals(company_id,requested_by,items,note)
-      VALUES($1,$2,$3::jsonb,$4) RETURNING id
-    `, [auth.companyId, auth.accountId, JSON.stringify(input.data.items), input.data.note ?? null]);
-    await pool.query("INSERT INTO audit_events(company_id,actor_account_id,event_type,metadata) VALUES($1,$2,'proposal.requested',$3::jsonb)",
-      [auth.companyId,auth.accountId,JSON.stringify({ proposalId: result.rows[0]!.id })]);
-    res.status(201).json({ id: result.rows[0]!.id, status: "requested", message: "Solicitação de proposta registrada, sem cobrança." });
+    const client = await pool.connect();
+    try {
+      await client.query("BEGIN");
+      const result = await client.query<{id:string}>(`
+        INSERT INTO proposals(company_id,requested_by,items,note)
+        VALUES($1,$2,$3::jsonb,$4) RETURNING id
+      `, [auth.companyId, auth.accountId, JSON.stringify(input.data.items), input.data.note ?? null]);
+      await client.query("INSERT INTO audit_events(company_id,actor_account_id,event_type,metadata) VALUES($1,$2,'proposal.requested',$3::jsonb)",
+        [auth.companyId,auth.accountId,JSON.stringify({ proposalId: result.rows[0]!.id })]);
+      await client.query("COMMIT");
+      res.status(201).json({ id: result.rows[0]!.id, status: "requested", message: "Solicitação de proposta registrada, sem cobrança." });
+    } catch (error) { await client.query("ROLLBACK"); throw error; }
+    finally { client.release(); }
   } catch (error) { next(error); }
 });
 
@@ -145,7 +152,7 @@ apiRouter.post("/pricing/quote", requireAuth, requireRoles("administrator", "man
     const prices = await pool.query<{product_id:string;unit_price_cents:number}>(`
       SELECT p.product_id,p.unit_price_cents FROM product_prices p
       JOIN catalog_products c ON c.id=p.product_id
-      WHERE p.product_id=ANY($1::text[]) AND p.approved=TRUE AND c.active=TRUE
+      WHERE p.product_id=ANY($1::text[]) AND p.approved=TRUE AND p.corporate_eligible=TRUE AND c.active=TRUE
         AND c.payload->>'commercialStage'='available'
         AND (p.valid_from IS NULL OR p.valid_from<=NOW())
         AND (p.valid_until IS NULL OR p.valid_until>NOW())

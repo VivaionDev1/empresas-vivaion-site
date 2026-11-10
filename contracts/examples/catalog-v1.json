@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-10T12:00:00-03:00",
+  "products": [
+    {
+      "id": "pos:posfati",
+      "slug": "posfati",
+      "kind": "pos",
+      "title": "Fala Motora, Apraxia e Tecnologias de Intervenção",
+      "summary": "Pós-graduação especializada em fala motora e tecnologias clínicas.",
+      "canonicalUrl": "https://vivaion.com.br/pos-graduacao/posfati/",
+      "area": "Fonoaudiologia",
+      "audienceLabel": "Exclusiva para fonoaudiólogos",
+      "audienceRestrictions": "Exclusiva para profissionais que atendem aos pré-requisitos acadêmicos do programa.",
+      "deliveryMode": "recorded",
+      "commercialStage": "available",
+      "tags": ["fonoaudiologia", "fala motora"],
+      "themes": ["fala"],
+      "workload": "480h",
+      "imageUrl": null
+    }
+  ]
+}

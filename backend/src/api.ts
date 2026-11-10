@@ -69,7 +69,7 @@ apiRouter.get("/companies/me/people", requireAuth, requireRoles("administrator",
   } catch (error) { next(error); }
 });
 
-apiRouter.get("/orders", requireAuth, async (req, res, next) => {
+apiRouter.get("/orders", requireAuth, requireRoles("administrator", "manager", "finance"), async (req, res, next) => {
   try {
     const companyId = (req as AuthRequest).auth!.companyId;
     const result = await pool.query<{id:string;status:string;created_at:string;record_type:string}>(`
@@ -84,10 +84,10 @@ apiRouter.get("/orders", requireAuth, async (req, res, next) => {
 
 apiRouter.get("/seats", requireAuth, async (req, res, next) => {
   try {
-    const companyId = (req as AuthRequest).auth!.companyId;
+    const auth = (req as AuthRequest).auth!;
     const result = await pool.query<{id:string;status:string;order_item_id:string}>(
-      "SELECT id,status,order_item_id FROM seats WHERE company_id=$1 ORDER BY created_at DESC LIMIT 500",
-      [companyId]);
+      "SELECT id,status,order_item_id FROM seats WHERE company_id=$1 AND ($2::text <> 'collaborator' OR assigned_account_id=$3) ORDER BY created_at DESC LIMIT 500",
+      [auth.companyId, auth.role, auth.accountId]);
     res.json({ seats: result.rows });
   } catch (error) { next(error); }
 });

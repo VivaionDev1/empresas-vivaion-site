@@ -66,6 +66,15 @@ test("companies cannot see each other's membership, orders or sessions", async (
   assert.equal(ordersA.body.orders.length,1);
   assert.equal(ordersB.body.orders.length,0);
 
+  // Even company members with collaborator role cannot read all orders or members.
+  await pool.query("UPDATE memberships SET role='collaborator' WHERE company_id=$1", [bProfile.body.company.id]);
+  const bOrdersForbidden = await request(app).get("/api/orders").set("Cookie",b.cookie);
+  const bPeopleForbidden = await request(app).get("/api/companies/me/people").set("Cookie",b.cookie);
+  assert.equal(bOrdersForbidden.status,403);
+  assert.equal(bPeopleForbidden.status,403);
+  const bOwnSeats = await request(app).get("/api/seats").set("Cookie",b.cookie);
+  assert.equal(bOwnSeats.status,200);
+
   const wrongOrigin = await request(app).post("/api/proposals").set("Origin","https://evil.example").set("Cookie",a.cookie)
     .send({items:[{productId:product.id,quantity:1}]});
   assert.equal(wrongOrigin.status,403);

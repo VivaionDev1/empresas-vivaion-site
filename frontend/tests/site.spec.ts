@@ -1,5 +1,11 @@
 import { expect, test } from "@playwright/test";
 
+// The site must remain usable without third-party font hosts.
+test.beforeEach(async ({ page }) => {
+  await page.route("https://fonts.googleapis.com/**", (route) => route.abort());
+  await page.route("https://fonts.gstatic.com/**", (route) => route.abort());
+});
+
 test("homepage renders institutional branding and navigation", async ({page}) => {
   await page.goto("/");
   await expect(page).toHaveTitle(/Vivaion Empresas/);

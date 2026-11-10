@@ -53,3 +53,12 @@ Consulte `docs/deploy.md`. Não habilite `PUBLIC_SITE_LIVE=true`, `CORPORATE_PRI
 | Pagamento | Modelagem inicial; checkout e webhook desativados |
 | Vagas e matrículas | Modelagem e visualização; atribuição desativada |
 | Publicação | Não realizada |
+
+## Iteração de segurança #2 (branch separada)
+
+- A integridade entre `orders`, `order_items`, `seats` e `memberships` agora é reforçada por chaves estrangeiras compostas; dados de empresas diferentes não podem ser vinculados.
+- O cadastro não entrega sessão antes da verificação de e-mail, que usa link de uso único válido por 24 horas.
+- Recuperação de senha via token de uso único válido por 30 minutos, com revogação das sessões anteriores.
+- **Sem provedor de e-mail configurado, o cadastro e a recuperação respondem 503.** Isso é intencional. Configurar um relay HTTPS transacional autorizado antes de homologar essas funcionalidades.
+- A verificação de e-mail não aprova o CNPJ nem o representante, e a política de preços segue desativada.
+- Testes de integração foram ampliados, sem publicar ou migrar bancos existentes.

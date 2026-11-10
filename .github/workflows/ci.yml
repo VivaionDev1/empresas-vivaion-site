@@ -1,7 +1,7 @@
 name: Vivaion Empresas CI
 on:
   pull_request:
-    branches: [main]
+    branches: [main, feat/portal-empresas-foundation]
   push:
     branches: [main]
 jobs:

@@ -1,0 +1,26 @@
+{
+  "name": "vivaion-empresas",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "workspaces": [
+    "contracts",
+    "backend",
+    "frontend"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build:contracts": "npm run build -w @vivaion/empresas-contracts",
+    "build": "npm run build:contracts && npm run build -w @vivaion/empresas-backend && npm run build -w @vivaion/empresas-frontend",
+    "check": "npm run build:contracts && npm run check -w @vivaion/empresas-backend && npm run check -w @vivaion/empresas-frontend",
+    "test": "npm run build:contracts && npm run test -w @vivaion/empresas-contracts && npm run test -w @vivaion/empresas-backend",
+    "test:integration": "npm run build:contracts && npm run test:integration -w @vivaion/empresas-backend",
+    "dev:frontend": "npm run dev -w @vivaion/empresas-frontend",
+    "dev:backend": "npm run build:contracts && npm run dev -w @vivaion/empresas-backend",
+    "db:migrate": "npm run db:migrate -w @vivaion/empresas-backend",
+    "catalog:sync": "npm run catalog:sync -w @vivaion/empresas-backend",
+    "test:e2e": "npm run test:e2e -w @vivaion/empresas-frontend"
+  }
+}

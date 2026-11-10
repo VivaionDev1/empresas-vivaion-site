@@ -1,0 +1,137 @@
+---
+import SiteLayout from "../layouts/SiteLayout.astro";
+---
+<SiteLayout title="Painel empresarial" description="Área restrita de gestão empresarial." noindex>
+  <section class="page-hero"><div class="container"><span class="eyebrow eyebrow--light">Área da empresa</span><h1>Seu espaço de desenvolvimento.</h1><p>Informações de cadastro, solicitações e gestão corporativa em um só lugar.</p></div></section>
+  <section class="section"><div class="container">
+    <div id="dashboard-alert" class="notice notice--info" role="status">Verificando acesso à conta…</div>
+    <div id="dashboard-content" class="dashboard-shell" hidden>
+      <nav class="dashboard-nav" aria-label="Menu do painel">
+        <a href="#visao-geral" aria-current="page">Visão geral</a>
+        <a href="#solicitacoes">Solicitações</a>
+        <a href="#pedido-proposta">Nova proposta</a>
+        <a href="#matriculas">Vagas e matrículas</a>
+        <a href="#equipe">Equipe</a>
+        <a href="#organizacao">Empresa</a>
+      </nav>
+      <div>
+        <section id="visao-geral" class="dashboard-panel" style="margin-bottom:21px">
+          <span class="eyebrow">Bem-vindo</span><h2 id="dashboard-greeting" style="font-size:2.25rem;margin-top:13px">Seu painel</h2>
+          <p id="company-status" class="section-intro">Consultando cadastro…</p>
+          <div class="dashboard-stats"><div class="dashboard-stat"><strong id="orders-count">—</strong><small>Solicitações</small></div><div class="dashboard-stat"><strong id="seats-count">—</strong><small>Vagas registradas</small></div><div class="dashboard-stat"><strong id="company-state">—</strong><small>Situação da empresa</small></div></div>
+        </section>
+        <section id="solicitacoes" class="dashboard-panel" style="margin-bottom:21px"><h3>Solicitações e pedidos</h3><div id="orders-list" class="dashboard-empty">Carregando registros…</div><a href="/catalogo/" class="inline-link">Conhecer cursos ↗</a></section>
+        <section id="pedido-proposta" class="dashboard-panel" style="margin-bottom:21px"><h3>Solicitar proposta</h3><p class="section-intro">Selecione cursos no catálogo para solicitar uma proposta sem cobrança. Quantidades e condições serão conferidas por nossa equipe.</p><form id="proposal-form" class="form-grid"><div id="proposal-items" class="field--wide dashboard-empty">Carregando seleção...</div><label class="field field--wide">Observações da proposta<textarea id="proposal-note" maxlength="2000" placeholder="Informe a quantidade de profissionais, as necessidades e os objetivos de formação."></textarea></label><div id="proposal-feedback" class="form-feedback" role="status" aria-live="polite"></div><div class="form-submit"><a href="/catalogo/" class="inline-link">Escolher outros cursos</a><button class="button button--primary" type="submit">Solicitar análise comercial →</button></div></form></section>
+        <section id="matriculas" class="dashboard-panel" style="margin-bottom:21px"><h3>Vagas e matrículas</h3><div id="seats-list" class="dashboard-empty">Carregando registros…</div><p class="section-intro">As atribuições de vagas somente serão habilitadas após a integração acadêmica e financeira ser homologada.</p></section>
+        <section id="equipe" class="dashboard-panel" style="margin-bottom:21px"><h3>Equipe vinculada</h3><div id="team-list" class="dashboard-empty">Carregando equipe…</div><p class="section-intro">Convites e atribuição de vagas serão habilitados após a validação acadêmica e do serviço de notificações.</p></section>
+        <section id="organizacao" class="dashboard-panel"><h3>Dados empresariais</h3><p id="company-name" class="section-intro"></p><p id="company-id" class="section-intro"></p><button type="button" class="button button--outline" id="logout-button">Sair da conta</button></section>
+      </div>
+    </div>
+  </div></section>
+</SiteLayout>
+<script>
+  type Session = { user: { fullName: string; email: string; role: string }; company: { name: string; cnpj: string; status: string } };
+  const alert = document.querySelector<HTMLElement>("#dashboard-alert");
+  const shell = document.querySelector<HTMLElement>("#dashboard-content");
+  const stateLabels: Record<string,string> = { pending: "Pendente", verified: "Verificada", rejected: "Recusada", suspended: "Suspensa" };
+  const selectionKey = "vivaion-empresas-selection-v1";
+  type SelectedItem = { productId: string; quantity: number };
+  function selection(): SelectedItem[] {
+    try {
+      const raw = JSON.parse(localStorage.getItem(selectionKey) ?? "[]");
+      return Array.isArray(raw) ? raw.filter((item): item is SelectedItem => item && typeof item.productId === "string" && Number.isInteger(item.quantity) && item.quantity > 0 && item.quantity <= 1000) : [];
+    } catch { return []; }
+  }
+  function selectionSave(items: SelectedItem[]) { localStorage.setItem(selectionKey, JSON.stringify(items)); }
+  function showSelection() {
+    const container = document.querySelector<HTMLElement>("#proposal-items");
+    if (!container) return;
+    container.replaceChildren();
+    const items = selection();
+    if (!items.length) { container.textContent = "Nenhum curso selecionado. Abra o catálogo e escolha as formações de interesse."; return; }
+    for (const item of items) {
+      const row = document.createElement("div");
+      row.style.cssText = "display:flex;gap:13px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:13px 0;border-bottom:1px solid var(--line)";
+      const label = document.createElement("label");
+      label.style.cssText = "font-size:.79rem;font-weight:600;word-break:break-word;flex:1";
+      label.textContent = item.productId;
+      const qty = document.createElement("input");
+      qty.type = "number"; qty.min = "1"; qty.max = "1000"; qty.value = String(item.quantity); qty.style.cssText = "width:78px;padding:7px;border:1px solid var(--line);border-radius:9px";
+      qty.setAttribute("aria-label","Quantidade para " + item.productId);
+      qty.addEventListener("change", () => { const n = Number(qty.value); if (!Number.isInteger(n) || n < 1 || n > 1000) { qty.value = String(item.quantity); return; } item.quantity = n; selectionSave(items); });
+      const remove = document.createElement("button"); remove.type = "button"; remove.className = "inline-link"; remove.textContent = "Remover";
+      remove.addEventListener("click", () => { selectionSave(items.filter((x) => x.productId !== item.productId)); showSelection(); });
+      row.append(label,qty,remove); container.append(row);
+    }
+  }
+  async function getData(path: string) {
+    const res = await fetch(path, { credentials: "same-origin" });
+    if (res.status === 401) { window.location.assign("/entrar/"); throw new Error("not_authenticated"); }
+    if (!res.ok) throw new Error("Falha na consulta de dados");
+    return res.json();
+  }
+  async function load() {
+    try {
+      const profile = (await getData("/api/auth/me")) as Session;
+      document.querySelector<HTMLElement>("#dashboard-greeting")!.textContent = "Olá, " + profile.user.fullName.split(" ")[0] + ".";
+      document.querySelector<HTMLElement>("#company-status")!.textContent = profile.company.status === "verified"
+        ? "Sua organização está verificada. Condições comerciais ainda dependem de aprovação."
+        : "Cadastro empresarial sob análise. A representação legal precisa ser confirmada antes da liberação de benefícios.";
+      document.querySelector<HTMLElement>("#company-state")!.textContent = stateLabels[profile.company.status] ?? "Pendente";
+      document.querySelector<HTMLElement>("#company-name")!.textContent = "Razão social: " + profile.company.name;
+      document.querySelector<HTMLElement>("#company-id")!.textContent = "CNPJ: " + profile.company.cnpj;
+      const [ordersResult, seatsResult] = await Promise.allSettled([getData("/api/orders"), getData("/api/seats")]);
+      if (ordersResult.status === "fulfilled") {
+        const orders = Array.isArray(ordersResult.value.orders) ? ordersResult.value.orders : [];
+        document.querySelector<HTMLElement>("#orders-count")!.textContent = String(orders.length);
+        document.querySelector<HTMLElement>("#orders-list")!.textContent = orders.length ? orders.length + " solicitação(ões) registrada(s)." : "Nenhuma solicitação registrada até agora.";
+      }
+      if (seatsResult.status === "fulfilled") {
+        const seats = Array.isArray(seatsResult.value.seats) ? seatsResult.value.seats : [];
+        document.querySelector<HTMLElement>("#seats-count")!.textContent = String(seats.length);
+        document.querySelector<HTMLElement>("#seats-list")!.textContent = seats.length ? seats.length + " vaga(s) registrada(s)." : "Nenhuma vaga registrada.";
+      }
+      const team = document.querySelector<HTMLElement>("#team-list");
+      if (team) {
+        if (profile.user.role === "administrator" || profile.user.role === "manager") {
+          try { const result = await getData("/api/companies/me/people"); team.replaceChildren(); for (const person of result.people ?? []) { const line = document.createElement("p"); line.textContent = person.full_name + " · " + person.role; team.append(line); } if (!result.people?.length) team.textContent = "Nenhum membro vinculado."; }
+          catch { team.textContent = "Não foi possível carregar os membros."; }
+        } else team.textContent = "Esta área está disponível aos administradores e gestores.";
+      }
+      showSelection();
+      if (shell) shell.hidden = false;
+      if (alert) alert.hidden = true;
+    } catch (e) {
+      if (e instanceof Error && e.message === "not_authenticated") return;
+      if (alert) { alert.textContent = "Não foi possível consultar o painel. Confira a conexão com a API ou tente novamente."; }
+    }
+  }
+  document.querySelector<HTMLFormElement>("#proposal-form")?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const feedback = document.querySelector<HTMLElement>("#proposal-feedback");
+    const submit = document.querySelector<HTMLButtonElement>('#proposal-form button[type="submit"]');
+    if (!feedback) return;
+    const items = selection();
+    if (!items.length) { feedback.textContent = "Selecione pelo menos um curso no catálogo."; feedback.dataset.state = "error"; return; }
+    if (submit) submit.disabled = true;
+    feedback.textContent = "Registrando proposta…"; feedback.dataset.state = "info";
+    try {
+      const res = await fetch("/api/proposals", { method: "POST", credentials: "same-origin", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ items, note: document.querySelector<HTMLTextAreaElement>("#proposal-note")?.value ?? "" }) });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.message ?? "Não foi possível registrar a solicitação.");
+      selectionSave([]);
+      showSelection();
+      feedback.textContent = "Proposta solicitada com sucesso, sem cobrança. A equipe avaliará sua solicitação.";
+      feedback.dataset.state = "success";
+      const ordersResult = await getData("/api/orders");
+      const orders = Array.isArray(ordersResult.orders) ? ordersResult.orders : [];
+      document.querySelector<HTMLElement>("#orders-count")!.textContent = String(orders.length);
+      document.querySelector<HTMLElement>("#orders-list")!.textContent = orders.length + " solicitação(ões) registrada(s).";
+    } catch (error) { feedback.textContent = error instanceof Error ? error.message : "Falha de comunicação."; feedback.dataset.state = "error"; }
+    finally { if (submit) submit.disabled = false; }
+  });
+  document.querySelector<HTMLButtonElement>("#logout-button")?.addEventListener("click", async () => {
+    try { await fetch("/api/auth/logout", { method: "POST", credentials: "same-origin" }); } finally { window.location.assign("/entrar/"); }
+  });
+  load();
+</script>

@@ -26,7 +26,7 @@ test("registration and contact pages provide accessible field labels", async ({p
   await page.goto("/cadastro/");
   await expect(page.getByRole("textbox", { name: "Razão social" })).toBeVisible();
   await expect(page.getByRole("textbox", { name: "CNPJ" })).toBeVisible();
-  await expect(page.getByRole("link", { name: "aviso de privacidade" })).toBeVisible();
+  await expect(page.locator("#register-form").getByRole("link", { name: "aviso de privacidade", exact: true })).toBeVisible();
   await page.goto("/contato/");
   await expect(page.getByRole("textbox", { name: "Qual é a necessidade?" })).toBeVisible();
 });

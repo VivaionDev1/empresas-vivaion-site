@@ -1,0 +1,40 @@
+---
+const path = Astro.url.pathname;
+const menu = [
+  { href: "/catalogo/", label: "Catálogo" },
+  { href: "/para-empresas/", label: "Para empresas" },
+  { href: "/beneficios/", label: "Benefícios" },
+  { href: "/como-funciona/", label: "Como funciona" }
+];
+---
+<header class="site-header" id="site-header">
+  <div class="container header-inner">
+    <a class="brand" href="/" aria-label="Vivaion Empresas, início">
+      <span class="brand__symbol" aria-hidden="true">✦</span>
+      <span class="brand__wordmark"><strong>VIVAION</strong><small>EMPRESAS</small></span>
+    </a>
+    <button type="button" class="menu-toggle" aria-label="Abrir menu" aria-expanded="false" aria-controls="header-navigation">
+      <span></span><span></span><span></span>
+    </button>
+    <nav id="header-navigation" class="main-nav" aria-label="Navegação principal">
+      {menu.map((item) => <a href={item.href} aria-current={path === item.href ? "page" : undefined}>{item.label}</a>)}
+      <a href="/entrar/" class="main-nav__login">Entrar</a>
+      <a href="/cadastro/" class="button button--small button--primary">Criar conta empresarial <span aria-hidden="true">↗</span></a>
+    </nav>
+  </div>
+</header>
+<script>
+  const header = document.querySelector<HTMLElement>(".site-header");
+  const toggle = header?.querySelector<HTMLButtonElement>(".menu-toggle");
+  const nav = header?.querySelector<HTMLElement>(".main-nav");
+  toggle?.addEventListener("click", () => {
+    const isOpen = toggle.getAttribute("aria-expanded") === "true";
+    toggle.setAttribute("aria-expanded", String(!isOpen));
+    toggle.setAttribute("aria-label", isOpen ? "Abrir menu" : "Fechar menu");
+    nav?.classList.toggle("is-open", !isOpen);
+  });
+  nav?.querySelectorAll("a").forEach((link) => link.addEventListener("click", () => {
+    toggle?.setAttribute("aria-expanded", "false");
+    nav.classList.remove("is-open");
+  }));
+</script>

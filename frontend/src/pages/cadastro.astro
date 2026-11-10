@@ -46,9 +46,9 @@ import SiteLayout from "../layouts/SiteLayout.astro";
       });
       const payload = await result.json().catch(() => ({}));
       if (!result.ok) throw new Error(payload.message ?? "Não foi possível enviar o cadastro.");
-      feedback.textContent = "Cadastro recebido! A empresa está pendente de verificação.";
+      feedback.textContent = payload.message ?? "Cadastro registrado. Confirme o seu e-mail antes de entrar.";
       feedback.dataset.state = "success";
-      window.location.assign("/painel/");
+      form.reset();
     } catch (error) {
       feedback.textContent = error instanceof Error ? error.message : "Falha de comunicação. Tente novamente.";
       feedback.dataset.state = "error";

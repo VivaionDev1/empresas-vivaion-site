@@ -1,0 +1,22 @@
+name: Vivaion Empresas CI
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main, feat/portal-empresas-foundation]
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Typecheck
+        run: npm run check
+      - name: Tests
+        run: npm run test
+      - name: Production builds
+        run: npm run build

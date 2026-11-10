@@ -46,3 +46,17 @@ test("responsive pages avoid horizontal overflow and mobile menu navigates", asy
     await expect(page).toHaveURL(/\/para-empresas\/$/);
   }
 });
+
+test("email confirmation, password recovery and reset URLs are safe and accessible", async ({page}) => {
+  await page.goto("/recuperar-acesso/");
+  await expect(page.getByRole("textbox", {name:"E-mail"})).toBeVisible();
+  await page.goto("/reenviar-confirmacao/");
+  await expect(page.getByRole("textbox", {name:"E-mail cadastrado"})).toBeVisible();
+  await page.goto("/confirmar-email/?token=invalid");
+  await expect(page.locator("#verify-status")).toContainText("Link inválido");
+  await expect(page).toHaveURL(/\/confirmar-email\/$/);
+  await page.goto("/redefinir-senha/?token=fake");
+  await expect(page.locator("#reset-status")).toContainText("Link inválido");
+  await expect(page).toHaveURL(/\/redefinir-senha\/$/);
+  await expect(page.locator('meta[name="referrer"]')).toHaveAttribute("content","no-referrer");
+});

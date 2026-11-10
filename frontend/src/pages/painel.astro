@@ -1,0 +1,71 @@
+---
+import SiteLayout from "../layouts/SiteLayout.astro";
+---
+<SiteLayout title="Painel empresarial" description="Área restrita de gestão empresarial." noindex>
+  <section class="page-hero"><div class="container"><span class="eyebrow eyebrow--light">Área da empresa</span><h1>Seu espaço de desenvolvimento.</h1><p>Informações de cadastro, solicitações e gestão corporativa em um só lugar.</p></div></section>
+  <section class="section"><div class="container">
+    <div id="dashboard-alert" class="notice notice--info" role="status">Verificando acesso à conta…</div>
+    <div id="dashboard-content" class="dashboard-shell" hidden>
+      <nav class="dashboard-nav" aria-label="Menu do painel">
+        <a href="#visao-geral" aria-current="page">Visão geral</a>
+        <a href="#solicitacoes">Solicitações</a>
+        <a href="#matriculas">Vagas e matrículas</a>
+        <a href="#organizacao">Empresa</a>
+      </nav>
+      <div>
+        <section id="visao-geral" class="dashboard-panel" style="margin-bottom:21px">
+          <span class="eyebrow">Bem-vindo</span><h2 id="dashboard-greeting" style="font-size:2.25rem;margin-top:13px">Seu painel</h2>
+          <p id="company-status" class="section-intro">Consultando cadastro…</p>
+          <div class="dashboard-stats"><div class="dashboard-stat"><strong id="orders-count">—</strong><small>Solicitações</small></div><div class="dashboard-stat"><strong id="seats-count">—</strong><small>Vagas registradas</small></div><div class="dashboard-stat"><strong id="company-state">—</strong><small>Situação da empresa</small></div></div>
+        </section>
+        <section id="solicitacoes" class="dashboard-panel" style="margin-bottom:21px"><h3>Solicitações e pedidos</h3><div id="orders-list" class="dashboard-empty">Carregando registros…</div><a href="/catalogo/" class="inline-link">Conhecer cursos ↗</a></section>
+        <section id="matriculas" class="dashboard-panel" style="margin-bottom:21px"><h3>Vagas e matrículas</h3><div id="seats-list" class="dashboard-empty">Carregando registros…</div><p class="section-intro">As atribuições de vagas somente serão habilitadas após a integração acadêmica e financeira ser homologada.</p></section>
+        <section id="organizacao" class="dashboard-panel"><h3>Dados empresariais</h3><p id="company-name" class="section-intro"></p><p id="company-id" class="section-intro"></p><button type="button" class="button button--outline" id="logout-button">Sair da conta</button></section>
+      </div>
+    </div>
+  </div></section>
+</SiteLayout>
+<script>
+  type Session = { user: { fullName: string; email: string; role: string }; company: { name: string; cnpj: string; status: string } };
+  const alert = document.querySelector<HTMLElement>("#dashboard-alert");
+  const shell = document.querySelector<HTMLElement>("#dashboard-content");
+  const stateLabels: Record<string,string> = { pending: "Pendente", verified: "Verificada", rejected: "Recusada", suspended: "Suspensa" };
+  async function getData(path: string) {
+    const res = await fetch(path, { credentials: "same-origin" });
+    if (res.status === 401) { window.location.assign("/entrar/"); throw new Error("not_authenticated"); }
+    if (!res.ok) throw new Error("Falha na consulta de dados");
+    return res.json();
+  }
+  async function load() {
+    try {
+      const profile = (await getData("/api/auth/me")) as Session;
+      document.querySelector<HTMLElement>("#dashboard-greeting")!.textContent = "Olá, " + profile.user.fullName.split(" ")[0] + ".";
+      document.querySelector<HTMLElement>("#company-status")!.textContent = profile.company.status === "verified"
+        ? "Sua organização está verificada. Condições comerciais ainda dependem de aprovação."
+        : "Cadastro empresarial sob análise. A representação legal precisa ser confirmada antes da liberação de benefícios.";
+      document.querySelector<HTMLElement>("#company-state")!.textContent = stateLabels[profile.company.status] ?? "Pendente";
+      document.querySelector<HTMLElement>("#company-name")!.textContent = "Razão social: " + profile.company.name;
+      document.querySelector<HTMLElement>("#company-id")!.textContent = "CNPJ: " + profile.company.cnpj;
+      const [ordersResult, seatsResult] = await Promise.allSettled([getData("/api/orders"), getData("/api/seats")]);
+      if (ordersResult.status === "fulfilled") {
+        const orders = Array.isArray(ordersResult.value.orders) ? ordersResult.value.orders : [];
+        document.querySelector<HTMLElement>("#orders-count")!.textContent = String(orders.length);
+        document.querySelector<HTMLElement>("#orders-list")!.textContent = orders.length ? orders.length + " solicitação(ões) registrada(s)." : "Nenhuma solicitação registrada até agora.";
+      }
+      if (seatsResult.status === "fulfilled") {
+        const seats = Array.isArray(seatsResult.value.seats) ? seatsResult.value.seats : [];
+        document.querySelector<HTMLElement>("#seats-count")!.textContent = String(seats.length);
+        document.querySelector<HTMLElement>("#seats-list")!.textContent = seats.length ? seats.length + " vaga(s) registrada(s)." : "Nenhuma vaga registrada.";
+      }
+      if (shell) shell.hidden = false;
+      if (alert) alert.hidden = true;
+    } catch (e) {
+      if (e instanceof Error && e.message === "not_authenticated") return;
+      if (alert) { alert.textContent = "Não foi possível consultar o painel. Confira a conexão com a API ou tente novamente."; }
+    }
+  }
+  document.querySelector<HTMLButtonElement>("#logout-button")?.addEventListener("click", async () => {
+    try { await fetch("/api/auth/logout", { method: "POST", credentials: "same-origin" }); } finally { window.location.assign("/entrar/"); }
+  });
+  load();
+</script>

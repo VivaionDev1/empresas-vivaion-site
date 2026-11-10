@@ -1,0 +1,56 @@
+---
+import SiteLayout from "../layouts/SiteLayout.astro";
+---
+<SiteLayout title="Criar conta empresarial" description="Comece o cadastro da sua empresa na Vivaion. A representação e o CNPJ são verificados antes da liberação de benefícios." noindex>
+  <section class="section"><div class="container auth-layout">
+    <div class="auth-aside"><span class="eyebrow">Bem-vindo à Vivaion Empresas</span><h2>Um novo espaço para investir em pessoas.</h2><p>Crie uma conta vinculada à sua empresa. A verificação do CNPJ e a confirmação da representação são necessárias antes de qualquer benefício ou contratação corporativa.</p><div class="auth-benefits"><span>Catálogo de cursos em um só lugar</span><span>Propostas corporativas sob avaliação</span><span>Gestão futura de vagas e matrículas</span></div></div>
+    <div class="form-panel"><h2>Cadastro empresarial</h2><p>Preencha os dados abaixo para iniciar o processo de análise.</p>
+      <form id="register-form" class="form-grid">
+        <label class="field field--wide">Razão social<input name="companyName" required minlength="3" maxlength="180" autocomplete="organization" /></label>
+        <label class="field field--wide">CNPJ<input name="cnpj" required minlength="14" maxlength="22" placeholder="Aceita CNPJ numérico ou alfanumérico" autocapitalize="characters" /></label>
+        <label class="field field--wide">Nome do representante<input name="fullName" required minlength="3" maxlength="140" autocomplete="name" /></label>
+        <label class="field field--wide">E-mail corporativo<input name="email" type="email" required maxlength="254" autocomplete="email" /></label>
+        <label class="field">Senha<input name="password" type="password" required minlength="12" maxlength="128" autocomplete="new-password" /></label>
+        <label class="field">Confirmar senha<input name="confirmation" type="password" required minlength="12" maxlength="128" autocomplete="new-password" /></label>
+        <label class="field field--wide" style="display:flex;align-items:start;gap:11px;font-weight:400"><input name="accepted" type="checkbox" required style="width:auto;min-height:auto;margin-top:6px" /><span>Solicito o cadastro em nome da organização informada e estou ciente de que será necessária confirmação dos dados e da representação.</span></label>
+        <div class="form-feedback" id="register-feedback" role="status" aria-live="polite"></div>
+        <div class="form-submit"><span style="font-size:.78rem;color:var(--muted)">Já possui conta? <a href="/entrar/" class="inline-link">Entrar</a></span><button class="button button--primary" type="submit">Solicitar cadastro <span aria-hidden="true">→</span></button></div>
+      </form>
+    </div>
+  </div></section>
+</SiteLayout>
+<script>
+  const form = document.querySelector<HTMLFormElement>("#register-form");
+  const feedback = document.querySelector<HTMLElement>("#register-feedback");
+  form?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    if (!form || !feedback) return;
+    const submit = form.querySelector<HTMLButtonElement>('button[type="submit"]');
+    const data = new FormData(form);
+    if (data.get("password") !== data.get("confirmation")) {
+      feedback.textContent = "As senhas não conferem.";
+      feedback.dataset.state = "error";
+      return;
+    }
+    submit && (submit.disabled = true);
+    feedback.textContent = "Enviando cadastro…";
+    feedback.dataset.state = "info";
+    try {
+      const result = await fetch("/api/auth/register", {
+        method: "POST", credentials: "same-origin", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          companyName: data.get("companyName"), cnpj: data.get("cnpj"),
+          fullName: data.get("fullName"), email: data.get("email"), password: data.get("password")
+        })
+      });
+      const payload = await result.json().catch(() => ({}));
+      if (!result.ok) throw new Error(payload.message ?? "Não foi possível enviar o cadastro.");
+      feedback.textContent = "Cadastro recebido! A empresa está pendente de verificação.";
+      feedback.dataset.state = "success";
+      window.location.assign("/painel/");
+    } catch (error) {
+      feedback.textContent = error instanceof Error ? error.message : "Falha de comunicação. Tente novamente.";
+      feedback.dataset.state = "error";
+    } finally { submit && (submit.disabled = false); }
+  });
+</script>

@@ -1,0 +1,89 @@
+---
+import SiteLayout from "../layouts/SiteLayout.astro";
+---
+<SiteLayout title="Catálogo de cursos" description="Explore o catálogo Vivaion Empresas por área, modalidade e tipo de formação.">
+  <section class="page-hero"><div class="container"><span class="eyebrow eyebrow--light">Conhecimento para diferentes jornadas</span><h1>Descubra a próxima formação.</h1><p>Explore cursos livres, formações e pós-graduações. Cada curso mantém seus critérios acadêmicos próprios.</p></div></section>
+  <section class="section"><div class="container">
+    <div id="catalog-notice" class="notice notice--info" role="status">Conectando ao catálogo oficial da Vivaion…</div>
+    <div class="catalog-toolbar">
+      <label class="field field--search">Buscar por título ou tema<input id="search" type="search" placeholder="Ex.: saúde mental, comunicação, liderança" autocomplete="off" /></label>
+      <label class="field field--filter">Tipo de formação<select id="kind"><option value="">Todas</option><option value="pos">Pós-graduação</option><option value="formacao">Formação</option><option value="curso-livre">Curso livre</option></select></label>
+      <label class="field field--filter">Modalidade<select id="mode"><option value="">Todas</option><option value="recorded">Gravada</option><option value="live">Ao vivo</option><option value="online">Online</option><option value="hybrid">Híbrida</option><option value="in-person">Presencial</option></select></label>
+    </div>
+    <div id="catalog-count" class="catalog-meta" aria-live="polite"></div>
+    <div id="catalog-grid" class="catalog-grid" aria-live="polite"></div>
+    <div id="catalog-empty" class="state-panel" hidden>Nenhuma formação corresponde aos filtros selecionados.</div>
+    <div class="cta-banner" style="margin-top:49px"><div><span class="eyebrow eyebrow--light">Um investimento pensado para sua equipe</span><h2>Precisa capacitar mais de uma pessoa?</h2><p>Converse com a Vivaion sobre suas necessidades de formação e proposta corporativa.</p></div><a class="button button--light" href="/contato/">Solicitar proposta</a></div>
+  </div></section>
+</SiteLayout>
+<script>
+  import { demoCatalog, type SiteProduct } from "../data/demoCatalog";
+  const grid = document.querySelector<HTMLElement>("#catalog-grid");
+  const notice = document.querySelector<HTMLElement>("#catalog-notice");
+  const count = document.querySelector<HTMLElement>("#catalog-count");
+  const empty = document.querySelector<HTMLElement>("#catalog-empty");
+  const search = document.querySelector<HTMLInputElement>("#search");
+  const kind = document.querySelector<HTMLSelectElement>("#kind");
+  const mode = document.querySelector<HTMLSelectElement>("#mode");
+  let products: SiteProduct[] = [];
+  let demo = false;
+  const kinds: Record<string, string> = { pos: "Pós-graduação", formacao: "Formação", "curso-livre": "Curso livre" };
+  const modes: Record<string, string> = { recorded: "Gravada", live: "Ao vivo", online: "Online", hybrid: "Híbrida", "in-person": "Presencial", unspecified: "Modalidade a confirmar" };
+  const stages: Record<string, string> = { available: "Catálogo público", prelaunch: "Pré-lançamento", closed: "Inscrições encerradas" };
+  function node<K extends keyof HTMLElementTagNameMap>(tag: K, className: string, value: string) {
+    const element = document.createElement(tag);
+    if (className) element.className = className;
+    element.textContent = value;
+    return element;
+  }
+  function render() {
+    const query = (search?.value ?? "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    const filtered = products.filter((item) => {
+      const haystack = (item.title + " " + item.area + " " + item.summary).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+      return haystack.includes(query) && (!kind?.value || item.kind === kind.value) && (!mode?.value || item.deliveryMode === mode.value);
+    });
+    grid?.replaceChildren();
+    count && (count.textContent = filtered.length + (filtered.length === 1 ? " formação encontrada" : " formações encontradas") + (demo ? " · exemplos demonstrativos" : ""));
+    if (empty) empty.hidden = filtered.length !== 0;
+    for (const item of filtered) {
+      const article = node("article", "course-card", "");
+      const top = node("div", "course-card__top", "");
+      top.append(node("span", "course-card__kind", kinds[item.kind] ?? "Curso"));
+      top.append(node("span", "course-card__stage", demo ? "Demonstração" : (stages[item.commercialStage] ?? "Verificar")));
+      const title = node("h3", "", item.title);
+      const text = node("p", "", item.summary);
+      const foot = node("div", "course-card__footer", "");
+      foot.append(node("small", "", item.area + " · " + (modes[item.deliveryMode] ?? "Modalidade a confirmar")));
+      const link = node("a", "inline-link", "Conhecer curso ↗");
+      link.href = item.canonicalUrl;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      foot.append(link);
+      article.append(top, title, text, foot);
+      grid?.append(article);
+    }
+  }
+  async function loadCatalog() {
+    try {
+      const response = await fetch("/api/catalog", { headers: { Accept: "application/json" } });
+      if (!response.ok) throw new Error("Catálogo temporariamente indisponível");
+      const data: unknown = await response.json();
+      if (!data || typeof data !== "object" || !("products" in data) || !Array.isArray(data.products) || !data.products.length) {
+        throw new Error("Fonte de catálogo oficial pendente");
+      }
+      products = data.products.filter((p: unknown): p is SiteProduct => !!p && typeof p === "object" &&
+        "title" in p && typeof p.title === "string" &&
+        "canonicalUrl" in p && typeof p.canonicalUrl === "string" &&
+        "kind" in p && typeof p.kind === "string") as SiteProduct[];
+      demo = false;
+      if (notice) { notice.textContent = "Catálogo institucional sincronizado. Valores e benefícios corporativos dependem de proposta comercial."; }
+    } catch {
+      products = demoCatalog;
+      demo = true;
+      if (notice) notice.textContent = "Visualização demonstrativa: o catálogo completo será exibido após a integração oficial com vivaion.com.br. Nenhum preço ou disponibilidade está confirmado por esta demonstração.";
+    }
+    render();
+  }
+  [search, kind, mode].forEach((control) => control?.addEventListener("input", render));
+  loadCatalog();
+</script>

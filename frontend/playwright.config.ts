@@ -14,7 +14,9 @@ export default defineConfig({
     { name: "mobile-chromium", use: { ...devices["iPhone 13"], browserName: "chromium" } }
   ],
   webServer: {
-    command: "npm run preview -- --host 127.0.0.1 --port 4322",
+    command: "node scripts/test-static-server.mjs",
+    stdout: "pipe",
+    stderr: "pipe",
     url: "http://127.0.0.1:4322",
     reuseExistingServer: !process.env.CI,
     timeout: 120_000

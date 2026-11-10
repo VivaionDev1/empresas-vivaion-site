@@ -6,7 +6,7 @@ Antes de qualquer alteração, identificar domínios, VirtualHosts, portas, espa
 
 Diretório de aplicação sugerido: `/var/www/empresas.vivaion.com.br`. Publicar o frontend estático em `frontend/dist` e executar a API como usuário próprio, vinculada à loopback na porta 8082.
 
-Banco PostgreSQL exclusivo: `vivaion_empresas`, proprietário e privilégios próprios. Nunca compartilhar `unyomdb` nem bancos acadêmicos.
+Banco PostgreSQL exclusivo: `vivaion_empresas` (ou `vivaion_empresas_dev` / `vivaion_empresas_test` em ambientes não produtivos), proprietário e privilégios próprios. O backend rejeita nomes de banco fora desse prefixo, impedindo operações acidentais em `unyomdb` ou bancos acadêmicos.
 
 ## 2. Build
 

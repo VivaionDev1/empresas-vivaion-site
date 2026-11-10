@@ -3,8 +3,10 @@ import { createHash } from "node:crypto";
 import { catalogFeedSchema } from "@vivaion/empresas-contracts";
 import { config } from "../src/config.js";
 import { pool } from "../src/db.js";
+import { assertIsolatedDatabaseUrl } from "../src/domain/dbTarget.js";
 
 if (!config.databaseUrl) throw new Error("DATABASE_URL is required before syncing catalog");
+assertIsolatedDatabaseUrl(config.databaseUrl);
 const feedUrl = new URL(config.catalogFeedUrl);
 const trusted = feedUrl.protocol === "https:" && ["vivaion.com.br", "www.vivaion.com.br"].includes(feedUrl.hostname);
 const localDev = config.allowLocalCatalog && !config.isProduction && ["localhost","127.0.0.1"].includes(feedUrl.hostname);
@@ -21,6 +23,10 @@ try {
     const raw = await response.text();
     if (raw.length > 3_000_000) throw new Error("Catalog response too large");
     const parsed = catalogFeedSchema.parse(JSON.parse(raw));
+    if (parsed.products.length === 0) {
+      const existing = await client.query<{count:number}>("SELECT COUNT(*)::integer AS count FROM catalog_products WHERE active=TRUE");
+      if ((existing.rows[0]?.count ?? 0) > 0) throw new Error("Refusing to deactivate the entire catalog from an empty feed");
+    }
     const ids = parsed.products.map((p) => p.id);
     const digest = createHash("sha256").update(raw).digest("hex");
     await client.query("BEGIN");

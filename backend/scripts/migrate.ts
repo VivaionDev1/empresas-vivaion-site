@@ -3,8 +3,10 @@ import { readdir, readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { pool } from "../src/db.js";
 import { config } from "../src/config.js";
+import { assertIsolatedDatabaseUrl } from "../src/domain/dbTarget.js";
 
 if (!config.databaseUrl) throw new Error("DATABASE_URL is required for migrations");
+assertIsolatedDatabaseUrl(config.databaseUrl);
 const files = (await readdir(resolve(process.cwd(), "migrations"))).filter((f) => /^\d+_.*\.sql$/.test(f)).sort();
 const client = await pool.connect();
 try {

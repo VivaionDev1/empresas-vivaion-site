@@ -5,6 +5,14 @@ import SiteLayout from "../layouts/SiteLayout.astro";
   <section class="page-hero"><div class="container"><span class="eyebrow eyebrow--light">Área da empresa</span><h1>Seu espaço de desenvolvimento.</h1><p>Informações de cadastro, solicitações e gestão corporativa em um só lugar.</p></div></section>
   <section class="section"><div class="container">
     <div id="dashboard-alert" class="notice notice--info" role="status">Verificando acesso à conta…</div>
+    <section id="hml-preview" class="dashboard-panel hml-preview" hidden>
+      <span class="eyebrow">Prévia de homologação</span>
+      <h2>Sua seleção está pronta para conversar com a equipe.</h2>
+      <p class="section-intro">O painel de contas empresariais ainda está em validação. Sua seleção fica salva neste navegador e não foi enviada à Vivaion.</p>
+      <div id="hml-selection-list" class="hml-selection-list"></div>
+      <div class="action-row"><a href="/catalogo/" class="button button--outline">Voltar ao catálogo</a><a id="hml-whatsapp" class="button button--primary" href="https://wa.me/554588042562" target="_blank" rel="noopener noreferrer">Conversar com a equipe →</a></div>
+      <p class="hml-preview__note">Ao abrir o WhatsApp, revise e envie a mensagem para registrar seu interesse. Valores, vagas e matrícula precisam de confirmação da equipe.</p>
+    </section>
     <div id="dashboard-content" class="dashboard-shell" hidden>
       <nav class="dashboard-nav" aria-label="Menu do painel">
         <a href="#visao-geral" aria-current="page">Visão geral</a>
@@ -43,6 +51,38 @@ import SiteLayout from "../layouts/SiteLayout.astro";
     } catch { return []; }
   }
   function selectionSave(items: SelectedItem[]) { localStorage.setItem(selectionKey, JSON.stringify(items)); }
+  async function showHmlPreview() {
+    const preview = document.querySelector<HTMLElement>("#hml-preview");
+    const list = document.querySelector<HTMLElement>("#hml-selection-list");
+    const whatsapp = document.querySelector<HTMLAnchorElement>("#hml-whatsapp");
+    if (!preview || !list || !whatsapp) return;
+    const items = selection();
+    const titles = new Map<string, string>();
+    try {
+      const response = await fetch("/api/catalog", { headers: { Accept: "application/json" } });
+      if (response.ok) {
+        const data = await response.json();
+        for (const product of data.products ?? []) if (typeof product.id === "string" && typeof product.title === "string") titles.set(product.id, product.title);
+      }
+    } catch { /* The saved selection remains visible even if the catalog is temporarily unavailable. */ }
+    list.replaceChildren();
+    if (items.length) {
+      for (const item of items) {
+        const row = document.createElement("div");
+        row.className = "hml-selection-list__item";
+        row.textContent = (titles.get(item.productId) ?? item.productId) + " · " + item.quantity + (item.quantity === 1 ? " pessoa" : " pessoas");
+        list.append(row);
+      }
+      const message = "Olá! Tenho interesse em uma proposta corporativa para estas formações: " + items.map((item) => (titles.get(item.productId) ?? item.productId) + " (" + item.quantity + ")").join("; ") + ". Gostaria de conhecer disponibilidade e condições.";
+      whatsapp.href = "https://wa.me/554588042562?text=" + encodeURIComponent(message);
+    } else {
+      list.textContent = "Você ainda não selecionou cursos. Explore o catálogo e adicione as formações de interesse.";
+      whatsapp.href = "https://wa.me/554588042562?text=" + encodeURIComponent("Olá! Gostaria de conversar sobre capacitação para minha empresa.");
+    }
+    preview.hidden = false;
+    const alert = document.querySelector<HTMLElement>("#dashboard-alert");
+    if (alert) alert.hidden = true;
+  }
   function showSelection() {
     const container = document.querySelector<HTMLElement>("#proposal-items");
     if (!container) return;
@@ -133,5 +173,6 @@ import SiteLayout from "../layouts/SiteLayout.astro";
   document.querySelector<HTMLButtonElement>("#logout-button")?.addEventListener("click", async () => {
     try { await fetch("/api/auth/logout", { method: "POST", credentials: "same-origin" }); } finally { window.location.assign("/entrar/"); }
   });
-  load();
+  if (document.body.dataset.siteLive === "true") load();
+  else showHmlPreview();
 </script>

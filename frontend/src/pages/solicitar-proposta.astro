@@ -1,0 +1,87 @@
+---
+import SiteLayout from "../layouts/SiteLayout.astro";
+---
+<SiteLayout title="Solicitar proposta" description="Envie uma solicitação de capacitação corporativa sem necessidade de criar uma conta." noindex>
+  <section class="page-hero"><div class="container"><span class="eyebrow eyebrow--light">Atendimento corporativo</span><h1>Solicite uma proposta para sua equipe.</h1><p>Informe os cursos e seus contatos. A equipe da Vivaion analisará disponibilidade, elegibilidade e condições.</p></div></section>
+  <section class="section"><div class="container auth-layout">
+    <div class="auth-aside">
+      <h2>Suas formações selecionadas</h2>
+      <div id="proposal-course-summary" aria-live="polite">Consultando seleção…</div>
+      <p class="section-intro">A estimativa do carrinho não é preço garantido nem reserva de vagas. Não há pagamento nesta etapa.</p>
+      <a class="inline-link" href="/carrinho/">← Revisar carrinho</a>
+    </div>
+    <div class="form-panel">
+      <h2>Dados para contato</h2><p>Não é necessário criar uma conta empresarial para solicitar atendimento.</p>
+      <form id="public-proposal-form" class="form-grid">
+        <label class="field field--wide">Seu nome<input name="contactName" autocomplete="name" required minlength="3" maxlength="140" /></label>
+        <label class="field field--wide">Empresa<input name="companyName" autocomplete="organization" required minlength="2" maxlength="180" /></label>
+        <label class="field field--wide">E-mail<input name="email" type="email" autocomplete="email" required maxlength="254" /></label>
+        <label class="field field--wide">Telefone / WhatsApp (opcional)<input name="phone" type="tel" autocomplete="tel" maxlength="30" /></label>
+        <label class="field field--wide">Contexto e necessidades (opcional)<textarea name="message" maxlength="2000" placeholder="Objetivo da capacitação, público e datas desejadas."></textarea></label>
+        <div class="field field--wide" aria-hidden="true" style="position:absolute;left:-10000px"><label>Deixe em branco<input name="website" tabindex="-1" autocomplete="off" /></label></div>
+        <label class="field field--wide" style="display:flex;gap:12px;align-items:start"><input type="checkbox" name="privacyAcknowledged" required style="width:auto;min-height:auto" /><span>Li o <a href="/privacidade/" class="inline-link" target="_blank" rel="noopener noreferrer">aviso de privacidade</a> e estou ciente de que meus dados serão utilizados para retorno desta solicitação.</span></label>
+        <div id="proposal-feedback" class="form-feedback" role="status" aria-live="polite"></div>
+        <div class="form-submit"><button class="button button--primary" type="submit">Enviar solicitação →</button></div>
+      </form>
+    </div>
+  </div></section>
+</SiteLayout>
+<script>
+  type CartItem = {productId:string; quantity:number};
+  type Product = {id:string;title:string};
+  const form=document.querySelector<HTMLFormElement>("#public-proposal-form");
+  const summary=document.querySelector<HTMLElement>("#proposal-course-summary");
+  const feedback=document.querySelector<HTMLElement>("#proposal-feedback");
+  let titles=new Map<string,string>();
+  let requestKey=crypto.randomUUID();
+  const key="vivaion-empresas-cart-v1";
+  function cart():CartItem[]{
+    try {
+      const value=JSON.parse(localStorage.getItem(key)??localStorage.getItem("vivaion-empresas-selection-v1")??"[]");
+      if(!Array.isArray(value))return [];
+      const ids=new Set<string>();let total=0;
+      return value.filter((x):x is CartItem=>{
+        if(!x||typeof x.productId!=="string"||!/^(pos|formacao|curso-livre):[a-z0-9-]+$/.test(x.productId)||!Number.isInteger(x.quantity)||x.quantity<1||x.quantity>50||ids.has(x.productId)||total+x.quantity>50)return false;
+        ids.add(x.productId);total+=x.quantity;return true;
+      }).slice(0,30);
+    }catch{return [];}
+  }
+  function render(){
+    if(!summary)return;
+    const items=cart();
+    summary.replaceChildren();
+    if(!items.length){summary.textContent="Nenhuma formação selecionada. Volte ao carrinho para incluir cursos.";return;}
+    const list=document.createElement("ul");
+    for(const item of items){const li=document.createElement("li");li.textContent=(titles.get(item.productId)??item.productId)+" — "+item.quantity+" "+(item.quantity===1?"vaga":"vagas");list.append(li);}
+    summary.append(list);
+  }
+  fetch("/api/catalog").then(r=>r.ok?r.json():Promise.reject()).then((data:{products:Product[]})=>{
+    titles=new Map((data.products??[]).map(p=>[p.id,p.title]));render();
+  }).catch(()=>render());
+  form?.addEventListener("submit",async(event)=>{
+    event.preventDefault();
+    if(!form||!feedback)return;
+    const items=cart();
+    if(!items.length){feedback.textContent="Escolha pelo menos uma formação no carrinho.";feedback.dataset.state="error";return;}
+    const button=form.querySelector<HTMLButtonElement>('button[type="submit"]');
+    if(button)button.disabled=true;
+    feedback.textContent="Registrando solicitação…";feedback.dataset.state="info";
+    const data=new FormData(form);
+    try{
+      const response=await fetch("/api/public-proposals",{
+        method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({
+          requestKey,contactName:data.get("contactName"),companyName:data.get("companyName"),
+          email:data.get("email"),phone:String(data.get("phone")||"").trim()||undefined,
+          message:String(data.get("message")||"").trim()||undefined,
+          website:data.get("website"),privacyAcknowledged:data.get("privacyAcknowledged")==="on",
+          items
+        })
+      });
+      const result=await response.json().catch(()=>({}));
+      if(!response.ok)throw Error(result.message||"Não foi possível registrar a solicitação.");
+      feedback.textContent=result.reference?"Recebemos sua solicitação. Protocolo: "+result.reference+". A equipe Vivaion entrará em contato.":"Solicitação recebida.";
+      feedback.dataset.state="success";form.reset();localStorage.removeItem(key);requestKey=crypto.randomUUID();render();
+    }catch(e){feedback.textContent=e instanceof Error?e.message:"Não foi possível registrar a solicitação.";feedback.dataset.state="error";}
+    finally{if(button)button.disabled=false;}
+  });
+</script>

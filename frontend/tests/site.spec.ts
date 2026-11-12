@@ -73,3 +73,10 @@ test("mobile or desktop: navigation and four pages without horizontal overflow",
     await expect(page.getByRole("navigation",{name:"Navegação principal"})).toBeVisible();
   }
 });
+
+test("assisted commercial proposal page does not require an account",async({page})=>{
+  await page.goto("/solicitar-proposta/");
+  await expect(page.getByRole("heading",{level:1})).toContainText("Solicite uma proposta");
+  await expect(page.getByRole("textbox",{name:"Seu nome"})).toBeVisible();
+  await expect(page.getByText("Não é necessário criar uma conta empresarial")).toBeVisible();
+});

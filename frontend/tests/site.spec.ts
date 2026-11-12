@@ -80,3 +80,20 @@ test("assisted commercial proposal page does not require an account",async({page
   await expect(page.getByRole("textbox",{name:"Seu nome"})).toBeVisible();
   await expect(page.getByText("Não é necessário criar uma conta empresarial")).toBeVisible();
 });
+
+test("assisted proposal is available when corporate pricing has no approval",async({page})=>{
+  const product=catalog.products.find(p=>p.commercialStage==="available")!;
+  await page.route("**/api/catalog",route=>route.fulfill({status:200,contentType:"application/json",body:JSON.stringify({schemaVersion:1,products:catalog.products})}));
+  await page.route("**/api/commercial/catalog",route=>route.fulfill({status:503,contentType:"application/json",body:JSON.stringify({error:"pricing_disabled"})}));
+  await page.goto("/carrinho/");
+  await page.evaluate((id)=>{
+    localStorage.setItem("vivaion-empresas-cart-v1",JSON.stringify([{productId:id,quantity:2}]));
+  },product.id);
+  await page.reload();
+  await expect(page.locator(".cart-item")).toHaveCount(1);
+  await expect(page.locator("#cart-total")).toContainText("Sob consulta");
+  await expect(page.locator("#cart-proposal")).toHaveAttribute("href","/solicitar-proposta/");
+  await page.locator("#cart-proposal").click();
+  await expect(page).toHaveURL(/\/solicitar-proposta\/$/);
+  await expect(page.getByText(product.title).first()).toBeVisible();
+});

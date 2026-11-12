@@ -106,3 +106,34 @@ import SiteLayout from "../layouts/SiteLayout.astro";
     if (totalNode) totalNode.textContent = money(Math.round(subtotal*(10000-percent)/10000));
     const nextTier = tiers.filter((tier)=>tier.minimumSeats>quantity).sort((a,b)=>a.minimumSeats-b.minimumSeats)[0];
     if (noteNode) noteNode.textContent = nextTier ? `Adicione ${nextTier.minimumSeats-quantity} ${nextTier.minimumSeats-quantity===1?"unidade":"unidades"} para chegar a ${(nextTier.discountBps/100).toLocaleString("pt-BR")}% de desconto.` : "Você atingiu a maior faixa de desconto disponível.";
+    try {
+      const response = await fetch("/api/pricing/preview",{method:"POST",headers:{"Content-Type":"application/json",Accept:"application/json"},body:JSON.stringify({items:lines})});
+      const data = await response.json(); if(token!==quoteToken)return;
+      if(!response.ok) throw new Error(data.message??"Não foi possível confirmar a prévia de valores.");
+      if(totalNode)totalNode.textContent=money(data.totalCents);
+      if(discountNode)discountNode.textContent=`${(data.discountBps/100).toLocaleString("pt-BR")}%`;
+      if(errorNode)errorNode.hidden=true;
+      const productsText = lines.map((line)=>`${line.quantity}x ${products.get(line.productId)?.title??line.productId}`).join(", ");
+      // A proposta formal registra os itens no backend, sem envio automático ao WhatsApp.
+      if (proposalLink) proposalLink.href="/solicitar-proposta/";
+    } catch(error) { if (token === quoteToken && errorNode){errorNode.textContent=error instanceof Error?error.message:"Não foi possível confirmar os preços.";errorNode.hidden=false;} }
+  }
+  async function load() {
+    try {
+      const [catalogResponse, pricingResponse] = await Promise.all([fetch("/api/catalog"),fetch("/api/commercial/catalog")]);
+      if (!catalogResponse.ok) throw new Error("O catálogo está temporariamente indisponível.");
+      const catalog=await catalogResponse.json();
+      products=new Map((catalog.products as Product[]).map((product)=>[product.id,product]));
+      if (pricingResponse.ok) {
+        const pricing=await pricingResponse.json();
+        prices=new Map((pricing.products as Price[]).map((price)=>[price.productId,price]));
+        tiers=pricing.policy.tiers as Tier[];
+      } else { prices.clear(); tiers=[]; }
+      const lines=readCart().filter((line)=>products.has(line.productId));
+      const normalized=JSON.stringify(lines);
+      if(normalized!==localStorage.getItem(key))save(lines);else render();
+    } catch(error) { if(errorNode){errorNode.textContent=error instanceof Error?error.message:"Falha ao carregar o carrinho.";errorNode.hidden=false;} }
+  }
+  window.addEventListener("storage",()=>render());window.addEventListener("vivaion:cart-updated",()=>render());
+  load();
+</script>

@@ -106,8 +106,8 @@ import SiteLayout from "../layouts/SiteLayout.astro";
       if(discountNode)discountNode.textContent=`${(data.discountBps/100).toLocaleString("pt-BR")}%`;
       if(errorNode)errorNode.hidden=true;
       const productsText = lines.map((line)=>`${line.quantity}x ${products.get(line.productId)?.title??line.productId}`).join(", ");
-      const message = `Olá! Gostaria de solicitar uma proposta para: ${productsText}. Prévia informativa do carrinho: ${money(data.totalCents)} com ${(data.discountBps/100).toLocaleString("pt-BR")}% de desconto. Por favor, confirmem valores vigentes e condições.`;
-      if(proposalLink)proposalLink.href=`https://wa.me/554588042562?text=${encodeURIComponent(message)}`;
+      // A proposta formal registra os itens no backend, sem envio automático ao WhatsApp.
+      if (proposalLink) proposalLink.href="/solicitar-proposta/";
     } catch(error) { if (token === quoteToken && errorNode){errorNode.textContent=error instanceof Error?error.message:"Não foi possível confirmar os preços.";errorNode.hidden=false;} }
   }
   async function load() {

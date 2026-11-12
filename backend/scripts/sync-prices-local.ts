@@ -29,21 +29,24 @@ try {
   await client.query(`UPDATE product_prices SET approved=FALSE,corporate_eligible=FALSE WHERE NOT(product_id=ANY($1::text[]))`,[[...ids]]);
   for (const price of snapshot.prices) await client.query(`
     INSERT INTO product_prices(product_id,unit_price_cents,currency,approved,approved_at,valid_from,valid_until,corporate_eligible,source_url,source_checked_at,price_label)
-    VALUES($1,$2,'BRL',TRUE,NOW(),NOW(),$3,TRUE,$4,$5,$6)
-    ON CONFLICT(product_id) DO UPDATE SET unit_price_cents=EXCLUDED.unit_price_cents,currency='BRL',approved=TRUE,
-      approved_at=NOW(),valid_from=NOW(),valid_until=EXCLUDED.valid_until,corporate_eligible=TRUE,
+    VALUES($1,$2,'BRL',FALSE,NULL,NOW(),$3,FALSE,$4,$5,$6)
+    ON CONFLICT(product_id) DO UPDATE SET unit_price_cents=EXCLUDED.unit_price_cents,currency='BRL',
+      approved=CASE WHEN product_prices.unit_price_cents=EXCLUDED.unit_price_cents
+        AND product_prices.source_url=EXCLUDED.source_url AND product_prices.valid_until=EXCLUDED.valid_until
+        THEN product_prices.approved ELSE FALSE END,
+      approved_at=CASE WHEN product_prices.unit_price_cents=EXCLUDED.unit_price_cents
+        AND product_prices.source_url=EXCLUDED.source_url AND product_prices.valid_until=EXCLUDED.valid_until
+        THEN product_prices.approved_at ELSE NULL END,
+      valid_from=NOW(),valid_until=EXCLUDED.valid_until,
+      corporate_eligible=CASE WHEN product_prices.unit_price_cents=EXCLUDED.unit_price_cents
+        AND product_prices.source_url=EXCLUDED.source_url AND product_prices.valid_until=EXCLUDED.valid_until
+        THEN product_prices.corporate_eligible ELSE FALSE END,
       source_url=EXCLUDED.source_url,source_checked_at=EXCLUDED.source_checked_at,price_label=EXCLUDED.price_label
   `,[price.productId,price.unitPriceCents,price.validUntil,price.sourceUrl,snapshot.sourceCheckedAt,price.priceLabel]);
-  const existingPolicy = await client.query<{id:string}>("SELECT id FROM discount_policies WHERE name='Vivaion Empresas volume 2026' ORDER BY created_at DESC LIMIT 1");
-  const policy = existingPolicy.rows[0]
-    ? await client.query<{id:string}>("UPDATE discount_policies SET base_discount_bps=1000,is_active=TRUE WHERE id=$1 RETURNING id",[existingPolicy.rows[0].id])
-    : await client.query<{id:string}>("INSERT INTO discount_policies(name,base_discount_bps,is_active) VALUES('Vivaion Empresas volume 2026',1000,TRUE) RETURNING id");
-  await client.query("UPDATE discount_policies SET is_active=FALSE WHERE id<>$1",[policy.rows[0]!.id]);
-  await client.query("DELETE FROM discount_tiers WHERE policy_id=$1",[policy.rows[0]!.id]);
-  for (const [minimum,bps] of [[2,1500],[5,2000],[10,3000],[30,4000]] as const)
-    await client.query("INSERT INTO discount_tiers(policy_id,minimum_seats,discount_bps) VALUES($1,$2,$3)",[policy.rows[0]!.id,minimum,bps]);
+  // Importing prices never creates or activates a commercial discount policy.
+  // Policies and approval of individual prices require separate authorized review.
   await client.query("COMMIT");
-  console.info(`Synchronized ${snapshot.prices.length} approved official price rows and volume tiers.`);
+  console.info(`Imported ${snapshot.prices.length} official price rows; commercial approvals remain independent.`);
 } catch (error) {
   try { await client.query("ROLLBACK"); } catch { /* no transaction may be active */ }
   throw error;

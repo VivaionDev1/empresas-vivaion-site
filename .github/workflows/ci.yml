@@ -1,7 +1,7 @@
 name: Vivaion Empresas CI
 on:
   pull_request:
-    branches: [main, feat/portal-empresas-foundation]
+    branches: [main, feat/portal-empresas-foundation, 'feat/empresas-opcao-a-**']
   push:
     branches: [main]
 jobs:
@@ -28,6 +28,8 @@ jobs:
       CORPORATE_PRICING_ENABLED: "false"
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -56,16 +58,23 @@ jobs:
           HOST: 127.0.0.1
           PORT: "8082"
         run: npm run test:e2e -w @vivaion/empresas-frontend -- tests/fullstack-flow.spec.ts
+      - name: Adversarial archive extraction regression tests
+        run: |
+          PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s scripts -p 'test_safe_extract_release.py' -v
+      - name: Build and verify immutable HML release bundle (no deploy)
+        run: |
+          npm run release:candidate
+          npm run release:verify -- ".release-out/empresas-hml-$(git rev-parse HEAD)"
+          npm run release:rehearse -- ".release-out/empresas-hml-$(git rev-parse HEAD)"
       - name: Preserve reviewed release candidate (non-live build only)
         if: success()
         uses: actions/upload-artifact@v4
         with:
           name: empresas-opcao-a-rc-${{ github.event.pull_request.head.sha || github.sha }}
           path: |
-            frontend/dist/
-            backend/dist/
-            backend/migrations/
-            data/catalog-v1.json
-            data/course-details.json
+            .release-out/empresas-hml-*/empresas-hml-*.tgz
+            .release-out/empresas-hml-*/empresas-hml-*.tgz.sha256
+            .release-out/empresas-hml-*/payload/release-manifest.json
           if-no-files-found: error
+          include-hidden-files: true
           retention-days: 7

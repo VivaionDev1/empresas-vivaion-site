@@ -27,12 +27,12 @@ npm run release:rehearse -- ".release-out/empresas-hml-$(git rev-parse HEAD)"
 
 O comando `release:candidate` exige Git limpo, commit exato e index do Astro com `noindex, nofollow`. O parâmetro `--allow-dirty` só existe para ensaio **não publicável** e produz `sourceClean:false` no manifesto. Um artefato com `sourceClean:false` não pode ser tratado como liberação.
 
-O `release:verify` compara checksum do tar, manifesto individual, conteúdo e metadados de HML. O `release:rehearse` verifica a troca atômica e a reversão de um link simbólico **dentro de `.release-rehearsal` neste workspace**. Ele **não** atua sobre Apache, systemd, banco operacional ou symlink de produção.
+O `release:verify` exige `sourceClean:true` por padrão e confere SHA-256, manifesto, todos os arquivos de saída e `noindex` em cada HTML; Python 3 é pré-requisito para extração com validação de tipos, paths e limites antes de qualquer gravação. Apenas em simulações isoladas, o operador pode invocar `node scripts/release-candidate.mjs verify CAMINHO --allow-dirty` para um build não publicável. A ação não valida assinatura de origem, a ser verificada externamente. O `release:rehearse` utiliza o mesmo extrator seguro e verifica a troca atômica e a reversão de um link simbólico **dentro de `.release-rehearsal` neste workspace**. Ele **não** atua sobre Apache, systemd, banco operacional ou symlink de produção.
 
 ## Critérios para publicar em HML real (responsável da VPS)
 
 1. Liberar e identificar um responsável pelo publicador assinado, com permissão específica para HML.
-2. Verificar assinatura externa do artefato aprovado, commit do manifesto, SHA-256, política de `sourceClean:true`, `channel:hml`, `publicSiteLive:false` e os checks da CI do SHA.
+2. Verificar com um verificador confiável do commit autorizado (Node.js 22 + Python 3 instalados) a assinatura externa do artefato aprovado, commit do manifesto, SHA-256, política de `sourceClean:true`, `channel:hml`, `publicSiteLive:false` e os checks da CI do SHA.
 3. Proteger HML contra acesso indevido; não expor formulários com dados pessoais reais enquanto LGPD/atendimento não forem aprovados.
 4. Criar nova pasta de release **sem sobrescrever a versão ativa**, fazer backup/restore drill do banco HML (sem dados reais) e aplicar migrações 001–006 no banco `vivaion_empresas*` exclusivo, via `node dist/scripts/migrate.js` a partir de `backend/`.
 5. Instalar dependências exatas (`npm ci --omit=dev --no-audit --no-fund`) dentro da pasta nova, sem usar credenciais do repositório original. Manter `DATABASE_URL`, `APP_ORIGIN`, `HOST=127.0.0.1`, `CORPORATE_PRICING_ENABLED=false` e demais variáveis protegidas fora do DocumentRoot.

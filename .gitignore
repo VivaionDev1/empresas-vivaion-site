@@ -12,3 +12,4 @@ playwright-report/
 test-results/
 .release-out/
 .release-rehearsal/
+__pycache__/

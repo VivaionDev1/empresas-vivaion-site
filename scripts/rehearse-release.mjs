@@ -10,6 +10,7 @@ import { fileURLToPath } from "node:url";
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const rehearsalRoot = join(root, ".release-rehearsal");
 const bundleArg = process.argv[2];
+const allowDirty = process.argv.includes("--allow-dirty");
 if (!bundleArg) throw new Error("Provide .release-out/empresas-hml-<sha> directory");
 const bundle = resolve(root, bundleArg);
 if (!bundle.startsWith(join(root, ".release-out") + "/") || !/^empresas-hml-[a-f0-9]{40}$/.test(basename(bundle))) {
@@ -21,7 +22,7 @@ const exec = (cmd, args) => execFileSync(cmd, args, {cwd:root,stdio:["ignore","p
 const marker = async (link) => (await readFile(join(link, "rehearsal-marker.txt"), "utf8")).trim();
 
 async function main() {
-  exec("node", ["scripts/release-candidate.mjs", "verify", bundleArg]);
+  exec("node", ["scripts/release-candidate.mjs", "verify", bundleArg, ...(allowDirty ? ["--allow-dirty"] : [])]);
   await mkdir(rehearsalRoot, {recursive:true});
   const session = await mkdtemp(join(rehearsalRoot, "session-"));
   try {
@@ -30,9 +31,10 @@ async function main() {
     for (const slot of ["baseline", "candidate"]) {
       const path = join(releases, slot);
       await mkdir(path);
-      exec("tar", ["-xzf", tarball, "--no-same-owner", "--no-same-permissions", "-C", path]);
+      exec("python3", ["scripts/safe-extract-release.py", tarball, path]);
       const manifest = JSON.parse(await readFile(join(path,"release-manifest.json"),"utf8"));
-      if (manifest.channel !== "hml" || manifest.publicSiteLive !== false) throw new Error("Unsafe HML manifest");
+      if (manifest.channel !== "hml" || manifest.publicSiteLive !== false ||
+          (!allowDirty && manifest.sourceClean !== true)) throw new Error("Unsafe HML manifest");
       await readFile(join(path,"frontend/dist/index.html"),"utf8");
       await readFile(join(path,"backend/dist/src/server.js"),"utf8");
       await writeFile(join(path, "rehearsal-marker.txt"), slot);

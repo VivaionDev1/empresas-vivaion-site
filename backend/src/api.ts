@@ -52,6 +52,7 @@ async function getActivePricing() {
 }
 
 apiRouter.get("/commercial/catalog", async (_req, res, next) => {
+  if (!config.corporatePricingEnabled) { res.status(503).json({error:"pricing_disabled",message:"Condições comerciais ainda não aprovadas."}); return; }
   try {
     const [products, pricing] = await Promise.all([
       pool.query<{product_id:string;unit_price_cents:number;currency:string;valid_until:string|null;source_url:string;source_checked_at:string;price_label:string}>(`
@@ -177,6 +178,7 @@ function distinctItems(items: {productId:string;quantity:number}[]): boolean {
 function underUnitLimit(items: {productId:string;quantity:number}[]): boolean { return items.reduce((total,item)=>total+item.quantity,0) <= 50; }
 
 apiRouter.post("/pricing/preview", pricingPreviewLimiter, async (req, res, next) => {
+  if (!config.corporatePricingEnabled) { res.status(503).json({error:"pricing_disabled",message:"Condições comerciais ainda não aprovadas."}); return; }
   const input = proposalSchema.safeParse(req.body);
   if (!input.success || !distinctItems(input.data.items) || !underUnitLimit(input.data.items)) {
     res.status(400).json({error:"invalid_items",message:"O carrinho aceita até 50 unidades e não repete produtos em linhas separadas."}); return;

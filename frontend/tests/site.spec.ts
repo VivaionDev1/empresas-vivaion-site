@@ -97,3 +97,19 @@ test("assisted proposal is available when corporate pricing has no approval",asy
   await expect(page).toHaveURL(/\/solicitar-proposta\/$/);
   await expect(page.getByText(product.title).first()).toBeVisible();
 });
+
+test("available courses without approved price retain the proposal action",async({page})=>{
+  const sample=catalog.products.find(p=>p.commercialStage==="available")!;
+  await page.route("**/api/catalog",route=>route.fulfill({status:200,contentType:"application/json",body:JSON.stringify({schemaVersion:1,products:catalog.products})}));
+  await page.route("**/api/commercial/catalog",route=>route.fulfill({status:503,contentType:"application/json",body:JSON.stringify({error:"pricing_disabled"})}));
+  await page.goto("/catalogo/");
+  await page.locator("#search").fill(sample.title);
+  const card=page.locator(".course-card").filter({hasText:sample.title}).first();
+  await expect(card.getByRole("button",{name:"Solicitar proposta +"})).toBeEnabled();
+  await card.getByRole("button",{name:"Solicitar proposta +"}).click();
+  const selection=await page.evaluate(()=>JSON.parse(localStorage.getItem("vivaion-empresas-cart-v1")??"[]"));
+  expect(selection).toContainEqual({productId:sample.id,quantity:1});
+  await page.goto("/carrinho/");
+  await expect(page.locator("#cart-total")).toContainText("Sob consulta");
+  await expect(page.locator("#cart-proposal")).toHaveAttribute("href","/solicitar-proposta/");
+});

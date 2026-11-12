@@ -208,8 +208,9 @@ import SiteLayout from "../layouts/SiteLayout.astro";
       const meta = document.createElement("small"); meta.textContent = `${item.area} · ${modes[item.deliveryMode] ?? "Formato a confirmar"}`;
       const link = document.createElement("a"); link.className = "inline-link"; link.textContent = "Ver detalhes ↗"; link.href = `/cursos/${item.kind}/${item.slug}/`; footer.append(meta, link);
       const button = document.createElement("button"); button.type = "button"; button.className = "button button--outline button--small";
-      button.textContent = item.commercialStage === "prelaunch" ? "Tenho interesse" : item.commercialStage === "closed" ? "Consultar alternativas" : price ? "Adicionar ao carrinho +" : "Preço indisponível";
-      button.disabled = item.commercialStage === "available" && !price;
+      button.textContent = item.commercialStage === "prelaunch" ? "Tenho interesse" : item.commercialStage === "closed" ? "Consultar alternativas" : price ? "Adicionar ao carrinho +" : "Solicitar proposta +";
+      // Opção A: falta de preço homologado não impede que a empresa solicite uma proposta.
+      button.disabled = false;
       button.addEventListener("click", () => {
         if (item.commercialStage === "prelaunch") { window.open(`https://wa.me/554588042562?text=${encodeURIComponent(`Olá! Tenho interesse no pré-lançamento de ${item.title}.`)}`, "_blank", "noopener,noreferrer"); return; }
         if (item.commercialStage === "closed") { window.open(`https://wa.me/554588042562?text=${encodeURIComponent(`Olá! Tenho interesse em ${item.title}. Existem formações semelhantes disponíveis?`)}`, "_blank", "noopener,noreferrer"); return; }

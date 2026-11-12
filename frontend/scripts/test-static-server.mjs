@@ -1,5 +1,5 @@
 // Isolated static preview for Playwright; not part of production deployment.
-import { createServer } from "node:http";
+import { createServer, request as httpRequest } from "node:http";
 import { createReadStream } from "node:fs";
 import { stat } from "node:fs/promises";
 import { extname, resolve, sep, join } from "node:path";
@@ -20,6 +20,24 @@ const mime = {
 const server = createServer(async (req, res) => {
   try {
     if ((req.url ?? "").startsWith("/api/")) {
+      // Only CI acceptance mode may proxy to a disposable API on loopback.
+      // No user-supplied upstream host, production deployment or external port.
+      if (process.env.E2E_FULLSTACK === "true") {
+        const upstream = httpRequest({
+          hostname: "127.0.0.1", port: 8082,
+          path: req.url, method: req.method,
+          headers: { ...req.headers, host: "127.0.0.1:8082" }
+        }, (response) => {
+          res.writeHead(response.statusCode ?? 502, response.headers);
+          response.pipe(res);
+        });
+        upstream.on("error", () => {
+          if (!res.headersSent) res.writeHead(502, { "Content-Type": "text/plain" });
+          res.end("Disposable API unavailable");
+        });
+        req.pipe(upstream);
+        return;
+      }
       res.writeHead(404, { "Content-Type": "application/json" });
       res.end(JSON.stringify({ error: "not_available_in_static_preview" }));
       return;

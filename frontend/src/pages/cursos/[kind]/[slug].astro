@@ -25,7 +25,7 @@ const actionLabel = product.commercialStage === "available" ? "Ver condições e
   <section class="page-hero course-detail-hero">
     <div class="container">
       <a class="course-back-link" href="/catalogo/">← Voltar ao catálogo</a>
-      <div class="course-detail-meta"><span>{kindLabels[product.kind] ?? "Formação"}</span><span>{modeLabels[product.deliveryMode] ?? "Modalidade a confirmar"}</span><span>{stageLabel}</span></div>
+      <div class="course-detail-meta"><span>{kindLabels[product.kind] ?? "Formação"}</span><span>{modeLabels[product.deliveryMode ?? "unspecified"] ?? "Modalidade a confirmar"}</span><span>{stageLabel}</span></div>
       <h1>{product.title}</h1>
       <p>{product.summary}</p>
       <div class="course-detail-facts">

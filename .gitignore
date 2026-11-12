@@ -10,3 +10,5 @@ coverage/
 .vscode/
 playwright-report/
 test-results/
+.release-out/
+.release-rehearsal/

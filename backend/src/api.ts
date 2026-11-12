@@ -1,5 +1,7 @@
 import { Router } from "express";
 import { rateLimit } from "express-rate-limit";
+import { existsSync, readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { z } from "zod";
 import { pool } from "./db.js";
 import { config } from "./config.js";
@@ -8,6 +10,13 @@ import { calculateQuote } from "./domain/pricing.js";
 
 export const apiRouter = Router();
 const contactLimiter = rateLimit({ windowMs: 15 * 60_000, limit: 5, standardHeaders: "draft-8", legacyHeaders: false });
+const pricingPreviewLimiter = rateLimit({ windowMs: 15 * 60_000, limit: 60, standardHeaders: "draft-8", legacyHeaders: false });
+const courseDetailsFile = [resolve(process.cwd(), "data/course-details.json"), resolve(process.cwd(), "../data/course-details.json")].find(existsSync);
+if (!courseDetailsFile) throw new Error("Course details snapshot missing");
+const courseDetailsArtifact = JSON.parse(readFileSync(courseDetailsFile, "utf8")) as {
+  schemaVersion: number;
+  courses: Record<string, { modules: Array<{title:string;description?:string}>; professors: Array<{name:string}> }>;
+};
 
 apiRouter.get("/health", (_req, res) => res.json({ status: "ok", service: "vivaion-empresas" }));
 apiRouter.get("/ready", async (_req, res) => {
@@ -27,6 +36,68 @@ apiRouter.get("/catalog", async (_req, res, next) => {
       source: sync.rows.length ? "institutional" : "pending",
       syncedAt: sync.rows[0]?.synced_at ?? null,
       products: products.rows.map((row) => row.payload)
+    });
+  } catch (error) { next(error); }
+});
+
+async function getActivePricing() {
+  const [policy, tiers] = await Promise.all([
+    pool.query<{id:string;base_discount_bps:number}>("SELECT id,base_discount_bps FROM discount_policies WHERE is_active=TRUE ORDER BY created_at DESC LIMIT 1"),
+    pool.query<{minimum_seats:number;discount_bps:number}>(`
+      SELECT t.minimum_seats,t.discount_bps FROM discount_tiers t
+      JOIN discount_policies p ON p.id=t.policy_id WHERE p.is_active=TRUE ORDER BY t.minimum_seats
+    `)
+  ]);
+  return { policy: policy.rows[0], tiers: tiers.rows.map((t) => ({minimumSeats:t.minimum_seats,discountBps:t.discount_bps})) };
+}
+
+apiRouter.get("/commercial/catalog", async (_req, res, next) => {
+  try {
+    const [products, pricing] = await Promise.all([
+      pool.query<{product_id:string;unit_price_cents:number;currency:string;valid_until:string|null;source_url:string;source_checked_at:string;price_label:string}>(`
+        SELECT p.product_id,p.unit_price_cents,p.currency,p.valid_until,p.source_url,p.source_checked_at,p.price_label
+        FROM product_prices p JOIN catalog_products c ON c.id=p.product_id
+        WHERE p.approved=TRUE AND p.corporate_eligible=TRUE AND c.active=TRUE
+          AND c.payload->>'commercialStage'='available'
+          AND (p.valid_from IS NULL OR p.valid_from<=NOW()) AND (p.valid_until IS NULL OR p.valid_until>NOW())
+        ORDER BY p.product_id
+      `), getActivePricing()
+    ]);
+    if (!pricing.policy) { res.status(503).json({error:"pricing_unavailable"}); return; }
+    res.setHeader("Cache-Control", "public, max-age=60");
+    res.json({schemaVersion:1,currency:"BRL",source:"vivaion.com.br",sourceCheckedAt:products.rows[0]?.source_checked_at ?? null,
+      products:products.rows.map((p)=>({productId:p.product_id,unitPriceCents:p.unit_price_cents,currency:p.currency,validUntil:p.valid_until,sourceUrl:p.source_url,priceLabel:p.price_label})),
+      policy:{baseDiscountBps:pricing.policy.base_discount_bps,tiers:pricing.tiers,maxUnits:50}});
+  } catch (error) { next(error); }
+});
+
+apiRouter.get("/courses/:kind/:slug", async (req, res, next) => {
+  const kind = req.params.kind;
+  const slug = req.params.slug;
+  if (!["pos", "formacao", "curso-livre"].includes(kind) || !/^[a-z0-9-]{1,120}$/.test(slug)) {
+    res.status(400).json({ error: "invalid_course_id" }); return;
+  }
+  try {
+    const id = kind + ":" + slug;
+    const result = await pool.query<{payload: Record<string, unknown>}>(
+      "SELECT payload FROM catalog_products WHERE id=$1 AND active=TRUE", [id]);
+    const product = result.rows[0]?.payload;
+    if (!product) { res.status(404).json({ error: "course_not_found" }); return; }
+    const stage = String(product.commercialStage ?? "closed");
+    const officialUrl = String(product.canonicalUrl ?? "https://vivaion.com.br/");
+    res.setHeader("Cache-Control", "public, max-age=60");
+    res.json({
+      product,
+      academic: courseDetailsArtifact.courses[id] ?? { modules: [], professors: [] },
+      nextStep: {
+        status: stage === "available" ? "official-enrollment" : stage === "prelaunch" ? "prelaunch" : "closed",
+        url: officialUrl,
+        message: stage === "available"
+          ? "Consulte condições e matrícula na página oficial da formação."
+          : stage === "prelaunch"
+            ? "Esta formação está em pré-lançamento; consulte a página oficial para acompanhar as informações."
+            : "As inscrições estão encerradas; consulte a equipe sobre alternativas."
+      }
     });
   } catch (error) { next(error); }
 });
@@ -94,7 +165,7 @@ apiRouter.get("/seats", requireAuth, async (req, res, next) => {
 
 const requestedItemSchema = z.object({
   productId: z.string().regex(/^(pos|formacao|curso-livre):[a-z0-9-]+$/),
-  quantity: z.number().int().min(1).max(1000)
+  quantity: z.number().int().min(1).max(50)
 }).strict();
 const proposalSchema = z.object({
   items: z.array(requestedItemSchema).min(1).max(30),
@@ -103,6 +174,30 @@ const proposalSchema = z.object({
 function distinctItems(items: {productId:string;quantity:number}[]): boolean {
   return new Set(items.map((item) => item.productId)).size === items.length;
 }
+function underUnitLimit(items: {productId:string;quantity:number}[]): boolean { return items.reduce((total,item)=>total+item.quantity,0) <= 50; }
+
+apiRouter.post("/pricing/preview", pricingPreviewLimiter, async (req, res, next) => {
+  const input = proposalSchema.safeParse(req.body);
+  if (!input.success || !distinctItems(input.data.items) || !underUnitLimit(input.data.items)) {
+    res.status(400).json({error:"invalid_items",message:"O carrinho aceita até 50 unidades e não repete produtos em linhas separadas."}); return;
+  }
+  try {
+    const pricing = await getActivePricing();
+    if (!pricing.policy) { res.status(503).json({error:"pricing_unavailable"}); return; }
+    const ids = input.data.items.map((item)=>item.productId);
+    const prices = await pool.query<{product_id:string;unit_price_cents:number;source_url:string;valid_until:string|null}>(`
+      SELECT p.product_id,p.unit_price_cents,p.source_url,p.valid_until FROM product_prices p
+      JOIN catalog_products c ON c.id=p.product_id WHERE p.product_id=ANY($1::text[])
+        AND p.approved=TRUE AND p.corporate_eligible=TRUE AND c.active=TRUE
+        AND c.payload->>'commercialStage'='available'
+        AND (p.valid_from IS NULL OR p.valid_from<=NOW()) AND (p.valid_until IS NULL OR p.valid_until>NOW())
+    `,[ids]);
+    if (prices.rows.length !== ids.length) { res.status(409).json({error:"prices_pending",message:"Um ou mais preços oficiais precisam ser atualizados."}); return; }
+    const byId = new Map(prices.rows.map((row)=>[row.product_id,row]));
+    const quote = calculateQuote(input.data.items.map((item)=>({productId:item.productId,quantity:item.quantity,unitPriceCents:byId.get(item.productId)!.unit_price_cents})),pricing.policy.base_discount_bps,pricing.tiers);
+    res.json({...quote,lines:quote.lines.map((line)=>({...line,sourceUrl:byId.get(line.productId)!.source_url,priceValidUntil:byId.get(line.productId)!.valid_until})),payable:false,message:"Prévia informativa baseada nos preços à vista oficiais. Não é cobrança nem reserva de preço."});
+  } catch (error) { next(error); }
+});
 
 apiRouter.post("/proposals", requireAuth, requireRoles("administrator", "manager", "finance"), async (req, res, next) => {
   const input = proposalSchema.safeParse(req.body);
@@ -138,16 +233,15 @@ apiRouter.get("/pricing/status", async (_req, res) => {
 
 apiRouter.post("/pricing/quote", requireAuth, requireRoles("administrator", "manager", "finance"), async (req, res, next) => {
   const input = proposalSchema.safeParse(req.body);
-  if (!input.success || !distinctItems(input.data.items)) {
+  if (!input.success || !distinctItems(input.data.items) || !underUnitLimit(input.data.items)) {
     res.status(400).json({ error: "invalid_items" }); return;
   }
   const auth = (req as AuthRequest).auth!;
   if (auth.companyStatus !== "verified") { res.status(403).json({ error: "company_not_verified", message: "A empresa ainda não foi verificada." }); return; }
   if (!config.corporatePricingEnabled) { res.status(503).json({ error: "pricing_disabled", message: "Condições comerciais ainda não aprovadas." }); return; }
   try {
-    const policy = await pool.query<{id:string;base_discount_bps:number}>(
-      "SELECT id,base_discount_bps FROM discount_policies WHERE is_active=TRUE ORDER BY created_at DESC LIMIT 1");
-    if (!policy.rows[0]) { res.status(503).json({ error: "policy_not_approved" }); return; }
+    const pricing = await getActivePricing();
+    if (!pricing.policy) { res.status(503).json({ error: "policy_not_approved" }); return; }
     const ids = input.data.items.map((item) => item.productId);
     const prices = await pool.query<{product_id:string;unit_price_cents:number}>(`
       SELECT p.product_id,p.unit_price_cents FROM product_prices p
@@ -159,14 +253,9 @@ apiRouter.post("/pricing/quote", requireAuth, requireRoles("administrator", "man
     `, [ids]);
     if (prices.rows.length !== ids.length) { res.status(409).json({ error: "prices_pending", message: "Nem todos os cursos têm preço corporativo aprovado." }); return; }
     const priceByProduct = new Map(prices.rows.map((p) => [p.product_id, p.unit_price_cents]));
-    const tierResult = await pool.query<{minimum_seats:number;discount_bps:number}>(
-      "SELECT minimum_seats,discount_bps FROM discount_tiers WHERE policy_id=$1 ORDER BY minimum_seats",
-      [policy.rows[0].id]);
     const quote = calculateQuote(input.data.items.map((i) => ({
       productId: i.productId, quantity: i.quantity, unitPriceCents: priceByProduct.get(i.productId)!
-    })), policy.rows[0].base_discount_bps, tierResult.rows.map((t) => ({
-      minimumSeats: t.minimum_seats, discountBps: t.discount_bps
-    })));
+    })), pricing.policy.base_discount_bps, pricing.tiers);
     res.json({ ...quote, payable: false, message: "Cotação informativa. Checkout ainda não habilitado." });
   } catch (error) { next(error); }
 });

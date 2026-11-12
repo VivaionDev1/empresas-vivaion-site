@@ -1,17 +1,19 @@
 ---
 import SiteLayout from "../layouts/SiteLayout.astro";
+const isLive = import.meta.env.PUBLIC_SITE_LIVE === "true";
+const authEnabled = isLive || import.meta.env.PUBLIC_AUTH_ENABLED === "true";
 ---
 <SiteLayout title="Entrar" description="Acesse a área da sua empresa na Vivaion Empresas." noindex>
   <section class="section"><div class="container auth-layout">
     <div class="auth-aside"><span class="eyebrow">Sua área empresarial</span><h2>Um lugar para acompanhar seus próximos passos.</h2><p>Consulte a situação do cadastro e, quando habilitado, acompanhe propostas, matrículas e vagas da sua organização.</p><div class="auth-benefits"><span>Identidade empresarial verificada</span><span>Acesso restrito à organização</span><span>Visibilidade sobre solicitações</span></div></div>
-    <div class="form-panel"><h2>Entrar na sua conta</h2><p>Utilize o e-mail e a senha cadastrados.</p>
-      <form id="login-form" class="form-grid">
+    <div class="form-panel"><h2>Entrar na sua conta</h2><p>Informe o CNPJ da empresa e os dados da sua conta autorizada.</p>
+      {authEnabled ? <form id="login-form" class="form-grid">
+        <label class="field field--wide">CNPJ da empresa<input name="cnpj" required minlength="14" maxlength="22" placeholder="00.000.000/0000-00 ou formato alfanumérico" autocapitalize="characters" autocomplete="organization" /></label>
         <label class="field field--wide">E-mail<input name="email" type="email" required autocomplete="email" /></label>
         <label class="field field--wide">Senha<input name="password" type="password" required autocomplete="current-password" /></label>
         <div id="login-feedback" class="form-feedback" role="status" aria-live="polite"></div>
-        <div class="form-submit"><a class="inline-link" href="/cadastro/">Ainda não tenho uma conta</a><button type="submit" class="button button--primary">Entrar <span aria-hidden="true">→</span></button></div>
-      </form>
-      <p style="margin-top:24px;margin-bottom:0;font-size:.77rem">Se precisar recuperar o acesso, entre em <a class="inline-link" href="/contato/">contato com a equipe</a>. A recuperação automatizada será habilitada após a homologação do serviço de e-mail.</p>
+        <div class="form-submit"><div><a class="inline-link" href="/cadastro/">Ainda não tenho uma conta</a><br /><a class="inline-link" href="/recuperar-acesso/">Esqueci minha senha</a></div><button type="submit" class="button button--primary">Entrar <span aria-hidden="true">→</span></button></div>
+      </form> : <div class="notice notice--info"><p>O acesso empresarial ainda está em homologação. Nenhuma conta ou senha será solicitada nesta prévia.</p><a class="button button--primary" href="https://wa.me/554588042562?text=Ol%C3%A1%2C%20quero%20conversar%20sobre%20capacita%C3%A7%C3%A3o%20para%20minha%20empresa." target="_blank" rel="noopener noreferrer">Conversar com a equipe →</a><p style="margin:18px 0 0"><a class="inline-link" href="/catalogo/">Continuar explorando o catálogo</a></p></div>}
     </div>
   </div></section>
 </SiteLayout>
@@ -27,7 +29,7 @@ import SiteLayout from "../layouts/SiteLayout.astro";
     feedback.textContent = "Verificando credenciais…";
     feedback.dataset.state = "info";
     try {
-      const res = await fetch("/api/auth/login", { method: "POST", credentials: "same-origin", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: data.get("email"), password: data.get("password") }) });
+      const res = await fetch("/api/auth/login", { method: "POST", credentials: "same-origin", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ cnpj: data.get("cnpj"), email: data.get("email"), password: data.get("password") }) });
       const payload = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(payload.message ?? "Credenciais inválidas.");
       window.location.assign("/painel/");

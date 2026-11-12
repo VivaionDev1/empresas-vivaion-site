@@ -1,0 +1,92 @@
+---
+import SiteLayout from "../../../layouts/SiteLayout.astro";
+import catalog from "../../../../../data/catalog-v1.json";
+import details from "../../../../../data/course-details.json";
+
+type AcademicDetails = { modules: Array<{ title: string; description?: string }>; professors: Array<{ name: string }> };
+type CourseProduct = (typeof catalog.products)[number];
+export function getStaticPaths() {
+  const academicById = details.courses as Record<string, AcademicDetails>;
+  return catalog.products.map((product) => ({
+    params: { kind: product.kind, slug: product.slug },
+    props: { product, academic: academicById[product.id] ?? { modules: [], professors: [] } }
+  }));
+}
+
+const { product, academic } = Astro.props as { product: CourseProduct; academic: AcademicDetails };
+const modeLabels: Record<string, string> = { live: "Ao vivo", recorded: "Gravada", online: "Online", hybrid: "Híbrida", "in-person": "Presencial", unspecified: "Modalidade a confirmar" };
+const kindLabels: Record<string, string> = { pos: "Pós-graduação", formacao: "Formação", "curso-livre": "Curso livre" };
+const stageLabel = product.commercialStage === "available" ? "Inscrições no site oficial" : product.commercialStage === "prelaunch" ? "Pré-lançamento" : "Inscrições encerradas";
+const actionLabel = product.commercialStage === "available" ? "Ver condições e matrícula →" : product.commercialStage === "prelaunch" ? "Acompanhar o pré-lançamento →" : "Consultar alternativas →";
+---
+
+<SiteLayout title={product.title} description={product.summary} noindex>
+  <section class="page-hero course-detail-hero">
+    <div class="container">
+      <a class="course-back-link" href="/catalogo/">← Voltar ao catálogo</a>
+      <div class="course-detail-meta"><span>{kindLabels[product.kind] ?? "Formação"}</span><span>{modeLabels[product.deliveryMode ?? "unspecified"] ?? "Modalidade a confirmar"}</span><span>{stageLabel}</span></div>
+      <h1>{product.title}</h1>
+      <p>{product.summary}</p>
+      <div class="course-detail-facts">
+        <span><small>Área</small><strong>{product.area}</strong></span>
+        <span><small>Indicado para</small><strong>{product.audienceLabel}</strong></span>
+        {product.workload && <span><small>Carga horária</small><strong>{product.workload}</strong></span>}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container course-detail-layout">
+      <div class="course-detail-content">
+        <section class="course-academic-section" aria-labelledby="modules-title">
+          <span class="eyebrow">Percurso acadêmico</span>
+          <h2 id="modules-title">Módulos</h2>
+          {academic.modules.length ? <ol class="course-module-list">
+            {academic.modules.map((module, index) => <li><span class="course-module-list__number">{String(index + 1).padStart(2, "0")}</span><div><h3>{module.title}</h3>{module.description && <p>{module.description}</p>}</div></li>)}
+          </ol> : <div class="notice notice--info">A matriz detalhada não está publicada nesta página. Consulte a apresentação oficial da formação.</div>}
+        </section>
+
+        <section class="course-academic-section" aria-labelledby="faculty-title">
+          <span class="eyebrow">Quem conduz a formação</span>
+          <h2 id="faculty-title">Professores</h2>
+          {academic.professors.length ? <div class="course-faculty-grid">
+            {academic.professors.map((professor) => <article class="course-faculty-card"><span class="course-faculty-card__mark" aria-hidden="true">V</span><h3>{professor.name}</h3></article>)}
+          </div> : <div class="notice notice--info">A equipe docente ainda não está publicada. Consulte a página oficial para ver as informações mais recentes.</div>}
+        </section>
+      </div>
+
+      <aside class="course-next-step" aria-labelledby="course-next-step-title">
+        <span class="eyebrow">Próximo passo</span>
+        <h2 id="course-next-step-title">Matrícula e condições</h2>
+        <p>Valores, disponibilidade, pré-requisitos e matrícula são confirmados no canal oficial da Vivaion.</p>
+        {product.commercialStage === "available" && <>
+          <p class="course-detail-price" id="course-price" aria-live="polite">Consultando preço oficial à vista…</p>
+          <button class="button button--outline" id="add-course-cart" type="button" data-product-id={product.id} disabled>Adicionar ao carrinho</button>
+          <a class="course-cart-link" href="/carrinho/">Ver carrinho</a>
+        </>}
+        <a class="button button--primary" href={product.canonicalUrl} target="_blank" rel="noopener noreferrer">{actionLabel}</a>
+        <small>Você continuará na página institucional desta formação. A prévia Empresas não coleta pagamento nem confirma matrícula.</small>
+      </aside>
+    </div>
+  </section>
+</SiteLayout>
+{product.commercialStage === "available" && <script define:vars={{ productId: product.id }}>
+  const priceLabel = document.querySelector("#course-price");
+  const addButton = document.querySelector("#add-course-cart");
+  fetch("/api/commercial/catalog").then((response) => response.ok ? response.json() : Promise.reject())
+    .then((data) => {
+      const price = data.products.find((row) => row.productId === productId);
+      if (!price) throw new Error("price_unavailable");
+      if (priceLabel) priceLabel.textContent = `${price.priceLabel}: ${(price.unitPriceCents/100).toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}`;
+      if (addButton) { addButton.disabled = false; addButton.addEventListener("click", () => {
+        let cart = [];
+        try { const parsed = JSON.parse(localStorage.getItem("vivaion-empresas-cart-v1") ?? "[]"); if (Array.isArray(parsed)) cart = parsed; } catch { /* reset invalid local cart */ }
+        const total = cart.reduce((sum, line) => sum + (Number.isInteger(line?.quantity) ? line.quantity : 0), 0);
+        if (total >= 50) { alert("O carrinho permite até 50 unidades."); return; }
+        const existing = cart.find((line) => line.productId === productId);
+        if (existing) existing.quantity = Math.min(50, existing.quantity + 1); else cart.push({productId,quantity:1});
+        localStorage.setItem("vivaion-empresas-cart-v1",JSON.stringify(cart));
+        window.dispatchEvent(new Event("vivaion:cart-updated")); window.location.assign("/carrinho/");
+      }); }
+    }).catch(() => { if(priceLabel)priceLabel.textContent="Preço temporariamente indisponível; consulte a página oficial."; });
+</script>}

@@ -11,7 +11,9 @@
     "test:integration": "node --import tsx --test test/integration/*.test.ts",
     "db:migrate": "tsx scripts/migrate.ts",
     "catalog:sync": "tsx scripts/sync-catalog.ts",
-    "start": "node dist/src/server.js"
+    "start": "node dist/src/server.js",
+    "company:review": "tsx scripts/review-company.ts",
+    "tokens:cleanup": "tsx scripts/cleanup-tokens.ts"
   },
   "dependencies": {
     "@vivaion/empresas-contracts": "0.1.0",

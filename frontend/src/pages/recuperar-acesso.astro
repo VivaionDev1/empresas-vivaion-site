@@ -1,0 +1,32 @@
+---
+import SiteLayout from "../layouts/SiteLayout.astro";
+---
+<SiteLayout title="Recuperar acesso" description="Solicite a recuperação de senha da sua conta Vivaion Empresas." noindex>
+  <section class="section"><div class="container auth-layout">
+    <div class="auth-aside"><span class="eyebrow">Acesso seguro</span><h2>Volte para sua jornada de aprendizagem.</h2><p>Informe o e-mail da conta. Se houver cadastro confirmado, enviaremos instruções para definir uma nova senha.</p></div>
+    <div class="form-panel"><h2>Recuperar senha</h2><p>Por segurança, não informamos se o e-mail está cadastrado.</p>
+      <form id="forgot-form" class="form-grid"><label class="field field--wide">E-mail<input type="email" name="email" required autocomplete="email" maxlength="254" /></label>
+        <div id="forgot-status" class="form-feedback" role="status" aria-live="polite"></div>
+        <div class="form-submit"><a class="inline-link" href="/entrar/">Voltar ao login</a><button type="submit" class="button button--primary">Solicitar recuperação</button></div>
+      </form>
+    </div>
+  </div></section>
+</SiteLayout>
+<script>
+  const form = document.querySelector<HTMLFormElement>("#forgot-form");
+  const output = document.querySelector<HTMLElement>("#forgot-status");
+  form?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    if (!form || !output) return;
+    const submit = form.querySelector<HTMLButtonElement>('button[type="submit"]');
+    if (submit) submit.disabled=true;
+    const email = String(new FormData(form).get("email") ?? "");
+    try {
+      const res = await fetch("/api/auth/forgot-password", { method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email}) });
+      const data = await res.json().catch(() => ({}));
+      output.textContent = data.message ?? "Não foi possível concluir a solicitação.";
+      output.dataset.state = res.ok ? "success" : "error";
+    } catch { output.textContent = "Falha de conexão. Tente novamente."; output.dataset.state = "error"; }
+    finally { if (submit) submit.disabled=false; }
+  });
+</script>

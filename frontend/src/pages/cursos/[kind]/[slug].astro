@@ -5,9 +5,8 @@ import details from "../../../../../data/course-details.json";
 
 type AcademicDetails = { modules: Array<{ title: string; description?: string }>; professors: Array<{ name: string }> };
 type CourseProduct = (typeof catalog.products)[number];
-const academicById = details.courses as Record<string, AcademicDetails>;
-
 export function getStaticPaths() {
+  const academicById = details.courses as Record<string, AcademicDetails>;
   return catalog.products.map((product) => ({
     params: { kind: product.kind, slug: product.slug },
     props: { product, academic: academicById[product.id] ?? { modules: [], professors: [] } }

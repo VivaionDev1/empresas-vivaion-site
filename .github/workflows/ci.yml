@@ -71,4 +71,5 @@ jobs:
             .release-out/empresas-hml-*/empresas-hml-*.tgz.sha256
             .release-out/empresas-hml-*/payload/release-manifest.json
           if-no-files-found: error
+          include-hidden-files: true
           retention-days: 7

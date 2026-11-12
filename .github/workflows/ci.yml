@@ -47,3 +47,25 @@ jobs:
         run: npx playwright install --with-deps chromium
       - name: Browser and responsive smoke tests
         run: npm run test:e2e
+      - name: Seed approved institutional catalog in disposable database
+        run: cd backend && npx tsx scripts/sync-catalog-local.ts
+      - name: Full-stack acceptance with real API and disposable PostgreSQL
+        env:
+          E2E_FULLSTACK: "true"
+          APP_ORIGIN: http://127.0.0.1:4322
+          HOST: 127.0.0.1
+          PORT: "8082"
+        run: npm run test:e2e -w @vivaion/empresas-frontend -- tests/fullstack-flow.spec.ts
+      - name: Preserve reviewed release candidate (non-live build only)
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: empresas-opcao-a-rc-${{ github.event.pull_request.head.sha || github.sha }}
+          path: |
+            frontend/dist/
+            backend/dist/
+            backend/migrations/
+            data/catalog-v1.json
+            data/course-details.json
+          if-no-files-found: error
+          retention-days: 7

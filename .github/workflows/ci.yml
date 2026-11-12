@@ -12,7 +12,7 @@ jobs:
         image: postgres:18
         env:
           POSTGRES_USER: vivaion_test
-          POSTGRES_PASSWORD: [REDACTED]
+          POSTGRES_PASSWORD: ci-only-password
           POSTGRES_DB: vivaion_empresas_test
         ports:
           - 5432:5432
@@ -59,7 +59,8 @@ jobs:
           PORT: "8082"
         run: npm run test:e2e -w @vivaion/empresas-frontend -- tests/fullstack-flow.spec.ts
       - name: Adversarial archive extraction regression tests
-        run: PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s scripts -p 'test_safe_extract_release.py' -v
+        run: |
+          PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s scripts -p 'test_safe_extract_release.py' -v
       - name: Build and verify immutable HML release bundle (no deploy)
         run: |
           npm run release:candidate

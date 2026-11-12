@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { rateLimit } from "express-rate-limit";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { z } from "zod";
 import { pool } from "./db.js";
@@ -11,7 +11,8 @@ import { calculateQuote } from "./domain/pricing.js";
 export const apiRouter = Router();
 const contactLimiter = rateLimit({ windowMs: 15 * 60_000, limit: 5, standardHeaders: "draft-8", legacyHeaders: false });
 const pricingPreviewLimiter = rateLimit({ windowMs: 15 * 60_000, limit: 60, standardHeaders: "draft-8", legacyHeaders: false });
-const courseDetailsFile = resolve(process.cwd(), "data/course-details.json");
+const courseDetailsFile = [resolve(process.cwd(), "data/course-details.json"), resolve(process.cwd(), "../data/course-details.json")].find(existsSync);
+if (!courseDetailsFile) throw new Error("Course details snapshot missing");
 const courseDetailsArtifact = JSON.parse(readFileSync(courseDetailsFile, "utf8")) as {
   schemaVersion: number;
   courses: Record<string, { modules: Array<{title:string;description?:string}>; professors: Array<{name:string}> }>;

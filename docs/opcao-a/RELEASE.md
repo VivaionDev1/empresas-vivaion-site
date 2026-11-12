@@ -59,3 +59,7 @@ Não habilitar essa função para funcionários não treinados nem utilizá-la c
 - Recebimento operacional de leads, aviso de privacidade final e canal oficial de contato.
 - Execução e evidências do restore drill na VPS e implantação HML isolada.
 - Autorização explícita de cutover e acesso ao publicador assinado, que este MCP não expõe.
+
+## Evidência de QA
+
+A execução de CI deve referenciar o **SHA exato** desta branch. Não usar sucesso de commits anteriores como aprovação automática deste release candidate. Evidências, aprovações e eventuais não conformidades permanecem rastreáveis em PR, não em um HML alterado manualmente.

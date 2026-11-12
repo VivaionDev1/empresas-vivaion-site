@@ -3,16 +3,20 @@ import SiteLayout from "../../../layouts/SiteLayout.astro";
 import catalog from "../../../../../data/catalog-v1.json";
 import details from "../../../../../data/course-details.json";
 
+type AcademicDetails = { modules: Array<{ title: string; description?: string }>; professors: Array<{ name: string }> };
+type CourseProduct = (typeof catalog.products)[number];
+const academicById = details.courses as Record<string, AcademicDetails>;
+
 export function getStaticPaths() {
   return catalog.products.map((product) => ({
     params: { kind: product.kind, slug: product.slug },
-    props: { product, academic: details.courses[product.id] ?? { modules: [], professors: [] } }
+    props: { product, academic: academicById[product.id] ?? { modules: [], professors: [] } }
   }));
 }
 
-const { product, academic } = Astro.props;
-const modeLabels = { live: "Ao vivo", recorded: "Gravada", online: "Online", hybrid: "Híbrida", "in-person": "Presencial", unspecified: "Modalidade a confirmar" };
-const kindLabels = { pos: "Pós-graduação", formacao: "Formação", "curso-livre": "Curso livre" };
+const { product, academic } = Astro.props as { product: CourseProduct; academic: AcademicDetails };
+const modeLabels: Record<string, string> = { live: "Ao vivo", recorded: "Gravada", online: "Online", hybrid: "Híbrida", "in-person": "Presencial", unspecified: "Modalidade a confirmar" };
+const kindLabels: Record<string, string> = { pos: "Pós-graduação", formacao: "Formação", "curso-livre": "Curso livre" };
 const stageLabel = product.commercialStage === "available" ? "Inscrições no site oficial" : product.commercialStage === "prelaunch" ? "Pré-lançamento" : "Inscrições encerradas";
 const actionLabel = product.commercialStage === "available" ? "Ver condições e matrícula →" : product.commercialStage === "prelaunch" ? "Acompanhar o pré-lançamento →" : "Consultar alternativas →";
 ---

@@ -1,0 +1,103 @@
+---
+import SiteLayout from "../layouts/SiteLayout.astro";
+---
+<SiteLayout title="Capacitação corporativa" description="Cursos, formações e pós-graduações para impulsionar o desenvolvimento de pessoas e equipes. Conheça a Vivaion Empresas.">
+  <section class="hero">
+    <div class="container hero-grid">
+      <div>
+        <span class="eyebrow eyebrow--light">Instituto Vivaion · Soluções para empresas</span>
+        <h1>Capacitação para sua equipe, com a curadoria do <em>Instituto Vivaion.</em></h1>
+        <p class="hero-lead">Explore formações, confira público e modalidade e converse com a equipe sobre uma proposta corporativa. Você conhece as opções antes de assumir qualquer compromisso.</p>
+        <div class="action-row">
+          <a href="/catalogo/" class="button button--light">Explorar formações <span aria-hidden="true">↗</span></a>
+          <a href="/contato/" class="button button--white-outline">Solicitar proposta</a>
+        </div>
+        <p class="hero-micro">Cursos livres, formações e pós-graduações · Condições empresariais sujeitas à validação.</p>
+      </div>
+      <div class="hero-visual" aria-hidden="true">
+        <div class="orbit"></div>
+        <div class="orbit orbit--inner"></div>
+        <div class="orbit-center"><img src="/brand/simbolo-vivaion.png" alt="" /></div>
+        <div class="orbit-card orbit-card--top"><span class="orbit-card__icon">✧</span><strong>Aprender com propósito</strong><small>Desenvolvimento conectado ao trabalho.</small></div>
+        <div class="orbit-card orbit-card--bottom"><span class="orbit-card__icon">◉</span><strong>Crescimento em equipe</strong><small>Conhecimento para transformar práticas.</small></div>
+      </div>
+    </div>
+  </section>
+  <div class="trust-strip">
+    <div class="container trust-inner">
+      <div class="trust-item"><span>✦</span><span>Formações especializadas</span></div>
+      <div class="trust-item"><span>◎</span><span>Investimento em pessoas</span></div>
+      <div class="trust-item"><span>◇</span><span>Gestão de vagas</span></div>
+      <div class="trust-item"><span>↗</span><span>Desenvolvimento contínuo</span></div>
+    </div>
+  </div>
+  <section class="section section--soft">
+    <div class="container">
+      <div class="section-head"><div><span class="eyebrow">Catálogo institucional</span><h2>Formações reais para diferentes equipes.</h2><p class="section-intro">Conheça opções publicadas pela Vivaion. Disponibilidade, elegibilidade e condições são confirmadas com a equipe.</p></div><a class="inline-link" href="/catalogo/">Ver catálogo completo →</a></div>
+      <div id="home-featured-courses" class="feature-grid" aria-live="polite"><div class="state-panel">Carregando formações do catálogo…</div></div>
+    </div>
+  </section>
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <div><span class="eyebrow">Uma nova forma de investir em conhecimento</span><h2>Desenvolvimento que começa nas pessoas.</h2><p class="section-intro">Conteúdos orientados à prática profissional, com uma experiência corporativa que respeita a autonomia de cada aluno e a necessidade de gestão da empresa.</p></div>
+        <a class="inline-link" href="/para-empresas/">Saiba como funciona <span aria-hidden="true">→</span></a>
+      </div>
+      <div class="feature-grid">
+        <article class="feature-card"><span class="feature-card__icon" aria-hidden="true">⌕</span><h3>Catálogo em um só lugar</h3><p>Encontre cursos, formações e pós-graduações por área de conhecimento, público e modalidade.</p></article>
+        <article class="feature-card"><span class="feature-card__icon" aria-hidden="true">✧</span><h3>Benefícios empresariais</h3><p>Condições corporativas planejadas para CNPJs verificados e investimentos em múltiplas matrículas.</p></article>
+        <article class="feature-card"><span class="feature-card__icon" aria-hidden="true">▣</span><h3>Organização de equipes</h3><p>Uma área dedicada para acompanhar pedidos, distribuição de vagas e evolução das matrículas.</p></article>
+      </div>
+    </div>
+  </section>
+  <section class="section section--soft">
+    <div class="container split">
+      <div class="illustration-panel" aria-hidden="true">
+        <div class="stack-card stack-card--a"><small>Programa de capacitação</small><strong>Aprendizagem que acompanha objetivos</strong><span class="chip">Pessoas em foco</span></div>
+        <div class="stack-card stack-card--b"><small>Gestão empresarial</small><strong>Um lugar para organizar suas vagas</strong><span class="chip">Processo simplificado</span></div>
+      </div>
+      <div>
+        <span class="eyebrow">Para líderes e organizações</span>
+        <h2>Uma escolha consciente para <em>evoluir juntos.</em></h2>
+        <p class="section-intro">Você pode estudar para ampliar sua própria atuação ou estruturar um plano de desenvolvimento para colaboradores. A experiência foi pensada para os dois caminhos.</p>
+        <ul class="check-list">
+          <li>Escolha formações alinhadas às necessidades da empresa.</li>
+          <li>Solicite benefícios comerciais por volume de matrículas.</li>
+          <li>Organize participantes sem perder o controle das vagas.</li>
+        </ul>
+        <a href="/como-funciona/" class="button button--primary">Entenda o processo <span aria-hidden="true">→</span></a>
+      </div>
+    </div>
+  </section>
+  <section class="section">
+    <div class="container"><div class="cta-banner">
+      <div><span class="eyebrow eyebrow--light">O próximo passo da sua empresa</span><h2>Invista no que transforma resultados: pessoas.</h2><p>Comece conhecendo o catálogo ou converse com nossa equipe sobre uma proposta de capacitação.</p></div>
+      <div class="action-row"><a href="/cadastro/" class="button button--light">Criar conta empresarial</a><a href="/contato/" class="button button--white-outline">Falar com a equipe</a></div>
+    </div></div>
+  </section>
+</SiteLayout>
+<script>
+  const container = document.querySelector<HTMLElement>("#home-featured-courses");
+  async function showFeaturedCourses() {
+    if (!container) return;
+    try {
+      const response = await fetch("/api/catalog", { headers: { Accept: "application/json" } });
+      if (!response.ok) throw new Error("catalog_unavailable");
+      const data = await response.json();
+      const products = (data.products ?? []).slice(0, 3);
+      if (!products.length) throw new Error("catalog_empty");
+      container.replaceChildren();
+      for (const product of products) {
+        const card = document.createElement("article"); card.className = "feature-card feature-card--course";
+        const status = document.createElement("span"); status.className = "course-card__kind"; status.textContent = product.commercialStage === "prelaunch" ? "Pré-lançamento" : product.commercialStage === "available" ? "No catálogo" : "Consulte alternativas";
+        const title = document.createElement("h3"); title.textContent = product.title;
+        const area = document.createElement("p"); area.textContent = product.area + (product.deliveryMode ? " · " + product.deliveryMode : "");
+        const link = document.createElement("a"); link.className = "inline-link"; link.href = product.canonicalUrl; link.target = "_blank"; link.rel = "noopener noreferrer"; link.textContent = "Ver detalhes no site Vivaion ↗";
+        card.append(status, title, area, link); container.append(card);
+      }
+    } catch {
+      container.innerHTML = '<div class="state-panel">O catálogo está temporariamente indisponível. <a class="inline-link" href="/catalogo/">Tentar novamente no catálogo →</a></div>';
+    }
+  }
+  showFeaturedCourses();
+</script>

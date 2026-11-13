@@ -1,0 +1,244 @@
+---
+import SiteLayout from "../layouts/SiteLayout.astro";
+---
+<SiteLayout title="Catálogo de cursos" description="Explore o catálogo Vivaion Empresas por área, modalidade e tipo de formação.">
+  <section class="section catalog-section"><div class="container catalog-explorer">
+    <header class="catalog-heading"><span class="eyebrow">Vivaion Empresas</span><h1>Catálogo de formações</h1></header>
+    <div class="catalog-filter-panel">
+      <label class="field catalog-search">O que você quer encontrar?<input id="search" type="search" placeholder="Busque por curso, tema ou profissão" autocomplete="off" /></label>
+      <div class="catalog-suggestions" aria-label="Sugestões de busca"><span>Em destaque</span><button type="button" data-query="Comunicação Alternativa">Comunicação Alternativa</button><button type="button" data-query="Disfagia">Disfagia</button><button type="button" data-query="TCC">TCC</button><button type="button" data-query="Saúde Mental">Saúde Mental</button></div>
+
+      <section class="catalog-facet-block" aria-labelledby="nature-title">
+        <h2 id="nature-title" class="catalog-facet-title">Tipo de formação</h2>
+        <div class="catalog-pills">
+        <button class="catalog-pill catalog-pill--nature is-active" type="button" data-nature="">Todas</button>
+        <button class="catalog-pill catalog-pill--nature" type="button" data-nature="pos">Pós-graduações</button>
+        <button class="catalog-pill catalog-pill--nature" type="button" data-nature="other">Cursos e formações</button>
+        </div>
+      </section>
+
+      <section class="catalog-facet-block" aria-labelledby="profession-title">
+        <h2 id="profession-title" class="catalog-facet-title">Área profissional</h2>
+        <div class="catalog-pills" id="profession-facets">
+          <button class="catalog-pill is-active" type="button" data-profession="">Todas as áreas</button>
+          <button class="catalog-pill" type="button" data-profession="Fonoaudiologia">Fonoaudiologia</button>
+          <button class="catalog-pill" type="button" data-profession="Psicologia">Psicologia</button>
+          <button class="catalog-pill" type="button" data-profession="Psicopedagogia">Psicopedagogia</button>
+          <button class="catalog-pill" type="button" data-profession="Psicanálise">Psicanálise</button>
+          <button class="catalog-pill" type="button" data-profession="Psiquiatria">Psiquiatria</button>
+        </div>
+      </section>
+
+      <details class="catalog-advanced" id="advanced-filters">
+        <summary><span>Mais filtros</span><span class="catalog-advanced__toggle" aria-hidden="true">⌄</span></summary>
+        <div class="catalog-advanced__content">
+        <div class="catalog-filter-group"><span class="catalog-filter-label">Formato</span><div class="catalog-pills" id="format-facets"><button class="catalog-pill is-active" type="button" data-format="">Todas</button><button class="catalog-pill" type="button" data-format="live">Ao vivo</button><button class="catalog-pill" type="button" data-format="recorded">Gravadas</button><button class="catalog-pill" type="button" data-format="online">Online</button><button class="catalog-pill" type="button" data-format="hybrid">Híbridas</button></div></div>
+        <div class="catalog-filter-group"><span class="catalog-filter-label">Tema de interesse</span><div class="catalog-pills" id="all-themes"></div></div>
+        <div class="catalog-filter-group"><span class="catalog-filter-label">Subtemas</span><div class="catalog-pills" id="subtopics"><span class="catalog-subtopic-hint">Escolha um tema para ver os subtemas relacionados.</span></div><button type="button" class="catalog-more-subtopics" id="more-subtopics" hidden>Ver mais</button></div>
+        <div class="catalog-filter-group"><span class="catalog-filter-label">Disponibilidade</span><div class="catalog-pills" id="availability-facets"><button class="catalog-pill is-active" type="button" data-availability="">Todas</button><button class="catalog-pill" type="button" data-availability="available">Disponíveis</button><button class="catalog-pill" type="button" data-availability="prelaunch">Pré-lançamentos</button></div></div>
+        <div class="catalog-toolbar catalog-toolbar--secondary">
+          <label class="field field--filter">Área<select id="area"><option value="">Todas as áreas</option></select></label>
+          <label class="field field--filter">Ordenar por<select id="sort"><option value="relevance">Ordem do catálogo</option><option value="title">Nome: A–Z</option><option value="area">Área: A–Z</option></select></label>
+        </div>
+        </div>
+      </details>
+
+      <div class="catalog-active-filters" id="active-filter-box" hidden><div><strong>Filtros aplicados</strong><button type="button" id="clear-filters" class="catalog-clear">Limpar tudo</button></div><div class="catalog-active-filters__chips" id="active-filter-chips"></div></div>
+    </div>
+    <div class="catalog-results-bar"><div id="catalog-count" class="catalog-meta" aria-live="polite"></div></div>
+    <a id="selection-link" class="catalog-selection-link" href="/carrinho/" hidden></a>
+    <div id="catalog-grid" class="catalog-grid" aria-live="polite"></div>
+    <button id="load-more" class="button button--outline catalog-load-more" type="button" hidden>Mostrar mais formações</button>
+    <div id="catalog-empty" class="state-panel" hidden>Nenhuma formação corresponde aos filtros selecionados.</div>
+    <div class="cta-banner" style="margin-top:49px"><div><span class="eyebrow eyebrow--light">Um investimento pensado para sua equipe</span><h2>Precisa capacitar mais de uma pessoa?</h2><p>Converse com a Vivaion sobre suas necessidades de formação e proposta corporativa.</p></div><a class="button button--light" href="/contato/">Solicitar proposta</a></div>
+  </div></section>
+</SiteLayout>
+<script>
+  import { type SiteProduct } from "../data/demoCatalog";
+  type TaggedProduct = SiteProduct & { tags?: string[]; themes?: string[]; audienceRestrictions?: string | null };
+  const grid = document.querySelector<HTMLElement>("#catalog-grid");
+  const count = document.querySelector<HTMLElement>("#catalog-count");
+  const empty = document.querySelector<HTMLElement>("#catalog-empty");
+  const search = document.querySelector<HTMLInputElement>("#search");
+  const area = document.querySelector<HTMLSelectElement>("#area");
+  const sort = document.querySelector<HTMLSelectElement>("#sort");
+  const loadMore = document.querySelector<HTMLButtonElement>("#load-more");
+  const selectionLink = document.querySelector<HTMLAnchorElement>("#selection-link");
+  const moreSubtopics = document.querySelector<HTMLButtonElement>("#more-subtopics");
+  const subtopics = document.querySelector<HTMLElement>("#subtopics");
+  const activeFilterBox = document.querySelector<HTMLElement>("#active-filter-box");
+  const activeFilterChips = document.querySelector<HTMLElement>("#active-filter-chips");
+  let products: TaggedProduct[] = [];
+  let visibleLimit = 12;
+  let activeProfession = "";
+  let activeNature = "";
+  let activeTheme = "";
+  let activeSubtopic = "";
+  let activeFormat = "";
+  let activeAvailability = "";
+  let showAllSubtopics = false;
+  const pageSize = 12;
+  const selectionKey = "vivaion-empresas-cart-v1";
+  const legacySelectionKey = "vivaion-empresas-selection-v1";
+  const priceById = new Map<string, {unitPriceCents:number;priceLabel:string}>();
+  const themeLabels: Record<string, string> = {
+    "caa-comunicacao": "CAA e Comunicação Multimodal",
+    "linguagem-fala": "Linguagem, Fala e Apraxia",
+    "disfagia-alimentacao": "Disfagia e Alimentação",
+    "voz-motricidade": "Voz e Motricidade Orofacial",
+    "neurodesenvolvimento-inclusao": "Neurodesenvolvimento e Inclusão",
+    "psicologia-clinica": "Psicologia Clínica e Psicoterapias",
+    "saude-mental-dependencias": "Saúde Mental, Dependências e Trabalho",
+    "neurociencias-psicanalise": "Neurociências e Psicanálise",
+    "tecnologia-saude-digital": "Tecnologia e Saúde Digital",
+    "oratoria-profissional": "Oratória e Comunicação Profissional"
+  };
+  const professionTerms: Record<string, string[]> = {
+    "Fonoaudiologia": ["fono"], "Psicologia": ["psicolog"], "Psicopedagogia": ["psicopedagog"],
+    "Psicanálise": ["psicanal"], "Psiquiatria": ["psiquiatr"]
+  };
+  const kinds: Record<string, string> = { pos: "Pós-graduação", formacao: "Formação", "curso-livre": "Curso livre" };
+  const modes: Record<string, string> = { recorded: "Gravada", live: "Ao vivo", online: "Online", hybrid: "Híbrida", "in-person": "Presencial", unspecified: "Formato a confirmar" };
+  const stages: Record<string, string> = { available: "Disponível", prelaunch: "Pré-lançamento", closed: "Inscrições encerradas" };
+  const normalize = (value: string) => value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+  function readSelection() {
+    try {
+      const value = JSON.parse(localStorage.getItem(selectionKey) ?? localStorage.getItem(legacySelectionKey) ?? "[]");
+      if (!Array.isArray(value)) return [];
+      const normalized: Array<{productId:string;quantity:number}> = []; let remaining = 50;
+      for (const row of value) {
+        if (!row || typeof row.productId !== "string" || !Number.isInteger(row.quantity) || row.quantity < 1 || normalized.some((item)=>item.productId===row.productId) || remaining < 1) continue;
+        const quantity = Math.min(50,row.quantity,remaining); normalized.push({productId:row.productId,quantity}); remaining -= quantity;
+      }
+      return normalized;
+    }
+    catch { return []; }
+  }
+  function addSelection(id: string) {
+    const selected = readSelection(); const existing = selected.find((item) => item.productId === id);
+    const total = selected.reduce((sum,item)=>sum+item.quantity,0);
+    if (total >= 50) { window.alert("O carrinho permite até 50 unidades."); return false; }
+    if (existing) existing.quantity = Math.min(50, existing.quantity + 1); else selected.push({ productId: id, quantity: 1 });
+    localStorage.setItem(selectionKey, JSON.stringify(selected)); localStorage.removeItem(legacySelectionKey);
+    window.dispatchEvent(new Event("vivaion:cart-updated")); return true;
+  }
+  function makeButton(label: string, attrs: Record<string, string>, active = false) {
+    const button = document.createElement("button"); button.type = "button"; button.className = "catalog-pill" + (active ? " is-active" : ""); button.textContent = label;
+    button.setAttribute("aria-pressed", String(active));
+    for (const [key, value] of Object.entries(attrs)) button.dataset[key] = value;
+    return button;
+  }
+  function themeButtonLabel(id: string) { return themeLabels[id] ?? id.replaceAll("-", " ").replace(/^./, (letter) => letter.toUpperCase()); }
+  function renderFacetButtons() {
+    const allThemes = document.querySelector<HTMLElement>("#all-themes");
+    if (!allThemes) return;
+    allThemes.replaceChildren();
+    const ids = [...new Set(products.flatMap((product) => product.themes ?? []))].sort((a, b) => themeButtonLabel(a).localeCompare(themeButtonLabel(b), "pt-BR"));
+    for (const id of ids) {
+      const label = themeButtonLabel(id);
+      const allButton = makeButton(label, { theme: id }, activeTheme === id); allButton.addEventListener("click", () => setTheme(activeTheme === id ? "" : id)); allThemes.append(allButton);
+    }
+  }
+  function renderActiveFilters() {
+    if (!activeFilterBox || !activeFilterChips) return;
+    activeFilterChips.replaceChildren();
+    const filters: Array<{ label: string; clear: () => void }> = [];
+    if (search?.value.trim()) filters.push({ label: `Busca: ${search.value.trim()}`, clear: () => { if (search) search.value = ""; } });
+    if (activeProfession) filters.push({ label: activeProfession, clear: () => { activeProfession = ""; } });
+    if (activeNature) filters.push({ label: activeNature === "pos" ? "Pós-graduação" : "Cursos e formações", clear: () => { activeNature = ""; } });
+    if (activeTheme) filters.push({ label: themeButtonLabel(activeTheme), clear: () => { activeTheme = ""; activeSubtopic = ""; } });
+    if (activeSubtopic) filters.push({ label: activeSubtopic.replaceAll("-", " "), clear: () => { activeSubtopic = ""; } });
+    if (activeFormat) filters.push({ label: modes[activeFormat] ?? activeFormat, clear: () => { activeFormat = ""; } });
+    if (activeAvailability) filters.push({ label: activeAvailability === "available" ? "Disponíveis" : "Pré-lançamento", clear: () => { activeAvailability = ""; } });
+    if (area?.value) filters.push({ label: area.value, clear: () => { if (area) area.value = ""; } });
+    activeFilterBox.hidden = filters.length === 0;
+    for (const filter of filters) {
+      const chip = document.createElement("button"); chip.type = "button"; chip.className = "catalog-active-filter"; chip.textContent = `${filter.label}  ×`;
+      chip.setAttribute("aria-label", `Remover filtro ${filter.label}`);
+      chip.addEventListener("click", () => { filter.clear(); visibleLimit = pageSize; render(); });
+      activeFilterChips.append(chip);
+    }
+  }
+  function renderSubtopics() {
+    if (!subtopics) return;
+    subtopics.replaceChildren();
+    if (!activeTheme) { subtopics.innerHTML = '<span class="catalog-subtopic-hint">Escolha um tema para ver os subtemas relacionados.</span>'; if (moreSubtopics) moreSubtopics.hidden = true; return; }
+    const tags = [...new Set(products.filter((product) => (product.themes ?? []).includes(activeTheme)).flatMap((product) => product.tags ?? []))].sort((a,b)=>a.localeCompare(b,"pt-BR"));
+    const visible = showAllSubtopics ? tags : tags.slice(0, 8);
+    for (const tag of visible) { const button = makeButton(tag.replaceAll("-", " "), { subtopic: tag }, activeSubtopic === tag); button.addEventListener("click", () => { activeSubtopic = activeSubtopic === tag ? "" : tag; render(); }); subtopics.append(button); }
+    if (moreSubtopics) { moreSubtopics.hidden = tags.length <= 8; moreSubtopics.textContent = showAllSubtopics ? "Ver menos" : "Ver mais"; }
+  }
+  function setTheme(id: string) { activeTheme = id; activeSubtopic = ""; showAllSubtopics = false; render(); }
+  function setActive(selector: string, dataKey: string, value: string) { document.querySelectorAll<HTMLElement>(selector).forEach((button) => { const active = (button.dataset[dataKey] ?? "") === value; button.classList.toggle("is-active", active); button.setAttribute("aria-pressed", String(active)); }); }
+  function render() {
+    const query = normalize(search?.value ?? "");
+    const filtered = products.filter((item) => {
+      const searchable = normalize([item.title, item.area, item.summary, item.audienceLabel, item.audienceRestrictions ?? "", ...(item.tags ?? []), ...(item.themes ?? []).map(themeButtonLabel)].join(" "));
+      const professionText = normalize([item.audienceLabel, item.audienceRestrictions ?? "", item.area, item.title, ...(item.tags ?? [])].join(" "));
+      const professionTermsForFilter = professionTerms[activeProfession] ?? [];
+      return searchable.includes(query) && (!activeProfession || professionTermsForFilter.some((term) => professionText.includes(term))) &&
+        (!activeNature || (activeNature === "pos" ? item.kind === "pos" : item.kind !== "pos")) &&
+        (!activeTheme || (item.themes ?? []).includes(activeTheme)) && (!activeSubtopic || (item.tags ?? []).includes(activeSubtopic)) &&
+        (!activeFormat || item.deliveryMode === activeFormat) && (!activeAvailability || item.commercialStage === activeAvailability) &&
+        (!area?.value || item.area === area.value);
+    });
+    if (sort?.value === "title") filtered.sort((a,b)=>a.title.localeCompare(b.title,"pt-BR"));
+    if (sort?.value === "area") filtered.sort((a,b)=>a.area.localeCompare(b.area,"pt-BR")||a.title.localeCompare(b.title,"pt-BR"));
+    grid?.replaceChildren();
+    if (count) count.textContent = filtered.length > visibleLimit ? `Exibindo ${Math.min(visibleLimit, filtered.length)} de ${filtered.length} formações` : `${filtered.length} ${filtered.length === 1 ? "formação encontrada" : "formações encontradas"}`;
+    const selectedCount = readSelection().reduce((sum,item)=>sum+item.quantity,0);
+    if (selectionLink) { selectionLink.hidden = selectedCount === 0; selectionLink.textContent = `${selectedCount} ${selectedCount === 1 ? "unidade no carrinho" : "unidades no carrinho"} · revisar valores →`; }
+    if (empty) { empty.hidden = filtered.length !== 0; empty.textContent = products.length ? "Nenhuma formação foi encontrada. Tente outro termo ou ajuste os filtros." : "O catálogo oficial está temporariamente indisponível. Recarregue a página para tentar novamente."; }
+    if (loadMore) loadMore.hidden = filtered.length <= visibleLimit;
+    renderFacetButtons(); renderSubtopics(); renderActiveFilters();
+    setActive("[data-profession]", "profession", activeProfession); setActive("[data-nature]", "nature", activeNature);
+    setActive("[data-format]", "format", activeFormat); setActive("[data-availability]", "availability", activeAvailability);
+    for (const item of filtered.slice(0, visibleLimit)) {
+      const article = document.createElement("article"); article.className = "course-card";
+      const top = document.createElement("div"); top.className = "course-card__top";
+      const type = document.createElement("span"); type.className = "course-card__kind"; type.textContent = kinds[item.kind] ?? "Formação";
+      const status = document.createElement("span"); status.className = "course-card__stage"; status.textContent = stages[item.commercialStage] ?? "Verificar"; top.append(type, status);
+      const title = document.createElement("h3"); title.textContent = item.title;
+      const summary = document.createElement("p"); summary.textContent = item.summary;
+      const price = priceById.get(item.id);
+      const priceNode = document.createElement("p"); priceNode.className = "course-card__price";
+      if (price && item.commercialStage === "available") priceNode.textContent = `${price.priceLabel}: ${(price.unitPriceCents / 100).toLocaleString("pt-BR", {style:"currency",currency:"BRL"})}`;
+      const audience = document.createElement("small"); audience.className = "course-card__audience"; audience.textContent = item.audienceLabel ? `Público: ${item.audienceLabel}` : "Público a confirmar na página oficial";
+      const footer = document.createElement("div"); footer.className = "course-card__footer";
+      const meta = document.createElement("small"); meta.textContent = `${item.area} · ${modes[item.deliveryMode] ?? "Formato a confirmar"}`;
+      const link = document.createElement("a"); link.className = "inline-link"; link.textContent = "Ver detalhes ↗"; link.href = `/cursos/${item.kind}/${item.slug}/`; footer.append(meta, link);
+      const button = document.createElement("button"); button.type = "button"; button.className = "button button--outline button--small";
+      button.textContent = item.commercialStage === "prelaunch" ? "Tenho interesse" : item.commercialStage === "closed" ? "Consultar alternativas" : price ? "Adicionar ao carrinho +" : "Solicitar proposta +";
+      // Opção A: falta de preço homologado não impede que a empresa solicite uma proposta.
+      button.disabled = false;
+      button.addEventListener("click", () => {
+        if (item.commercialStage === "prelaunch") { window.open(`https://wa.me/554588042562?text=${encodeURIComponent(`Olá! Tenho interesse no pré-lançamento de ${item.title}.`)}`, "_blank", "noopener,noreferrer"); return; }
+        if (item.commercialStage === "closed") { window.open(`https://wa.me/554588042562?text=${encodeURIComponent(`Olá! Tenho interesse em ${item.title}. Existem formações semelhantes disponíveis?`)}`, "_blank", "noopener,noreferrer"); return; }
+        if (!addSelection(item.id)) return; button.textContent = "Adicionado · ver carrinho →"; button.setAttribute("aria-pressed", "true");
+        if (selectionLink) { const total = readSelection().reduce((sum,row)=>sum+row.quantity,0); selectionLink.hidden = false; selectionLink.textContent = `${total} ${total === 1 ? "unidade no carrinho" : "unidades no carrinho"} · revisar valores →`; }
+      });
+      article.append(top, title, summary); if (price?.unitPriceCents) article.append(priceNode); article.append(audience, footer, button); grid?.append(article);
+    }
+  }
+  async function loadCatalog() {
+    try {
+      const pricesResponse = await fetch("/api/commercial/catalog", {headers:{Accept:"application/json"}});
+      if (pricesResponse.ok) { const pricing = await pricesResponse.json(); for (const row of pricing.products ?? []) priceById.set(row.productId,{unitPriceCents:row.unitPriceCents,priceLabel:row.priceLabel}); }
+      const response = await fetch("/api/catalog", { headers: { Accept: "application/json" } }); if (!response.ok) throw new Error("Catalog unavailable");
+      const data: unknown = await response.json(); if (!data || typeof data !== "object" || !("products" in data) || !Array.isArray(data.products) || !data.products.length) throw new Error("Catalog pending");
+      products = data.products.filter((value: unknown): value is TaggedProduct => !!value && typeof value === "object" && "title" in value && typeof value.title === "string" && "canonicalUrl" in value && typeof value.canonicalUrl === "string" && "kind" in value && typeof value.kind === "string") as TaggedProduct[];
+      if (area) { for (const value of [...new Set(products.map((product) => product.area))].filter(Boolean).sort((a,b)=>a.localeCompare(b,"pt-BR"))) { const option = document.createElement("option"); option.value = value; option.textContent = value; area.append(option); } }
+    } catch { products = []; }
+    render();
+  }
+  document.querySelectorAll<HTMLButtonElement>("[data-profession]").forEach((button) => button.addEventListener("click", () => { activeProfession = button.dataset.profession ?? ""; visibleLimit = pageSize; render(); }));
+  document.querySelectorAll<HTMLButtonElement>("[data-nature]").forEach((button) => button.addEventListener("click", () => { activeNature = button.dataset.nature ?? ""; visibleLimit = pageSize; render(); }));
+  document.querySelectorAll<HTMLButtonElement>("[data-format]").forEach((button) => button.addEventListener("click", () => { activeFormat = button.dataset.format ?? ""; visibleLimit = pageSize; render(); }));
+  document.querySelectorAll<HTMLButtonElement>("[data-availability]").forEach((button) => button.addEventListener("click", () => { activeAvailability = button.dataset.availability ?? ""; visibleLimit = pageSize; render(); }));
+  document.querySelectorAll<HTMLButtonElement>("[data-query]").forEach((button) => button.addEventListener("click", () => { if (search) search.value = button.dataset.query ?? ""; visibleLimit = pageSize; render(); search?.focus(); }));
+  search?.addEventListener("input", () => { visibleLimit = pageSize; render(); }); area?.addEventListener("change", render); sort?.addEventListener("change", render);
+  moreSubtopics?.addEventListener("click", () => { showAllSubtopics = !showAllSubtopics; renderSubtopics(); });
+  loadMore?.addEventListener("click", () => { visibleLimit += pageSize; render(); });
+  document.querySelector<HTMLButtonElement>("#clear-filters")?.addEventListener("click", () => { activeProfession = activeNature = activeTheme = activeSubtopic = activeFormat = activeAvailability = ""; showAllSubtopics = false; if (search) search.value = ""; if (area) area.value = ""; if (sort) sort.value = "relevance"; visibleLimit = pageSize; render(); });
+  loadCatalog();
+</script>

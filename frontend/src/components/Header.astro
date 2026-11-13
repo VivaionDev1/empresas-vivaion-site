@@ -1,0 +1,53 @@
+---
+const path = Astro.url.pathname;
+const isLive = import.meta.env.PUBLIC_SITE_LIVE === "true";
+const menu = [
+  { href: "/catalogo/", label: "Catálogo" },
+  { href: "/para-empresas/", label: "Para empresas" },
+  { href: "/beneficios/", label: "Benefícios" },
+  { href: "/como-funciona/", label: "Como funciona" }
+];
+---
+<header class="site-header" id="site-header">
+  <div class="container header-inner">
+    <a class="brand" href="/" aria-label="Vivaion Empresas, início">
+      <img class="brand__logo" src="/brand/logotipo-branca-folha.png" alt="Vivaion" />
+      <span class="brand__division">Empresas</span>
+    </a>
+    <button type="button" class="menu-toggle" aria-label="Abrir menu" aria-expanded="false" aria-controls="header-navigation">
+      <span></span><span></span><span></span>
+    </button>
+    <nav id="header-navigation" class="main-nav" aria-label="Navegação principal">
+      {menu.map((item) => <a href={item.href} aria-current={path === item.href ? "page" : undefined}>{item.label}</a>)}
+      <a href="/carrinho/" class="header-cart" aria-label="Carrinho"><span aria-hidden="true">Sacola</span><span class="header-cart__count" id="cart-count">0</span></a>
+      <a href="/entrar/" class="main-nav__login">Entrar</a>
+      <a href={isLive ? "/cadastro/" : "https://wa.me/554588042562?text=Ol%C3%A1%2C%20quero%20conversar%20sobre%20capacita%C3%A7%C3%A3o%20para%20minha%20empresa."} class="button button--small button--primary" target={isLive ? undefined : "_blank"} rel={isLive ? undefined : "noopener noreferrer"}>{isLive ? "Criar conta empresarial" : "Falar com a equipe"} <span aria-hidden="true">↗</span></a>
+    </nav>
+  </div>
+</header>
+<script>
+  const header = document.querySelector<HTMLElement>(".site-header");
+  const toggle = header?.querySelector<HTMLButtonElement>(".menu-toggle");
+  const nav = header?.querySelector<HTMLElement>(".main-nav");
+  toggle?.addEventListener("click", () => {
+    const isOpen = toggle.getAttribute("aria-expanded") === "true";
+    toggle.setAttribute("aria-expanded", String(!isOpen));
+    toggle.setAttribute("aria-label", isOpen ? "Abrir menu" : "Fechar menu");
+    nav?.classList.toggle("is-open", !isOpen);
+  });
+  nav?.querySelectorAll("a").forEach((link) => link.addEventListener("click", () => {
+    toggle?.setAttribute("aria-expanded", "false");
+    nav.classList.remove("is-open");
+  }));
+  const cartCount = header?.querySelector<HTMLElement>("#cart-count");
+  function updateCartCount() {
+    try {
+      const raw = JSON.parse(localStorage.getItem("vivaion-empresas-cart-v1") ?? "[]");
+      const quantity = Array.isArray(raw) ? raw.reduce((sum, row) => sum + (Number.isInteger(row?.quantity) ? Math.max(0, row.quantity) : 0), 0) : 0;
+      if (cartCount) cartCount.textContent = String(quantity);
+    } catch { if (cartCount) cartCount.textContent = "0"; }
+  }
+  updateCartCount();
+  window.addEventListener("storage", updateCartCount);
+  window.addEventListener("vivaion:cart-updated", updateCartCount);
+</script>

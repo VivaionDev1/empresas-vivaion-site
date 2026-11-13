@@ -1,0 +1,139 @@
+---
+import SiteLayout from "../layouts/SiteLayout.astro";
+---
+<SiteLayout title="Carrinho de formações" description="Monte uma prévia informativa de investimento para sua equipe." noindex>
+  <section class="page-hero cart-hero"><div class="container"><span class="eyebrow eyebrow--light">Vivaion Empresas</span><h1>Seu carrinho</h1><p>Combine pós-graduações, cursos e formações. O desconto considera o total de unidades.</p></div></section>
+  <section class="section"><div class="container cart-layout">
+    <div class="cart-main"><div class="cart-main__header"><div><span class="eyebrow">Sua seleção</span><h2>Formações escolhidas</h2></div><a class="inline-link" href="/catalogo/">Continuar explorando</a></div>
+      <div id="cart-items" class="cart-items" aria-live="polite"></div>
+      <div id="cart-empty" class="cart-empty" hidden><p>Seu carrinho ainda está vazio.</p><a class="button button--primary" href="/catalogo/">Explorar catálogo</a></div>
+      <p id="cart-error" class="cart-error" role="status" hidden></p>
+    </div>
+    <aside class="cart-summary"><span class="eyebrow">Prévia comercial</span><h2>Resumo</h2>
+      <div class="cart-summary__row"><span>Unidades</span><strong id="cart-units">0</strong></div>
+      <div class="cart-summary__row"><span>Desconto por volume</span><strong id="cart-discount">—</strong></div>
+      <div class="cart-summary__row"><span>Subtotal à vista</span><strong id="cart-subtotal">—</strong></div>
+      <div class="cart-summary__row cart-summary__row--total"><span>Total estimado</span><strong id="cart-total">—</strong></div>
+      <p class="cart-summary__note" id="cart-tier-note">Adicione unidades para ver as faixas de desconto.</p>
+      <a id="cart-proposal" class="button button--primary cart-proposal" href="/contato/" aria-disabled="true">Solicitar proposta</a>
+      <small>Valores informativos baseados no preço à vista publicado no site oficial. A equipe confirma disponibilidade, preço vigente e condições. Nenhum pagamento é feito aqui.</small>
+    </aside>
+  </div></section>
+</SiteLayout>
+<script>
+  type CartLine = { productId: string; quantity: number };
+  type Product = { id: string; title: string; kind: string; slug: string; canonicalUrl: string };
+  type Price = { productId: string; unitPriceCents: number; priceLabel: string; sourceUrl: string; validUntil: string | null };
+  type Tier = { minimumSeats: number; discountBps: number };
+  const key = "vivaion-empresas-cart-v1";
+  const itemsNode = document.querySelector<HTMLElement>("#cart-items");
+  const emptyNode = document.querySelector<HTMLElement>("#cart-empty");
+  const errorNode = document.querySelector<HTMLElement>("#cart-error");
+  const unitsNode = document.querySelector<HTMLElement>("#cart-units");
+  const discountNode = document.querySelector<HTMLElement>("#cart-discount");
+  const subtotalNode = document.querySelector<HTMLElement>("#cart-subtotal");
+  const totalNode = document.querySelector<HTMLElement>("#cart-total");
+  const noteNode = document.querySelector<HTMLElement>("#cart-tier-note");
+  const proposalLink = document.querySelector<HTMLAnchorElement>("#cart-proposal");
+  let products = new Map<string, Product>();
+  let prices = new Map<string, Price>();
+  let tiers: Tier[] = [];
+  let quoteToken = 0;
+  const money = (cents: number) => (cents / 100).toLocaleString("pt-BR", {style:"currency",currency:"BRL"});
+  function readCart(): CartLine[] {
+    try {
+      const raw = JSON.parse(localStorage.getItem(key) ?? localStorage.getItem("vivaion-empresas-selection-v1") ?? "[]");
+      if (!Array.isArray(raw)) return [];
+      const seen = new Set<string>(); const normalized:CartLine[]=[]; let remaining=50;
+      for (const line of raw) {
+        if (!line || typeof line.productId !== "string" || !Number.isInteger(line.quantity) || line.quantity < 1 || seen.has(line.productId) || remaining < 1) continue;
+        const quantity=Math.min(50,line.quantity,remaining); normalized.push({productId:line.productId,quantity}); seen.add(line.productId); remaining-=quantity;
+        if(normalized.length===30)break;
+      }
+      return normalized;
+    } catch { return []; }
+  }
+  function save(lines: CartLine[]) { localStorage.setItem(key, JSON.stringify(lines)); localStorage.removeItem("vivaion-empresas-selection-v1"); window.dispatchEvent(new Event("vivaion:cart-updated")); render(); }
+  function applicableTier(quantity: number) { return tiers.filter((tier) => quantity >= tier.minimumSeats).sort((a,b)=>b.discountBps-a.discountBps)[0]?.discountBps ?? 0; }
+  function render() {
+    if (!itemsNode) return;
+    const lines = readCart(); const quantity = lines.reduce((sum,line)=>sum+line.quantity,0);
+    if (unitsNode) unitsNode.textContent = String(quantity);
+    if (emptyNode) emptyNode.hidden = lines.length > 0;
+    if (itemsNode) itemsNode.hidden = lines.length === 0;
+    if (proposalLink) { proposalLink.href="/solicitar-proposta/"; proposalLink.setAttribute("aria-disabled", String(lines.length === 0)); proposalLink.classList.toggle("is-disabled", lines.length === 0); }
+    itemsNode.replaceChildren();
+    for (const line of lines) {
+      const product = products.get(line.productId); const price = prices.get(line.productId);
+      if (!product) continue;
+      const row = document.createElement("article"); row.className = "cart-item";
+      const info = document.createElement("div"); info.className = "cart-item__info";
+      const title = document.createElement("a"); title.href = `/cursos/${product.kind}/${product.slug}/`; title.textContent = product.title;
+      const base = document.createElement("small"); base.textContent = price ? `${price.priceLabel}: ${money(price.unitPriceCents)} por unidade` : "Preço e condições sob consulta";
+      info.append(title, base);
+      const control = document.createElement("div"); control.className = "cart-quantity";
+      const decrease = document.createElement("button"); decrease.type = "button"; decrease.textContent = "−"; decrease.setAttribute("aria-label",`Diminuir ${product.title}`); decrease.disabled = line.quantity <= 1;
+      decrease.addEventListener("click",()=>save(lines.map((value)=>value.productId===line.productId?{...value,quantity:value.quantity-1}:value).filter((value)=>value.quantity>0)));
+      const number = document.createElement("span"); number.textContent = String(line.quantity);
+      const increase = document.createElement("button"); increase.type = "button"; increase.textContent = "+"; increase.setAttribute("aria-label",`Aumentar ${product.title}`); increase.disabled = quantity >= 50;
+      increase.addEventListener("click",()=>{if(quantity<50) save(lines.map((value)=>value.productId===line.productId?{...value,quantity:value.quantity+1}:value));});
+      control.append(decrease,number,increase);
+      const lineTotal = document.createElement("strong"); lineTotal.className = "cart-item__total";
+      const lineDiscount = applicableTier(quantity);
+      const discountedLine = price ? Math.round(price.unitPriceCents*(10000-lineDiscount)/10000)*line.quantity : null;
+      lineTotal.textContent = discountedLine===null ? "Sob consulta" : money(discountedLine);
+      const remove = document.createElement("button"); remove.type = "button"; remove.className = "cart-item__remove"; remove.textContent = "Remover"; remove.addEventListener("click",()=>save(lines.filter((value)=>value.productId!==line.productId)));
+      const actions = document.createElement("div"); actions.className = "cart-item__actions"; actions.append(control,lineTotal,remove);
+      row.append(info,actions); itemsNode.append(row);
+    }
+    updateQuote(lines, quantity);
+  }
+  async function updateQuote(lines: CartLine[], quantity: number) {
+    const token = ++quoteToken;
+    if (!quantity) { if(discountNode)discountNode.textContent="—";if(subtotalNode)subtotalNode.textContent="—";if(totalNode)totalNode.textContent="—";if(noteNode)noteNode.textContent="Adicione unidades para ver as faixas de desconto.";if(errorNode)errorNode.hidden=true;return; }
+    if (!tiers.length || lines.some(line=>!prices.has(line.productId))) {
+      if (discountNode) discountNode.textContent="—";
+      if (subtotalNode) subtotalNode.textContent="—";
+      if (totalNode) totalNode.textContent="Sob consulta";
+      if (noteNode) noteNode.textContent="Nossa equipe confirmará preços e condições antes de apresentar qualquer proposta.";
+      if (errorNode) errorNode.hidden=true;
+      return;
+    }
+    const percent = applicableTier(quantity);
+    if (discountNode) discountNode.textContent = `${(percent/100).toLocaleString("pt-BR")}%`;
+    const subtotal = lines.reduce((sum,line)=>sum+(prices.get(line.productId)?.unitPriceCents??0)*line.quantity,0);
+    if (subtotalNode) subtotalNode.textContent = money(subtotal);
+    if (totalNode) totalNode.textContent = money(Math.round(subtotal*(10000-percent)/10000));
+    const nextTier = tiers.filter((tier)=>tier.minimumSeats>quantity).sort((a,b)=>a.minimumSeats-b.minimumSeats)[0];
+    if (noteNode) noteNode.textContent = nextTier ? `Adicione ${nextTier.minimumSeats-quantity} ${nextTier.minimumSeats-quantity===1?"unidade":"unidades"} para chegar a ${(nextTier.discountBps/100).toLocaleString("pt-BR")}% de desconto.` : "Você atingiu a maior faixa de desconto disponível.";
+    try {
+      const response = await fetch("/api/pricing/preview",{method:"POST",headers:{"Content-Type":"application/json",Accept:"application/json"},body:JSON.stringify({items:lines})});
+      const data = await response.json(); if(token!==quoteToken)return;
+      if(!response.ok) throw new Error(data.message??"Não foi possível confirmar a prévia de valores.");
+      if(totalNode)totalNode.textContent=money(data.totalCents);
+      if(discountNode)discountNode.textContent=`${(data.discountBps/100).toLocaleString("pt-BR")}%`;
+      if(errorNode)errorNode.hidden=true;
+      const productsText = lines.map((line)=>`${line.quantity}x ${products.get(line.productId)?.title??line.productId}`).join(", ");
+      // A proposta formal registra os itens no backend, sem envio automático ao WhatsApp.
+      if (proposalLink) proposalLink.href="/solicitar-proposta/";
+    } catch(error) { if (token === quoteToken && errorNode){errorNode.textContent=error instanceof Error?error.message:"Não foi possível confirmar os preços.";errorNode.hidden=false;} }
+  }
+  async function load() {
+    try {
+      const [catalogResponse, pricingResponse] = await Promise.all([fetch("/api/catalog"),fetch("/api/commercial/catalog")]);
+      if (!catalogResponse.ok) throw new Error("O catálogo está temporariamente indisponível.");
+      const catalog=await catalogResponse.json();
+      products=new Map((catalog.products as Product[]).map((product)=>[product.id,product]));
+      if (pricingResponse.ok) {
+        const pricing=await pricingResponse.json();
+        prices=new Map((pricing.products as Price[]).map((price)=>[price.productId,price]));
+        tiers=pricing.policy.tiers as Tier[];
+      } else { prices.clear(); tiers=[]; }
+      const lines=readCart().filter((line)=>products.has(line.productId));
+      const normalized=JSON.stringify(lines);
+      if(normalized!==localStorage.getItem(key))save(lines);else render();
+    } catch(error) { if(errorNode){errorNode.textContent=error instanceof Error?error.message:"Falha ao carregar o carrinho.";errorNode.hidden=false;} }
+  }
+  window.addEventListener("storage",()=>render());window.addEventListener("vivaion:cart-updated",()=>render());
+  load();
+</script>

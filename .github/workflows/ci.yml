@@ -1,0 +1,80 @@
+name: Vivaion Empresas CI
+on:
+  pull_request:
+    branches: [main, feat/portal-empresas-foundation, 'feat/empresas-opcao-a-**']
+  push:
+    branches: [main]
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_USER: vivaion_test
+          POSTGRES_PASSWORD: ci-only-password
+          POSTGRES_DB: vivaion_empresas_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U vivaion_test -d vivaion_empresas_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+    env:
+      NODE_ENV: test
+      APP_ORIGIN: http://localhost:4321
+      DATABASE_URL: postgresql://vivaion_test:ci-only-password@127.0.0.1:5432/vivaion_empresas_test
+      CORPORATE_PRICING_ENABLED: "false"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Typecheck
+        run: npm run check
+      - name: Unit tests
+        run: npm run test
+      - name: Apply migrations in disposable database
+        run: npm run db:migrate
+      - name: Integration tests (auth, origin, tenant isolation, disabled gates)
+        run: npm run test:integration
+      - name: Production builds
+        run: npm run build
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Browser and responsive smoke tests
+        run: npm run test:e2e
+      - name: Seed approved institutional catalog in disposable database
+        run: cd backend && npx tsx scripts/sync-catalog-local.ts
+      - name: Full-stack acceptance with real API and disposable PostgreSQL
+        env:
+          E2E_FULLSTACK: "true"
+          APP_ORIGIN: http://127.0.0.1:4322
+          HOST: 127.0.0.1
+          PORT: "8082"
+        run: npm run test:e2e -w @vivaion/empresas-frontend -- tests/fullstack-flow.spec.ts
+      - name: Adversarial archive extraction regression tests
+        run: |
+          PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s scripts -p 'test_safe_extract_release.py' -v
+      - name: Build and verify immutable HML release bundle (no deploy)
+        run: |
+          npm run release:candidate
+          npm run release:verify -- ".release-out/empresas-hml-$(git rev-parse HEAD)"
+          npm run release:rehearse -- ".release-out/empresas-hml-$(git rev-parse HEAD)"
+      - name: Preserve reviewed release candidate (non-live build only)
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: empresas-opcao-a-rc-${{ github.event.pull_request.head.sha || github.sha }}
+          path: |
+            .release-out/empresas-hml-*/empresas-hml-*.tgz
+            .release-out/empresas-hml-*/empresas-hml-*.tgz.sha256
+            .release-out/empresas-hml-*/payload/release-manifest.json
+          if-no-files-found: error
+          include-hidden-files: true
+          retention-days: 7

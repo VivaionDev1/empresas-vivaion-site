@@ -1,0 +1,32 @@
+---
+import SiteLayout from "../layouts/SiteLayout.astro";
+---
+<SiteLayout title="Reenviar confirmação" description="Solicite outro link para confirmar seu e-mail corporativo." noindex>
+  <section class="section"><div class="container auth-layout">
+    <div class="auth-aside"><span class="eyebrow">Confirmar identidade</span><h2>A segurança começa com o seu e-mail.</h2><p>Para acessar o painel, confirme a titularidade do e-mail informado no cadastro. Isso não substitui a verificação de representação da empresa.</p></div>
+    <div class="form-panel"><h2>Solicitar novo link</h2><p>Se existir um cadastro aguardando confirmação, enviaremos outro link ao endereço registrado.</p>
+      <form id="resend-form" class="form-grid"><label class="field field--wide">E-mail cadastrado<input type="email" name="email" required autocomplete="email" maxlength="254" /></label>
+        <div id="resend-status" class="form-feedback" role="status" aria-live="polite"></div>
+        <div class="form-submit"><a class="inline-link" href="/entrar/">Voltar ao login</a><button type="submit" class="button button--primary">Solicitar link</button></div>
+      </form>
+    </div>
+  </div></section>
+</SiteLayout>
+<script>
+  const form = document.querySelector<HTMLFormElement>("#resend-form");
+  const output = document.querySelector<HTMLElement>("#resend-status");
+  form?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    if (!form || !output) return;
+    const submit = form.querySelector<HTMLButtonElement>('button[type="submit"]');
+    if (submit) submit.disabled=true;
+    const email = String(new FormData(form).get("email") ?? "");
+    try {
+      const res = await fetch("/api/auth/request-verification", { method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email}) });
+      const data = await res.json().catch(() => ({}));
+      output.textContent = data.message ?? "Não foi possível concluir a solicitação.";
+      output.dataset.state = res.ok ? "success" : "error";
+    } catch { output.textContent = "Falha de conexão. Tente novamente."; output.dataset.state = "error"; }
+    finally { if (submit) submit.disabled=false; }
+  });
+</script>

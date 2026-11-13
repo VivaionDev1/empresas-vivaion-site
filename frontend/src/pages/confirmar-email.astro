@@ -1,0 +1,30 @@
+---
+import SiteLayout from "../layouts/SiteLayout.astro";
+---
+<SiteLayout title="Confirmar e-mail" description="Confirmação de e-mail para acesso à Vivaion Empresas." noindex>
+  <section class="section"><div class="container" style="max-width:750px">
+    <div class="form-panel"><span class="eyebrow">Segurança de conta</span><h1 style="font-size:clamp(2.1rem,4vw,3.3rem);margin:16px 0;color:var(--deep)">Confirmação de e-mail</h1>
+      <p id="verify-status" role="status" aria-live="polite">Validando o link de confirmação...</p>
+      <div class="action-row"><a class="button button--primary" href="/entrar/">Ir para o login</a><a class="inline-link" href="/reenviar-confirmacao/">Solicitar outro link</a></div>
+    </div>
+  </div></section>
+</SiteLayout>
+<script>
+  const status = document.querySelector<HTMLElement>("#verify-status");
+  const token = new URL(window.location.href).searchParams.get("token") ?? "";
+  // Remove bearer token from history before making any requests.
+  window.history.replaceState(null, "", "/confirmar-email/");
+  async function confirm() {
+    if (!status) return;
+    if (!/^[A-Za-z0-9_-]{43}$/.test(token)) { status.textContent = "Link inválido. Solicite um novo link de confirmação."; return; }
+    try {
+      const result = await fetch("/api/auth/verify-email", {
+        method:"POST", credentials:"same-origin", headers:{ "Content-Type":"application/json" },
+        body:JSON.stringify({token})
+      });
+      const data = await result.json().catch(() => ({}));
+      status.textContent = data.message ?? (result.ok ? "E-mail confirmado." : "Link inválido ou expirado.");
+    } catch { status.textContent = "Não foi possível validar o link agora. Solicite um novo, se necessário."; }
+  }
+  void confirm();
+</script>

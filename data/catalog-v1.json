@@ -1,0 +1,1074 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-10T13:54:33.697Z",
+  "products": [
+    {
+      "id": "pos:cmna",
+      "slug": "cmna",
+      "kind": "pos",
+      "title": "Pós-Graduação em Comunicação Multimodal, Neurodesenvolvimento e Aprendizagem",
+      "summary": "Pré-lançamento de uma pós-graduação ao vivo para aprofundar comunicação multimodal, neurodesenvolvimento e aprendizagem em diálogo com a prática interdisciplinar.",
+      "canonicalUrl": "https://vivaion.com.br/pos-graduacao/cmna/",
+      "area": "Comunicação multimodal, neurodesenvolvimento e aprendizagem",
+      "audienceLabel": "Fonoaudiologia, Psicopedagogia e áreas afins",
+      "deliveryMode": "live",
+      "commercialStage": "prelaunch",
+      "tags": [
+        "fonoaudiologia",
+        "psicopedagogia",
+        "neurodesenvolvimento",
+        "neurodivergencia",
+        "comunicacao-multimodal"
+      ],
+      "themes": [
+        "neurodesenvolvimento-inclusao",
+        "caa-comunicacao"
+      ]
+    },
+    {
+      "id": "pos:cali",
+      "slug": "cali",
+      "kind": "pos",
+      "title": "Comunicação Aumentativa e Alternativa: Avaliação, Linguagem e Intervenção Baseada em Evidências",
+      "summary": "Pós-graduação EAD ao vivo para fonoaudiólogos que desejam aprofundar avaliação, Feature Matching, linguagem, modelagem e intervenção em CAA.",
+      "canonicalUrl": "https://vivaion.com.br/pos-graduacao/ao-vivo/cali/",
+      "area": "Fonoaudiologia e Comunicação Aumentativa e Alternativa",
+      "audienceLabel": "Exclusiva para fonoaudiólogos",
+      "audienceRestrictions": "Exclusiva para fonoaudiólogos",
+      "deliveryMode": "live",
+      "commercialStage": "prelaunch",
+      "tags": [
+        "fonoaudiologia",
+        "comunicacao-aumentativa",
+        "caa",
+        "linguagem",
+        "neurodesenvolvimento",
+        "modelagem",
+        "sistemas-comunicacao"
+      ],
+      "themes": [
+        "caa-comunicacao"
+      ],
+      "workload": "500h"
+    },
+    {
+      "id": "pos:saude-mental-riscos-psicossociais",
+      "slug": "saude-mental-riscos-psicossociais",
+      "kind": "pos",
+      "title": "Saúde Mental, Liderança e Gestão de Riscos Psicossociais no Trabalho",
+      "summary": "Pós-graduação EAD ao vivo para profissionais que desejam avaliar e enfrentar riscos psicossociais relacionados ao trabalho, articulando NR-1, liderança, diagnóstico organizacional e intervenção.",
+      "canonicalUrl": "https://vivaion.com.br/pos-graduacao/ao-vivo/saude-mental-riscos-psicossociais/",
+      "area": "Saúde mental e riscos psicossociais no trabalho",
+      "audienceLabel": "Psicologia, RH, SST, saúde ocupacional, gestão e áreas afins",
+      "deliveryMode": "live",
+      "commercialStage": "prelaunch",
+      "tags": [
+        "psicologia",
+        "saude-bem-estar",
+        "saude-mental",
+        "riscos-psicossociais",
+        "gestao",
+        "saude-mental-trabalho"
+      ],
+      "themes": [
+        "saude-mental-dependencias"
+      ],
+      "workload": "550h"
+    },
+    {
+      "id": "pos:especializacao-caa-grv",
+      "slug": "especializacao-caa-grv",
+      "kind": "pos",
+      "title": "Pós-graduação em Comunicação Aumentativa e Alternativa com Ênfase Clínica e Escolar",
+      "summary": "Pós em CAA gravada: 570h, 19 módulos curriculares, bônus de Libras e foco em avaliação, planejamento e implementação clínica e escolar.",
+      "canonicalUrl": "https://vivaion.com.br/pos-graduacao/especializacao-caa-grv/",
+      "area": "Comunicação Aumentativa e Alternativa",
+      "audienceLabel": "Profissionais de saúde, educação e áreas afins",
+      "deliveryMode": "recorded",
+      "commercialStage": "available",
+      "tags": [
+        "fonoaudiologia",
+        "psicopedagogia",
+        "saude-bem-estar",
+        "caa",
+        "comunicacao-funcional",
+        "modelagem"
+      ],
+      "themes": [
+        "caa-comunicacao"
+      ],
+      "workload": "570h"
+    },
+    {
+      "id": "pos:tccm",
+      "slug": "tccm",
+      "kind": "pos",
+      "title": "Terapias Cognitivo-Comportamentais na Clínica com Mulheres",
+      "summary": "Pós-graduação EAD ao vivo exclusiva para psicólogos, com atualização contemporânea em TCC e aprofundamento em demandas clínicas relacionadas à vida das mulheres.",
+      "canonicalUrl": "https://vivaion.com.br/pos-graduacao/ao-vivo/tccm/",
+      "area": "Psicologia clínica e Terapias Cognitivo-Comportamentais",
+      "audienceLabel": "Exclusiva para psicólogos",
+      "audienceRestrictions": "Exclusiva para psicólogos",
+      "deliveryMode": "live",
+      "commercialStage": "prelaunch",
+      "tags": [
+        "psicologia",
+        "saude-bem-estar",
+        "saude-mental",
+        "tcc",
+        "mulheres",
+        "trauma",
+        "clinica-mulheres"
+      ],
+      "themes": [
+        "psicologia-clinica"
+      ],
+      "workload": "500h"
+    },
+    {
+      "id": "pos:p-fala",
+      "slug": "p-fala",
+      "kind": "pos",
+      "title": "Fala: Avaliação e Intervenção Baseada em Evidências",
+      "summary": "Pós-graduação exclusiva para fonoaudiólogos, com avaliação, diagnóstico diferencial e intervenção baseada em evidências nos transtornos da fala.",
+      "canonicalUrl": "https://vivaion.com.br/pos-graduacao/p-fala/",
+      "area": "Fala",
+      "audienceLabel": "Exclusiva para fonoaudiólogos",
+      "audienceRestrictions": "Exclusiva para fonoaudiólogos",
+      "deliveryMode": "recorded",
+      "commercialStage": "available",
+      "tags": [
+        "fonoaudiologia",
+        "fala",
+        "saude-bem-estar",
+        "fala-motora",
+        "apraxia-fala"
+      ],
+      "themes": [
+        "linguagem-fala"
+      ],
+      "workload": "670h"
+    },
+    {
+      "id": "pos:adpt",
+      "slug": "adpt",
+      "kind": "pos",
+      "title": "Distúrbios de Alimentação e Deglutição Pediátricos: Diagnóstico e Terapia Avançada",
+      "summary": "Pós-graduação EAD ao vivo em alimentação e deglutição pediátricas, com diagnóstico diferencial, disfagia, neurodivergência, avaliação clínica e manejo multiprofissional.",
+      "canonicalUrl": "https://vivaion.com.br/pos-graduacao/ao-vivo/adpt/",
+      "area": "Alimentação e deglutição pediátricas",
+      "audienceLabel": "Profissionais da Saúde",
+      "deliveryMode": "live",
+      "commercialStage": "prelaunch",
+      "tags": [
+        "fonoaudiologia",
+        "saude-bem-estar",
+        "pediatria",
+        "disfagia",
+        "alimentacao-infantil",
+        "neurodivergencia",
+        "alimentacao-pediatrica",
+        "disfagia-pediatrica"
+      ],
+      "themes": [
+        "disfagia-alimentacao"
+      ],
+      "workload": "520h"
+    },
+    {
+      "id": "pos:posdqdc",
+      "slug": "posdqdc",
+      "kind": "pos",
+      "title": "Pós em Dependência Química e Dependências Comportamentais",
+      "summary": "Pós-graduação para profissionais da saúde que querem atuar com dependência química, dependências comportamentais, redução de danos, PTS, famílias, comorbidades e rede de cuidado.",
+      "canonicalUrl": "https://vivaion.com.br/pos-graduacao/posdqdc/",
+      "area": "Saúde mental",
+      "audienceLabel": "Saúde mental, cuidado e rede",
+      "deliveryMode": "recorded",
+      "commercialStage": "available",
+      "tags": [
+        "psicologia",
+        "psiquiatria",
+        "saude-bem-estar",
+        "dependencia-quimica",
+        "dependencias-comportamentais"
+      ],
+      "themes": [
+        "saude-mental-dependencias"
+      ],
+      "workload": "500h"
+    },
+    {
+      "id": "pos:vdmo-2",
+      "slug": "vdmo-2",
+      "kind": "pos",
+      "title": "Intervenção Integrada em Voz, Disfagia e Motricidade Orofacial — 2ª Turma",
+      "summary": "2ª turma da pós exclusiva para fonoaudiólogos que integra voz, disfagia e motricidade orofacial em avaliação, raciocínio clínico e intervenção, com encontros ao vivo e conteúdos gravados integrados.",
+      "canonicalUrl": "https://vivaion.com.br/pos-graduacao/ao-vivo/vdmo-2/",
+      "area": "Fonoaudiologia — voz, disfagia e motricidade orofacial",
+      "audienceLabel": "Exclusiva para fonoaudiólogos",
+      "audienceRestrictions": "Exclusiva para fonoaudiólogos",
+      "deliveryMode": "live",
+      "commercialStage": "prelaunch",
+      "tags": [
+        "fonoaudiologia",
+        "voz",
+        "disfagia",
+        "motricidade-orofacial",
+        "saude-bem-estar",
+        "disfagia-hospitalar"
+      ],
+      "themes": [
+        "voz-motricidade",
+        "disfagia-alimentacao"
+      ],
+      "workload": "745h"
+    },
+    {
+      "id": "pos:posfati",
+      "slug": "posfati",
+      "kind": "pos",
+      "title": "Fala Motora, Apraxia e Tecnologias de Intervenção",
+      "summary": "Pós-graduação gravada para fonoaudiólogos que desejam aprofundar avaliação e intervenção em transtornos dos sons da fala, apraxia, disartria, DTTC, ReST, ultrassonografia, CAA e tecnologias clínicas.",
+      "canonicalUrl": "https://vivaion.com.br/pos-graduacao/posfati/",
+      "area": "Fala motora, apraxia e tecnologias de intervenção",
+      "audienceLabel": "Exclusiva para fonoaudiólogos",
+      "audienceRestrictions": "Exclusiva para fonoaudiólogos",
+      "deliveryMode": "recorded",
+      "commercialStage": "available",
+      "tags": [
+        "fonoaudiologia",
+        "fala",
+        "apraxia",
+        "transtornos-motores-fala",
+        "tecnologia",
+        "saude-bem-estar",
+        "fala-motora",
+        "apraxia-fala"
+      ],
+      "themes": [
+        "linguagem-fala"
+      ],
+      "workload": "480h"
+    },
+    {
+      "id": "pos:proc",
+      "slug": "proc",
+      "kind": "pos",
+      "title": "Processamento Sensorial, Autorregulação e Estratégias de Acomodação",
+      "summary": "Pós-graduação EAD ao vivo e multiprofissional para compreender diferenças sensoriais, autorregulação e estratégias de acomodação nos contextos de saúde e educação.",
+      "canonicalUrl": "https://vivaion.com.br/pos-graduacao/ao-vivo/proc/",
+      "area": "Processamento sensorial, saúde e educação",
+      "audienceLabel": "Graduados das áreas da saúde e da educação",
+      "deliveryMode": "live",
+      "commercialStage": "prelaunch",
+      "tags": [
+        "psicologia",
+        "fonoaudiologia",
+        "psicopedagogia",
+        "saude-bem-estar",
+        "neurociencia",
+        "educacao",
+        "neurodesenvolvimento",
+        "processamento-sensorial",
+        "neurodivergencia"
+      ],
+      "themes": [
+        "neurodesenvolvimento-inclusao"
+      ],
+      "workload": "500h"
+    },
+    {
+      "id": "pos:posnacc",
+      "slug": "posnacc",
+      "kind": "pos",
+      "title": "Pós em Dependências Comportamentais Contemporâneas para Psicólogos",
+      "summary": "Pós voltada a psicólogos para estudar dependências comportamentais, avaliação clínica, neurociência afetiva, redução de danos e atenção psicossocial.",
+      "canonicalUrl": "https://vivaion.com.br/pos-graduacao/posnacc/",
+      "area": "Dependências contemporâneas, neurociência afetiva e clínica",
+      "audienceLabel": "Exclusiva para psicólogos",
+      "audienceRestrictions": "Exclusiva para psicólogos",
+      "deliveryMode": "recorded",
+      "commercialStage": "available",
+      "tags": [
+        "psicologia",
+        "psicanalise",
+        "neurociencia",
+        "saude-bem-estar",
+        "dependencias-comportamentais"
+      ],
+      "themes": [
+        "saude-mental-dependencias"
+      ],
+      "workload": "500h"
+    },
+    {
+      "id": "pos:smed",
+      "slug": "smed",
+      "kind": "pos",
+      "title": "Saúde Mental na Era Digital: Sociedade, Tecnologia e Subjetividade",
+      "summary": "Pós-graduação EAD ao vivo para compreender os impactos da Era Digital sobre a saúde mental, integrando sociedade, subjetividade, inteligência artificial, redes sociais, saúde digital, ética e inovação.",
+      "canonicalUrl": "https://vivaion.com.br/pos-graduacao/ao-vivo/smed/",
+      "area": "Saúde mental, tecnologia e sociedade digital",
+      "audienceLabel": "Saúde mental, Psicologia, saúde, educação e áreas afins",
+      "deliveryMode": "live",
+      "commercialStage": "prelaunch",
+      "tags": [
+        "psicologia",
+        "psiquiatria",
+        "neurociencia",
+        "saude-bem-estar",
+        "saude-mental",
+        "tecnologia",
+        "inteligencia-artificial",
+        "saude-mental-digital",
+        "saude-digital"
+      ],
+      "themes": [
+        "saude-mental-dependencias",
+        "tecnologia-saude-digital"
+      ],
+      "workload": "690h"
+    },
+    {
+      "id": "pos:poscnei",
+      "slug": "poscnei",
+      "kind": "pos",
+      "title": "Pós-graduação em CAA, Neurodesenvolvimento Infantil e Inclusão Escolar",
+      "summary": "Pós-graduação em CAA, Neurodesenvolvimento Infantil e Inclusão Escolar com 18 módulos, 29 aulas, 10 docentes e 544h.",
+      "canonicalUrl": "https://vivaion.com.br/pos-graduacao/poscnei/",
+      "area": "CAA, Neurodesenvolvimento Infantil e Inclusão Escolar",
+      "audienceLabel": "Saúde, educação e desenvolvimento infantil",
+      "deliveryMode": "recorded",
+      "commercialStage": "available",
+      "tags": [
+        "fonoaudiologia",
+        "psicologia",
+        "psicopedagogia",
+        "neuropsicopedagogia",
+        "saude-bem-estar",
+        "caa",
+        "educacao",
+        "autismo",
+        "inclusao-escolar"
+      ],
+      "themes": [
+        "neurodesenvolvimento-inclusao",
+        "caa-comunicacao"
+      ],
+      "workload": "544h"
+    },
+    {
+      "id": "pos:posmdef",
+      "slug": "posmdef",
+      "kind": "pos",
+      "title": "Pós-Graduação em Motricidade Orofacial, Sono, DTM e Estética Funcional",
+      "summary": "Pós-graduação gravada e exclusiva para fonoaudiólogos em motricidade orofacial, sono, ronco e apneia, DTM, estética funcional, cirurgia ortognática, paralisia facial, freios orais e tecnologias clínicas.",
+      "canonicalUrl": "https://vivaion.com.br/pos-graduacao/posmdef/",
+      "area": "Motricidade Orofacial, Sono, DTM e Estética Funcional",
+      "audienceLabel": "Exclusiva para fonoaudiólogos",
+      "audienceRestrictions": "Exclusiva para fonoaudiólogos",
+      "deliveryMode": "recorded",
+      "commercialStage": "available",
+      "tags": [
+        "fonoaudiologia",
+        "motricidade-orofacial",
+        "sono",
+        "dtm",
+        "estetica-funcional",
+        "saude-bem-estar"
+      ],
+      "themes": [
+        "voz-motricidade"
+      ],
+      "workload": "460h"
+    },
+    {
+      "id": "pos:posdiac",
+      "slug": "posdiac",
+      "kind": "pos",
+      "title": "Disfagia de Alta Complexidade",
+      "summary": "Pós-graduação gravada em disfagia de alta complexidade, com 605h.",
+      "canonicalUrl": "https://vivaion.com.br/pos-graduacao/posdiac/",
+      "area": "Disfagia de Alta Complexidade",
+      "audienceLabel": "Exclusiva para fonoaudiólogos",
+      "audienceRestrictions": "Exclusiva para fonoaudiólogos",
+      "deliveryMode": "recorded",
+      "commercialStage": "available",
+      "tags": [
+        "fonoaudiologia",
+        "saude-bem-estar",
+        "disfagia",
+        "disfagia-hospitalar",
+        "avaliacao-degluticao"
+      ],
+      "themes": [
+        "disfagia-alimentacao"
+      ],
+      "workload": "605h"
+    },
+    {
+      "id": "pos:posduci",
+      "slug": "posduci",
+      "kind": "pos",
+      "title": "Disfagia Neuro-Hospitalar, UTI e Comunicação no Adulto e Idoso",
+      "summary": "Pós-graduação de 455h para fonoaudiólogos que desejam atuar com disfagia neuro-hospitalar, UTI, pós-extubação, traqueostomia, IDDSI, AVC, doenças neurodegenerativas e comunicação funcional.",
+      "canonicalUrl": "https://vivaion.com.br/pos-graduacao/posduci/",
+      "area": "Disfagia neuro-hospitalar, UTI e comunicação no adulto/idoso",
+      "audienceLabel": "Exclusiva para fonoaudiólogos",
+      "audienceRestrictions": "Exclusiva para fonoaudiólogos",
+      "deliveryMode": "recorded",
+      "commercialStage": "available",
+      "tags": [
+        "fonoaudiologia",
+        "saude-bem-estar",
+        "disfagia",
+        "disfagia-hospitalar",
+        "avaliacao-degluticao"
+      ],
+      "themes": [
+        "disfagia-alimentacao"
+      ],
+      "workload": "455h"
+    },
+    {
+      "id": "pos:vdmo",
+      "slug": "vdmo",
+      "kind": "pos",
+      "title": "Pós em Voz, Disfagia e Motricidade Orofacial",
+      "summary": "Pós-graduação exclusiva para fonoaudiólogos que integra voz, disfagia e motricidade orofacial em uma mesma lógica clínica.",
+      "canonicalUrl": "https://vivaion.com.br/pos-graduacao/vdmo/",
+      "area": "Fonoaudiologia",
+      "audienceLabel": "Exclusivo para fonoaudiólogos",
+      "audienceRestrictions": "Exclusivo para fonoaudiólogos",
+      "deliveryMode": "recorded",
+      "commercialStage": "available",
+      "tags": [
+        "fonoaudiologia",
+        "saude-bem-estar",
+        "voz",
+        "motricidade-orofacial",
+        "disfagia-hospitalar"
+      ],
+      "themes": [
+        "voz-motricidade",
+        "disfagia-alimentacao"
+      ],
+      "workload": "720h"
+    },
+    {
+      "id": "pos:posclni",
+      "slug": "posclni",
+      "kind": "pos",
+      "title": "Pós-graduação em Comunicação, Linguagem e Neurodesenvolvimento Infantil",
+      "summary": "Pós-graduação em Comunicação, Linguagem e Neurodesenvolvimento Infantil para profissionais que desejam compreender comunicação infantil em contexto real.",
+      "canonicalUrl": "https://vivaion.com.br/pos-graduacao/posclni/",
+      "area": "Neurodesenvolvimento Infantil",
+      "audienceLabel": "Turma de lançamento • Público interdisciplinar",
+      "deliveryMode": "recorded",
+      "commercialStage": "available",
+      "tags": [
+        "fonoaudiologia",
+        "psicopedagogia",
+        "neuropsicopedagogia",
+        "saude-bem-estar",
+        "desenvolvimento-linguagem",
+        "intervencao-linguagem"
+      ],
+      "themes": [
+        "linguagem-fala",
+        "neurodesenvolvimento-inclusao"
+      ],
+      "workload": "360h"
+    },
+    {
+      "id": "pos:nctp",
+      "slug": "nctp",
+      "kind": "pos",
+      "title": "Neuropsicanálise Clínica",
+      "summary": "Pós-graduação em Neuropsicanálise Clínica para profissionais da saúde mental que desejam compreender o sofrimento humano pela via dos afetos, do corpo, da memória, do vínculo e do inconsciente.",
+      "canonicalUrl": "https://vivaion.com.br/pos-graduacao/nctp/",
+      "area": "Neuropsicanálise e clínica",
+      "audienceLabel": "Saúde mental e atuação clínica",
+      "deliveryMode": "recorded",
+      "commercialStage": "available",
+      "tags": [
+        "psicanalise",
+        "neurociencia",
+        "psicologia",
+        "saude-bem-estar",
+        "neuropsicanalise"
+      ],
+      "themes": [
+        "neurociencias-psicanalise"
+      ],
+      "workload": "460h"
+    },
+    {
+      "id": "pos:poscora",
+      "slug": "poscora",
+      "kind": "pos",
+      "title": "Pós-graduação em Comunicação Profissional e Oratória na Prática Fonoaudiológica",
+      "summary": "Pós CORA: comunicação profissional e oratória na prática fonoaudiológica, exclusiva para fonoaudiólogos.",
+      "canonicalUrl": "https://vivaion.com.br/pos-graduacao/poscora/",
+      "area": "Comunicação profissional e oratória",
+      "audienceLabel": "Exclusivo para fonoaudiólogos",
+      "audienceRestrictions": "Exclusivo para fonoaudiólogos",
+      "deliveryMode": "recorded",
+      "commercialStage": "available",
+      "tags": [
+        "fonoaudiologia",
+        "saude-bem-estar",
+        "comunicacao-profissional",
+        "expressividade"
+      ],
+      "themes": [
+        "oratoria-profissional"
+      ],
+      "workload": "600h"
+    },
+    {
+      "id": "curso-livre:iddsi-na-pratica",
+      "slug": "iddsi-na-pratica",
+      "kind": "curso-livre",
+      "title": "IDDSI na Prática: Consistências, Espessantes e Segurança do Paciente",
+      "summary": "Aprenda a aplicar o IDDSI com mais segurança na classificação de consistências, uso de espessantes e tomada de decisão clínica.",
+      "canonicalUrl": "https://vivaion.com.br/cursos-livres/iddsi-na-pratica/",
+      "area": "Disfagia",
+      "audienceLabel": "Fonoaudiólogos e profissionais da saúde",
+      "deliveryMode": "online",
+      "commercialStage": "available",
+      "tags": [
+        "disfagia",
+        "iddsi",
+        "seguranca-do-paciente",
+        "avaliacao-degluticao"
+      ],
+      "themes": [
+        "disfagia-alimentacao"
+      ],
+      "workload": "10 horas"
+    },
+    {
+      "id": "formacao:dttc-na-pratica-clinica",
+      "slug": "dttc-na-pratica-clinica",
+      "kind": "formacao",
+      "title": "DTTC na Prática Clínica",
+      "summary": "Aprofunde os princípios do DTTC e sua implementação na prática clínica com uma abordagem baseada em evidências.",
+      "canonicalUrl": "https://vivaion.com.br/cursos-livres/dttc-na-pratica-clinica/",
+      "area": "Fala motora",
+      "audienceLabel": "Fonoaudiólogos",
+      "deliveryMode": "online",
+      "commercialStage": "available",
+      "tags": [
+        "fala-motora",
+        "apraxia",
+        "dttc",
+        "apraxia-fala"
+      ],
+      "themes": [
+        "linguagem-fala"
+      ],
+      "workload": "50 horas"
+    },
+    {
+      "id": "curso-livre:sinais-de-alerta-no-neurodesenvolvimento-infantil",
+      "slug": "sinais-de-alerta-no-neurodesenvolvimento-infantil",
+      "kind": "curso-livre",
+      "title": "Sinais de Alerta no Neurodesenvolvimento Infantil",
+      "summary": "Aprenda a reconhecer sinais que merecem atenção no desenvolvimento infantil e a organizar observações, registros e encaminhamentos com mais segurança.",
+      "canonicalUrl": "https://vivaion.com.br/cursos-livres/sinais-de-alerta-no-neurodesenvolvimento-infantil/",
+      "area": "Neurodesenvolvimento infantil",
+      "audienceLabel": "Profissionais da saúde e educação",
+      "deliveryMode": "online",
+      "commercialStage": "available",
+      "tags": [
+        "neurodesenvolvimento",
+        "linguagem",
+        "infancia",
+        "autismo",
+        "neurodivergencia"
+      ],
+      "themes": [
+        "neurodesenvolvimento-inclusao"
+      ],
+      "workload": "10 horas"
+    },
+    {
+      "id": "curso-livre:dependencias-comportamentais-na-atualidade",
+      "slug": "dependencias-comportamentais-na-atualidade",
+      "kind": "curso-livre",
+      "title": "Dependências Comportamentais na Atualidade",
+      "summary": "Conheça temas atuais das dependências comportamentais e amplie sua compreensão sobre padrões compulsivos na prática profissional.",
+      "canonicalUrl": "https://vivaion.com.br/cursos-livres/dependencias-comportamentais-na-atualidade/",
+      "area": "Saúde mental",
+      "audienceLabel": "Profissionais da saúde mental",
+      "deliveryMode": "online",
+      "commercialStage": "prelaunch",
+      "tags": [
+        "saude-mental",
+        "dependencias",
+        "comportamento",
+        "dependencias-comportamentais"
+      ],
+      "themes": [
+        "saude-mental-dependencias"
+      ],
+      "workload": "50 horas"
+    },
+    {
+      "id": "formacao:ansiedade-comunicativa-e-medo-de-falar-em-publico",
+      "slug": "ansiedade-comunicativa-e-medo-de-falar-em-publico",
+      "kind": "formacao",
+      "title": "Ansiedade Comunicativa, Medo de Falar em Público e Intervenções",
+      "summary": "Compreenda como a ansiedade pode interferir na voz, na fala e na expressividade e conheça estratégias para lidar com situações de exposição oral.",
+      "canonicalUrl": "https://vivaion.com.br/cursos-livres/ansiedade-comunicativa-e-medo-de-falar-em-publico/",
+      "area": "Comunicação e oratória",
+      "audienceLabel": "Fonoaudiólogos",
+      "deliveryMode": "online",
+      "commercialStage": "available",
+      "tags": [
+        "comunicacao",
+        "oratoria",
+        "ansiedade",
+        "medo-falar-publico",
+        "comunicacao-profissional"
+      ],
+      "themes": [
+        "oratoria-profissional"
+      ],
+      "workload": "12 horas"
+    },
+    {
+      "id": "formacao:fundamentos-da-comunicacao-humana-e-da-oratoria",
+      "slug": "fundamentos-da-comunicacao-humana-e-da-oratoria",
+      "kind": "formacao",
+      "title": "Fundamentos da Comunicação Humana e da Oratória",
+      "summary": "Organize fundamentos de comunicação humana, expressão oral e oratória para uma atuação fonoaudiológica mais consciente e tecnicamente orientada.",
+      "canonicalUrl": "https://vivaion.com.br/cursos-livres/fundamentos-da-comunicacao-humana-e-da-oratoria/",
+      "area": "Comunicação e oratória",
+      "audienceLabel": "Fonoaudiólogos e estudantes de Fonoaudiologia",
+      "commercialStage": "available",
+      "tags": [
+        "comunicacao",
+        "oratoria",
+        "expressao-oral",
+        "comunicacao-humana",
+        "comunicacao-profissional"
+      ],
+      "themes": [
+        "oratoria-profissional"
+      ],
+      "workload": "50 horas"
+    },
+    {
+      "id": "formacao:expressividade-vocal-e-corporal",
+      "slug": "expressividade-vocal-e-corporal",
+      "kind": "formacao",
+      "title": "Expressividade Vocal e Corporal",
+      "summary": "Aprofunde a relação entre voz, corpo, presença e recursos comunicativos na atuação profissional.",
+      "canonicalUrl": "https://vivaion.com.br/cursos-livres/expressividade-vocal-e-corporal/",
+      "area": "Comunicação e oratória",
+      "audienceLabel": "Fonoaudiólogos",
+      "audienceRestrictions": "Conteúdo de origem da Pós CORA, formação exclusiva para fonoaudiólogos.",
+      "commercialStage": "available",
+      "tags": [
+        "expressividade",
+        "voz",
+        "comunicacao"
+      ],
+      "themes": [
+        "oratoria-profissional",
+        "voz-motricidade"
+      ],
+      "workload": "50 horas"
+    },
+    {
+      "id": "formacao:transtornos-motores-de-fala-e-apraxia-de-fala-na-infancia",
+      "slug": "transtornos-motores-de-fala-e-apraxia-de-fala-na-infancia",
+      "kind": "formacao",
+      "title": "Transtornos Motores de Fala e Apraxia de Fala na Infância",
+      "summary": "Organize a avaliação e o raciocínio clínico sobre transtornos motores de fala, apraxia de fala na infância e disartria.",
+      "canonicalUrl": "https://vivaion.com.br/cursos-livres/transtornos-motores-de-fala-e-apraxia-de-fala-na-infancia/",
+      "area": "Fala motora",
+      "audienceLabel": "Fonoaudiólogos",
+      "audienceRestrictions": "Conteúdo de origem da Pós FATI, formação exclusiva para fonoaudiólogos.",
+      "commercialStage": "available",
+      "tags": [
+        "fala-motora",
+        "apraxia",
+        "disartria",
+        "apraxia-fala"
+      ],
+      "themes": [
+        "linguagem-fala"
+      ],
+      "workload": "50 horas"
+    },
+    {
+      "id": "formacao:intervencao-baseada-em-evidencias-iii-ultrassonografia",
+      "slug": "intervencao-baseada-em-evidencias-iii-ultrassonografia",
+      "kind": "formacao",
+      "title": "Intervenção Baseada em Evidências III: Ultrassonografia",
+      "summary": "Compreenda fundamentos e possibilidades de uso clínico da ultrassonografia na avaliação e na intervenção da fala.",
+      "canonicalUrl": "https://vivaion.com.br/cursos-livres/intervencao-baseada-em-evidencias-iii-ultrassonografia/",
+      "area": "Fala motora e tecnologia clínica",
+      "audienceLabel": "Fonoaudiólogos",
+      "audienceRestrictions": "Conteúdo de origem da Pós FATI, formação exclusiva para fonoaudiólogos.",
+      "commercialStage": "available",
+      "tags": [
+        "ultrassonografia",
+        "fala-motora",
+        "tecnologia-clinica",
+        "tecnologias-clinicas"
+      ],
+      "themes": [
+        "linguagem-fala",
+        "tecnologia-saude-digital"
+      ],
+      "workload": "35 horas"
+    },
+    {
+      "id": "formacao:tdl-atrasos-de-linguagem-e-impactos-no-desenvolvimento",
+      "slug": "tdl-atrasos-de-linguagem-e-impactos-no-desenvolvimento",
+      "kind": "formacao",
+      "title": "TDL, Atrasos de Linguagem e Impactos no Desenvolvimento",
+      "summary": "Compreenda diferenças entre atrasos e transtornos de linguagem e seus impactos na rotina, aprendizagem e participação.",
+      "canonicalUrl": "https://vivaion.com.br/cursos-livres/tdl-atrasos-de-linguagem-e-impactos-no-desenvolvimento/",
+      "area": "Linguagem e neurodesenvolvimento infantil",
+      "audienceLabel": "Profissionais da saúde, educação e desenvolvimento infantil",
+      "commercialStage": "available",
+      "tags": [
+        "tdl",
+        "linguagem",
+        "desenvolvimento-infantil",
+        "desenvolvimento-linguagem"
+      ],
+      "themes": [
+        "linguagem-fala"
+      ],
+      "workload": "35 horas"
+    },
+    {
+      "id": "formacao:disfagia-pediatrica-na-pratica-clinica",
+      "slug": "disfagia-pediatrica-na-pratica-clinica",
+      "kind": "formacao",
+      "title": "Disfagia Pediátrica na Prática Clínica",
+      "summary": "Aprofunde fundamentos, avaliação, condutas e interdisciplinaridade na discussão de disfagia pediátrica.",
+      "canonicalUrl": "https://vivaion.com.br/cursos-livres/disfagia-pediatrica-na-pratica-clinica/",
+      "area": "Disfagia pediátrica",
+      "audienceLabel": "Fonoaudiólogos",
+      "audienceRestrictions": "Conteúdo de origem da Pós DIAC, formação exclusiva para fonoaudiólogos.",
+      "commercialStage": "available",
+      "tags": [
+        "disfagia",
+        "pediatria",
+        "interdisciplinaridade",
+        "disfagia-pediatrica",
+        "alimentacao-pediatrica"
+      ],
+      "themes": [
+        "disfagia-alimentacao"
+      ],
+      "workload": "65 horas"
+    },
+    {
+      "id": "formacao:raciocinio-clinico-avancado-e-planejamento-terapeutico-em-caa",
+      "slug": "raciocinio-clinico-avancado-e-planejamento-terapeutico-em-caa",
+      "kind": "formacao",
+      "title": "Raciocínio Clínico Avançado e Planejamento Terapêutico em CAA",
+      "summary": "Organize decisões terapêuticas em CAA a partir de dados, contexto e objetivos individualizados.",
+      "canonicalUrl": "https://vivaion.com.br/cursos-livres/raciocinio-clinico-avancado-e-planejamento-terapeutico-em-caa/",
+      "area": "Comunicação Aumentativa e Alternativa",
+      "audienceLabel": "Profissionais da saúde, educação e áreas afins",
+      "commercialStage": "available",
+      "tags": [
+        "caa",
+        "planejamento-terapeutico",
+        "comunicacao",
+        "modelagem"
+      ],
+      "themes": [
+        "caa-comunicacao"
+      ],
+      "workload": "20 horas"
+    },
+    {
+      "id": "formacao:avaliacao-e-intervencao-em-motricidade-orofacial-i",
+      "slug": "avaliacao-e-intervencao-em-motricidade-orofacial-i",
+      "kind": "formacao",
+      "title": "Avaliação e Intervenção em Motricidade Orofacial I",
+      "summary": "Aprofunde avaliação e intervenção em ronco, apneia e paralisia facial no escopo da motricidade orofacial.",
+      "canonicalUrl": "https://vivaion.com.br/cursos-livres/avaliacao-e-intervencao-em-motricidade-orofacial-i/",
+      "area": "Motricidade orofacial",
+      "audienceLabel": "Fonoaudiólogos",
+      "audienceRestrictions": "Conteúdo de origem da Pós MDEF, formação exclusiva para fonoaudiólogos.",
+      "commercialStage": "available",
+      "tags": [
+        "motricidade-orofacial",
+        "sono",
+        "paralisia-facial"
+      ],
+      "themes": [
+        "voz-motricidade"
+      ],
+      "workload": "65 horas"
+    },
+    {
+      "id": "formacao:casos-clinicos-e-pratica-supervisionada-em-comunicacao-e-oratoria",
+      "slug": "casos-clinicos-e-pratica-supervisionada-em-comunicacao-e-oratoria",
+      "kind": "formacao",
+      "title": "Casos Clínicos e Prática Supervisionada em Comunicação e Oratória",
+      "summary": "Discuta casos e integre o raciocínio fonoaudiológico à atuação em comunicação profissional e oratória.",
+      "canonicalUrl": "https://vivaion.com.br/cursos-livres/casos-clinicos-e-pratica-supervisionada-em-comunicacao-e-oratoria/",
+      "area": "Comunicação e oratória",
+      "audienceLabel": "Fonoaudiólogos",
+      "audienceRestrictions": "Conteúdo de origem da Pós CORA, formação exclusiva para fonoaudiólogos.",
+      "commercialStage": "available",
+      "tags": [
+        "casos-clinicos",
+        "comunicacao",
+        "oratoria",
+        "comunicacao-profissional",
+        "expressividade"
+      ],
+      "themes": [
+        "oratoria-profissional"
+      ],
+      "workload": "50 horas"
+    },
+    {
+      "id": "formacao:neurociencia-afetiva-basica",
+      "slug": "neurociencia-afetiva-basica",
+      "kind": "formacao",
+      "title": "Formação Básica em Neurociência Afetiva",
+      "summary": "Formação de introdução à neurociência afetiva, com foco nos sistemas emocionais e suas aplicações à compreensão clínica.",
+      "canonicalUrl": "https://vivaion.com.br/formacoes/neurociencia-afetiva-basica/",
+      "area": "Neurociência afetiva e clínica",
+      "audienceLabel": "Psicólogos, psicanalistas e profissionais da saúde mental",
+      "commercialStage": "available",
+      "tags": [
+        "neurociencia-afetiva",
+        "sistemas-afetivos",
+        "saude-mental"
+      ],
+      "themes": [
+        "neurociencias-psicanalise"
+      ]
+    },
+    {
+      "id": "formacao:neurociencia-afetiva",
+      "slug": "neurociencia-afetiva",
+      "kind": "formacao",
+      "title": "Formação Avançada em Neurociência Afetiva com Ênfase nos Sistemas Emocionais Primários",
+      "summary": "Formação de 8 aulas sobre fundamentos da neurociência afetiva e sistemas emocionais primários, com aplicação à leitura clínica e à formulação de caso.",
+      "canonicalUrl": "https://vivaion.com.br/formacoes/neurociencia-afetiva/",
+      "area": "Neurociência afetiva e clínica",
+      "audienceLabel": "Psicólogos, psicanalistas e profissionais da saúde mental",
+      "commercialStage": "available",
+      "tags": [
+        "neurociencia-afetiva",
+        "panksepp",
+        "afetos",
+        "saude-mental",
+        "sistemas-afetivos"
+      ],
+      "themes": [
+        "neurociencias-psicanalise"
+      ]
+    },
+    {
+      "id": "formacao:fco",
+      "slug": "fco",
+      "kind": "formacao",
+      "title": "Fundamentos da Comunicação e Oratória na Fonoaudiologia",
+      "summary": "Formação para fonoaudiólogos sobre comunicação humana, oratória, presença comunicativa e bases vocais aplicadas à avaliação e à intervenção.",
+      "canonicalUrl": "https://vivaion.com.br/formacoes/fco/",
+      "area": "Fonoaudiologia",
+      "audienceLabel": "Fonoaudiólogos",
+      "commercialStage": "available",
+      "tags": [
+        "fonoaudiologia",
+        "comunicacao",
+        "oratoria",
+        "voz",
+        "comunicacao-profissional",
+        "comunicacao-humana"
+      ],
+      "themes": [
+        "oratoria-profissional"
+      ]
+    },
+    {
+      "id": "formacao:sistemas-afetivos",
+      "slug": "sistemas-afetivos",
+      "kind": "formacao",
+      "title": "Formação em Sistemas Afetivos",
+      "summary": "Formação online sobre os sistemas afetivos primários e suas relações com desejo, medo, raiva, vínculo, cuidado e vida psíquica.",
+      "canonicalUrl": "https://vivaion.com.br/formacoes/sistemas-afetivos",
+      "area": "Neuropsicanálise Clínica",
+      "audienceLabel": "Psicólogos, psicanalistas e profissionais da saúde mental",
+      "commercialStage": "available",
+      "tags": [
+        "sistemas-afetivos",
+        "neuropsicanalise",
+        "psicanalise",
+        "saude-mental"
+      ],
+      "themes": [
+        "neurociencias-psicanalise"
+      ]
+    },
+    {
+      "id": "curso-livre:desenvolvimento-normal-da-linguagem",
+      "slug": "desenvolvimento-normal-da-linguagem",
+      "kind": "curso-livre",
+      "title": "Desenvolvimento Normal da Linguagem",
+      "summary": "Curso online sobre os marcos do desenvolvimento da linguagem infantil, da fase pré-verbal aos 5 anos, com estímulos e sinais de alerta.",
+      "canonicalUrl": "https://vivaion.com.br/formacoes/desenvolvimento-normal-da-linguagem",
+      "area": "Linguagem infantil",
+      "audienceLabel": "Pais, educadores e profissionais",
+      "commercialStage": "available",
+      "tags": [
+        "linguagem",
+        "educacao",
+        "familia",
+        "infancia",
+        "desenvolvimento-linguagem"
+      ],
+      "themes": [
+        "linguagem-fala"
+      ]
+    },
+    {
+      "id": "formacao:avaliacao-e-intervencao-em-perfis-gestalticos",
+      "slug": "avaliacao-e-intervencao-em-perfis-gestalticos",
+      "kind": "formacao",
+      "title": "Avaliação e Intervenção em Perfis Gestálticos",
+      "summary": "Formação para fonoaudiólogos sobre Processamento Gestáltico da Linguagem, estágios da NLA e planejamento de intervenções individualizadas.",
+      "canonicalUrl": "https://vivaion.com.br/formacoes/avaliacao-e-intervencao-em-perfis-gestalticos",
+      "area": "Linguagem",
+      "audienceLabel": "Fonoaudiólogos",
+      "commercialStage": "available",
+      "tags": [
+        "linguagem",
+        "gestaltico",
+        "nla",
+        "tea",
+        "intervencao-linguagem",
+        "autismo"
+      ],
+      "themes": [
+        "linguagem-fala",
+        "neurodesenvolvimento-inclusao"
+      ]
+    },
+    {
+      "id": "formacao:disfagia-base-conceitual-e-pratica",
+      "slug": "disfagia-base-conceitual-e-pratica",
+      "kind": "formacao",
+      "title": "Disfagia: Base Conceitual e Prática",
+      "summary": "Formação exclusiva para fonoaudiólogos, para organizar fundamentos, avaliação, reabilitação e condutas em disfagia clínica e pediátrica.",
+      "canonicalUrl": "https://vivaion.com.br/formacoes/disfagia-base-conceitual-e-pratica",
+      "area": "Disfagia",
+      "audienceLabel": "Fonoaudiólogos",
+      "audienceRestrictions": "Formação exclusiva para fonoaudiólogos",
+      "commercialStage": "available",
+      "tags": [
+        "disfagia",
+        "fonoaudiologia",
+        "clinica",
+        "avaliacao-degluticao",
+        "disfagia-pediatrica"
+      ],
+      "themes": [
+        "disfagia-alimentacao"
+      ]
+    },
+    {
+      "id": "formacao:disfagia-avancada",
+      "slug": "disfagia-avancada",
+      "kind": "formacao",
+      "title": "Disfagia Avançada",
+      "summary": "Formação exclusiva para fonoaudiólogos, sobre raciocínio clínico e tomada de decisão em casos complexos de disfagia.",
+      "canonicalUrl": "https://vivaion.com.br/formacoes/disfagia-avancada",
+      "area": "Disfagia",
+      "audienceLabel": "Fonoaudiólogos",
+      "audienceRestrictions": "Formação exclusiva para fonoaudiólogos",
+      "commercialStage": "available",
+      "tags": [
+        "disfagia",
+        "fonoaudiologia",
+        "complexidade",
+        "disfagia-hospitalar",
+        "avaliacao-degluticao"
+      ],
+      "themes": [
+        "disfagia-alimentacao"
+      ]
+    },
+    {
+      "id": "formacao:disturbios-da-voz-avaliacao-e-intervencao",
+      "slug": "disturbios-da-voz-avaliacao-e-intervencao",
+      "kind": "formacao",
+      "title": "Distúrbios da Voz: Avaliação e Intervenção",
+      "summary": "Formação para fonoaudiólogos sobre avaliação vocal, análise acústica e intervenção em disfonias funcionais, orgânicas e neurológicas.",
+      "canonicalUrl": "https://vivaion.com.br/formacoes/disturbios-da-voz-avaliacao-e-intervencao",
+      "area": "Voz",
+      "audienceLabel": "Fonoaudiólogos",
+      "commercialStage": "available",
+      "tags": [
+        "voz",
+        "fonoaudiologia",
+        "clinica"
+      ],
+      "themes": [
+        "voz-motricidade"
+      ]
+    },
+    {
+      "id": "formacao:motricidade-orofacial-ciencia-na-atualidade",
+      "slug": "motricidade-orofacial-ciencia-na-atualidade",
+      "kind": "formacao",
+      "title": "Motricidade Orofacial: Ciência na Atualidade",
+      "summary": "Formação para fonoaudiólogos sobre fundamentos, avaliação, fala, fissura labiopalatina e tecnologias aplicadas à motricidade orofacial.",
+      "canonicalUrl": "https://vivaion.com.br/formacoes/motricidade-orofacial-ciencia-na-atualidade",
+      "area": "Motricidade Orofacial",
+      "audienceLabel": "Fonoaudiólogos",
+      "commercialStage": "available",
+      "tags": [
+        "motricidade-orofacial",
+        "fonoaudiologia",
+        "tecnologia",
+        "tecnologias-clinicas"
+      ],
+      "themes": [
+        "voz-motricidade",
+        "tecnologia-saude-digital"
+      ]
+    },
+    {
+      "id": "formacao:neurociencia-aplicada-no-tea",
+      "slug": "neurociencia-aplicada-no-tea",
+      "kind": "formacao",
+      "title": "Neurociência Aplicada no TEA",
+      "summary": "Formação online sobre fundamentos da neurociência e suas relações com TEA, desenvolvimento, comportamento e práticas profissionais baseadas em evidências.",
+      "canonicalUrl": "https://vivaion.com.br/formacoes/neurociencia-aplicada-no-tea",
+      "area": "Neurociência e TEA",
+      "audienceLabel": "Saúde, Educação e Desenvolvimento Infantil",
+      "commercialStage": "available",
+      "tags": [
+        "neurociencia",
+        "tea",
+        "educacao",
+        "saude-bem-estar",
+        "neurociencia-aplicada",
+        "autismo"
+      ],
+      "themes": [
+        "neurociencias-psicanalise",
+        "neurodesenvolvimento-inclusao"
+      ]
+    }
+  ]
+}

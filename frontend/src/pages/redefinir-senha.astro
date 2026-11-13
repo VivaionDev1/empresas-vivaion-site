@@ -1,0 +1,46 @@
+---
+import SiteLayout from "../layouts/SiteLayout.astro";
+---
+<SiteLayout title="Redefinir senha" description="Defina uma nova senha para sua conta Vivaion Empresas." noindex>
+  <section class="section"><div class="container" style="max-width:740px">
+    <div class="form-panel"><span class="eyebrow">Nova senha</span><h2>Redefinir acesso</h2><p>Escolha uma senha com pelo menos 12 caracteres. O link pode ser utilizado uma única vez.</p>
+      <form id="reset-form" class="form-grid">
+        <label class="field field--wide">Nova senha<input type="password" name="password" minlength="12" maxlength="128" autocomplete="new-password" required /></label>
+        <label class="field field--wide">Confirmar nova senha<input type="password" name="confirmation" minlength="12" maxlength="128" autocomplete="new-password" required /></label>
+        <div id="reset-status" class="form-feedback" role="status" aria-live="polite"></div>
+        <div class="form-submit"><a class="inline-link" href="/recuperar-acesso/">Solicitar outro link</a><button type="submit" class="button button--primary">Redefinir senha</button></div>
+      </form>
+    </div>
+  </div></section>
+</SiteLayout>
+<script>
+  const form = document.querySelector<HTMLFormElement>("#reset-form");
+  const output = document.querySelector<HTMLElement>("#reset-status");
+  const token = new URL(window.location.href).searchParams.get("token") ?? "";
+  // Do not retain reset credentials in URL/history/referrers.
+  window.history.replaceState(null, "", "/redefinir-senha/");
+  if (!/^[A-Za-z0-9_-]{43}$/.test(token) && output) {
+    output.textContent = "Link inválido ou ausente. Solicite uma nova recuperação.";
+    output.dataset.state = "error";
+  }
+  form?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    if (!form || !output) return;
+    if (!/^[A-Za-z0-9_-]{43}$/.test(token)) { output.textContent="Link inválido. Solicite outro.";return; }
+    const data = new FormData(form);
+    if (data.get("password") !== data.get("confirmation")) { output.textContent="As senhas não conferem.";output.dataset.state="error";return; }
+    const submit = form.querySelector<HTMLButtonElement>('button[type="submit"]');
+    if (submit) submit.disabled=true;
+    try {
+      const res = await fetch("/api/auth/reset-password", {
+        method:"POST",headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({token,password:data.get("password")})
+      });
+      const result = await res.json().catch(() => ({}));
+      output.textContent = result.message ?? "Não foi possível redefinir a senha.";
+      output.dataset.state = res.ok ? "success" : "error";
+      if (res.ok) form.reset();
+    } catch { output.textContent="Falha de conexão. Tente novamente.";output.dataset.state="error"; }
+    finally { if (submit) submit.disabled=false; }
+  });
+</script>

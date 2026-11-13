@@ -1,0 +1,15 @@
+node_modules/
+dist/
+.astro/
+.env
+.env.*
+!.env.example
+*.log
+coverage/
+.DS_Store
+.vscode/
+playwright-report/
+test-results/
+.release-out/
+.release-rehearsal/
+__pycache__/

@@ -1,0 +1,39 @@
+---
+import SiteLayout from "../layouts/SiteLayout.astro";
+---
+<SiteLayout title="Entrar" description="Acesse a área da sua empresa na Vivaion Empresas." noindex>
+  <section class="section"><div class="container auth-layout">
+    <div class="auth-aside"><span class="eyebrow">Sua área empresarial</span><h2>Um lugar para acompanhar seus próximos passos.</h2><p>Consulte a situação do cadastro e, quando habilitado, acompanhe propostas, matrículas e vagas da sua organização.</p><div class="auth-benefits"><span>Identidade empresarial verificada</span><span>Acesso restrito à organização</span><span>Visibilidade sobre solicitações</span></div></div>
+    <div class="form-panel"><h2>Entrar na sua conta</h2><p>Utilize o e-mail e a senha cadastrados.</p>
+      <form id="login-form" class="form-grid">
+        <label class="field field--wide">E-mail<input name="email" type="email" required autocomplete="email" /></label>
+        <label class="field field--wide">Senha<input name="password" type="password" required autocomplete="current-password" /></label>
+        <div id="login-feedback" class="form-feedback" role="status" aria-live="polite"></div>
+        <div class="form-submit"><a class="inline-link" href="/cadastro/">Ainda não tenho uma conta</a><button type="submit" class="button button--primary">Entrar <span aria-hidden="true">→</span></button></div>
+      </form>
+      <p style="margin-top:24px;margin-bottom:0;font-size:.77rem">Se precisar recuperar o acesso, entre em <a class="inline-link" href="/contato/">contato com a equipe</a>. A recuperação automatizada será habilitada após a homologação do serviço de e-mail.</p>
+    </div>
+  </div></section>
+</SiteLayout>
+<script>
+  const form = document.querySelector<HTMLFormElement>("#login-form");
+  const feedback = document.querySelector<HTMLElement>("#login-feedback");
+  form?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    if (!form || !feedback) return;
+    const data = new FormData(form);
+    const submit = form.querySelector<HTMLButtonElement>('button[type="submit"]');
+    if (submit) submit.disabled = true;
+    feedback.textContent = "Verificando credenciais…";
+    feedback.dataset.state = "info";
+    try {
+      const res = await fetch("/api/auth/login", { method: "POST", credentials: "same-origin", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: data.get("email"), password: data.get("password") }) });
+      const payload = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(payload.message ?? "Credenciais inválidas.");
+      window.location.assign("/painel/");
+    } catch (error) {
+      feedback.textContent = error instanceof Error ? error.message : "Não foi possível entrar.";
+      feedback.dataset.state = "error";
+    } finally { if (submit) submit.disabled = false; }
+  });
+</script>

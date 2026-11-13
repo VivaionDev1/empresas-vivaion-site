@@ -1,0 +1,32 @@
+---
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import "../styles/global.css";
+
+interface Props {
+  title: string;
+  description: string;
+  noindex?: boolean;
+}
+const { title, description, noindex = false } = Astro.props;
+const isLive = import.meta.env.PUBLIC_SITE_LIVE === "true";
+---
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#052a3b" />
+    <meta name="description" content={description} />
+    <meta name="robots" content={noindex || !isLive ? "noindex, nofollow" : "index, follow"} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="canonical" href={new URL(Astro.url.pathname, "https://empresas.vivaion.com.br").toString()} />
+    <title>{title} | Vivaion Empresas</title>
+  </head>
+  <body>
+    <a href="#conteudo" class="skip-link">Ir para o conteúdo</a>
+    <Header />
+    <main id="conteudo"><slot /></main>
+    <Footer />
+  </body>
+</html>

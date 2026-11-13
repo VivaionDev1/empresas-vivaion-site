@@ -14,6 +14,10 @@ export const config = {
   catalogFeedUrl: process.env.CATALOG_FEED_URL ?? "https://vivaion.com.br/integracoes/empresas/catalogo/v1.json",
   allowLocalCatalog: process.env.ALLOW_LOCAL_CATALOG_FEED === "true",
   corporatePricingEnabled: process.env.CORPORATE_PRICING_ENABLED === "true",
+  mailRelayUrl: process.env.MAIL_RELAY_URL ?? "",
+  mailRelayAllowedHost: process.env.MAIL_RELAY_ALLOWED_HOST ?? "",
+  mailRelayBearerToken: process.env.MAIL_RELAY_BEARER_TOKEN ?? "",
+  mailFrom: process.env.MAIL_FROM ?? "",
   sessionDays: 7,
   isProduction: process.env.NODE_ENV === "production",
 };

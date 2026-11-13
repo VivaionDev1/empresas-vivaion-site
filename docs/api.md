@@ -27,3 +27,16 @@
 **Escritas:** exigem header `Origin` correspondente a `APP_ORIGIN`; backend não tem CORS liberado. Requisições do frontend utilizam `/api` no mesmo domínio. CSRF deve ser submetido a testes de segurança adicionais antes da produção.
 
 **Segurança:** confirmação matemática do CNPJ não concede status verificado; registros permanecem pendentes até revisão independente. Status de preços e produtos não cria pedido pagável. Não incluir informações confidenciais em respostas ou logs de erro.
+
+## Identidade e recuperação — iteração #2
+
+| Método | Rota | Requisito |
+| --- | --- | --- |
+| POST | /api/auth/request-verification | Envio genérico de novo link para conta ainda não verificada |
+| POST | /api/auth/verify-email | Token de 43 caracteres, 24h, uso único |
+| POST | /api/auth/forgot-password | Resposta genérica, sem expor existência da conta |
+| POST | /api/auth/reset-password | Token de uso único, 30min, revoga sessões |
+
+A API não registra, devolve em JSON ou imprime em logs tokens de e-mail e recuperação. Tokens são armazenados somente com hash SHA-256. A saída de e-mails é um relay HTTPS configurável (ver `docs/email-relay.md`) e um coletor estritamente de testes quando `NODE_ENV=test`.
+
+É proibido ativar uma conta por mera digitação do CNPJ. `companies.status` permanece `pending` até a verificação empresarial independente.

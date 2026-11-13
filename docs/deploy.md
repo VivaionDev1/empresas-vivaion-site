@@ -49,3 +49,9 @@ Requer módulos proxy, proxy_http e ssl. Configure HTTP -> HTTPS, HSTS apenas ap
 O backend deve ficar inacessível pela rede pública e somente pelo proxy local. Nunca servir `backend/.env`, `frontend/src` ou migrations via DocumentRoot.
 
 Não ativar `PUBLIC_SITE_LIVE` antes de revisão editorial e acessibilidade. Políticas comerciais, checkout Eduzz, webhook e concessão de vagas permanecem desativados. Backups e restauração precisam ser testados, sem afetar sistemas existentes.
+
+## Envio transacional de e-mail
+
+A identidade por e-mail exige `MAIL_RELAY_URL`, `MAIL_RELAY_BEARER_TOKEN`, `MAIL_FROM` devidamente configurados, com provedor e domínio aprovados. Sem eles, endpoints de cadastro, reenvio e recuperação ficam indisponíveis com erro 503. Configurar na API, **fora do webroot e do repositório**. Ver `docs/email-relay.md`.
+
+Antes das migrações, comparar o nome do banco com o padrão `vivaion_empresas*`; confirmar que as novas restrições compostas da migração 003 não apontem para registros legados inconsistentes. Não aplicar migrações em UNYOM, na Área do Aluno ou em outros bancos.

@@ -1,34 +1,12 @@
 import assert from "node:assert/strict";
 import { after, test } from "node:test";
-import { randomInt, randomUUID } from "node:crypto";
+import { randomUUID } from "node:crypto";
 import request from "supertest";
 import { app } from "../../src/app.ts";
 import { pool } from "../../src/db.ts";
+import { makeCnpj, origin, register } from "./helpers.ts";
 
 after(async () => { await pool.end(); });
-const origin = "http://localhost:4321";
-
-function makeCnpj(): string {
-  const raw = Array.from({length:12}, () => String(randomInt(0,10))).join("");
-  const d = (digits: string, weights: number[]) => {
-    const r = weights.reduce((sum, weight, idx) => sum + (digits.charCodeAt(idx) - 48) * weight, 0) % 11;
-    return r < 2 ? 0 : 11 - r;
-  };
-  const first = d(raw, [5,4,3,2,9,8,7,6,5,4,3,2]);
-  return raw + first + d(raw + first, [6,5,4,3,2,9,8,7,6,5,4,3,2]);
-}
-
-async function register(companyName: string) {
-  const email = randomUUID() + "@example.test";
-  const response = await request(app).post("/api/auth/register").set("Origin", origin).send({
-    companyName, cnpj: makeCnpj(), fullName: "Pessoa Responsavel",
-    email, password: "UmaSenhaForte123456!?"
-  });
-  assert.equal(response.status, 201, JSON.stringify(response.body));
-  const cookies = response.headers["set-cookie"];
-  assert.ok(Array.isArray(cookies) && cookies.length > 0);
-  return { cookie: String(cookies[0]).split(";")[0], email, companyName };
-}
 
 test("companies cannot see each other's membership, orders or sessions", async () => {
   const a = await register("Empresa A Desenvolvimento");
@@ -102,3 +80,4 @@ test("rejects invalid CNPJ and cross-origin registration", async () => {
   const forbidden = await request(app).post("/api/auth/register").set("Origin","https://bad.example").send({...body,cnpj:makeCnpj()});
   assert.equal(forbidden.status,403);
 });
+

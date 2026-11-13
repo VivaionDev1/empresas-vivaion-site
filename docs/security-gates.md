@@ -21,3 +21,13 @@
 Flags padrão: `CORPORATE_PRICING_ENABLED=false` e `PUBLIC_SITE_LIVE=false`.
 
 O simples cadastro de empresa não habilita preços, benefícios, matrícula ou checkout. Não há integração real com Eduzz ou Área do Aluno neste commit.
+
+## Identidade por e-mail (iteracao #2)
+
+- [x] Fluxo de confirmacao de e-mail com token hash SHA-256, expiracao e uso unico.
+- [x] Bloqueio de sessao para contas sem e-mail confirmado.
+- [x] Redefinicao de senha com revogacao de sessoes.
+- [x] Restrições SQL cruzadas entre empresa, pedido, vagas e colaborador.
+- [ ] Provedor de envio de e-mail validado, reputacao de dominio (SPF/DKIM/DMARC) e tratamento de falhas.
+- [ ] Verificacao humana da representacao legal do CNPJ e do direito de administrar a empresa.
+- [ ] MFA, monitoramento de tentativas distribuidas e fluxo de revogacao administrativa.

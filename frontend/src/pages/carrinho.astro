@@ -54,22 +54,22 @@ import SiteLayout from "../layouts/SiteLayout.astro";
     } catch { return []; }
   }
   function save(lines: CartLine[]) { localStorage.setItem(key, JSON.stringify(lines)); localStorage.removeItem("vivaion-empresas-selection-v1"); window.dispatchEvent(new Event("vivaion:cart-updated")); render(); }
-  function applicableTier(quantity: number) { return tiers.filter((tier) => quantity >= tier.minimumSeats).sort((a,b)=>b.discountBps-a.discountBps)[0]?.discountBps ?? 1000; }
+  function applicableTier(quantity: number) { return tiers.filter((tier) => quantity >= tier.minimumSeats).sort((a,b)=>b.discountBps-a.discountBps)[0]?.discountBps ?? 0; }
   function render() {
     if (!itemsNode) return;
     const lines = readCart(); const quantity = lines.reduce((sum,line)=>sum+line.quantity,0);
     if (unitsNode) unitsNode.textContent = String(quantity);
     if (emptyNode) emptyNode.hidden = lines.length > 0;
     if (itemsNode) itemsNode.hidden = lines.length === 0;
-    if (proposalLink) { proposalLink.setAttribute("aria-disabled", String(lines.length === 0)); proposalLink.classList.toggle("is-disabled", lines.length === 0); }
+    if (proposalLink) { proposalLink.href="/solicitar-proposta/"; proposalLink.setAttribute("aria-disabled", String(lines.length === 0)); proposalLink.classList.toggle("is-disabled", lines.length === 0); }
     itemsNode.replaceChildren();
     for (const line of lines) {
       const product = products.get(line.productId); const price = prices.get(line.productId);
-      if (!product || !price) continue;
+      if (!product) continue;
       const row = document.createElement("article"); row.className = "cart-item";
       const info = document.createElement("div"); info.className = "cart-item__info";
       const title = document.createElement("a"); title.href = `/cursos/${product.kind}/${product.slug}/`; title.textContent = product.title;
-      const base = document.createElement("small"); base.textContent = `${price.priceLabel}: ${money(price.unitPriceCents)} por unidade`;
+      const base = document.createElement("small"); base.textContent = price ? `${price.priceLabel}: ${money(price.unitPriceCents)} por unidade` : "Preço e condições sob consulta";
       info.append(title, base);
       const control = document.createElement("div"); control.className = "cart-quantity";
       const decrease = document.createElement("button"); decrease.type = "button"; decrease.textContent = "−"; decrease.setAttribute("aria-label",`Diminuir ${product.title}`); decrease.disabled = line.quantity <= 1;
@@ -80,8 +80,8 @@ import SiteLayout from "../layouts/SiteLayout.astro";
       control.append(decrease,number,increase);
       const lineTotal = document.createElement("strong"); lineTotal.className = "cart-item__total";
       const lineDiscount = applicableTier(quantity);
-      const discountedLine = Math.round(price.unitPriceCents*(10000-lineDiscount)/10000)*line.quantity;
-      lineTotal.textContent = money(discountedLine);
+      const discountedLine = price ? Math.round(price.unitPriceCents*(10000-lineDiscount)/10000)*line.quantity : null;
+      lineTotal.textContent = discountedLine===null ? "Sob consulta" : money(discountedLine);
       const remove = document.createElement("button"); remove.type = "button"; remove.className = "cart-item__remove"; remove.textContent = "Remover"; remove.addEventListener("click",()=>save(lines.filter((value)=>value.productId!==line.productId)));
       const actions = document.createElement("div"); actions.className = "cart-item__actions"; actions.append(control,lineTotal,remove);
       row.append(info,actions); itemsNode.append(row);
@@ -91,6 +91,14 @@ import SiteLayout from "../layouts/SiteLayout.astro";
   async function updateQuote(lines: CartLine[], quantity: number) {
     const token = ++quoteToken;
     if (!quantity) { if(discountNode)discountNode.textContent="—";if(subtotalNode)subtotalNode.textContent="—";if(totalNode)totalNode.textContent="—";if(noteNode)noteNode.textContent="Adicione unidades para ver as faixas de desconto.";if(errorNode)errorNode.hidden=true;return; }
+    if (!tiers.length || lines.some(line=>!prices.has(line.productId))) {
+      if (discountNode) discountNode.textContent="—";
+      if (subtotalNode) subtotalNode.textContent="—";
+      if (totalNode) totalNode.textContent="Sob consulta";
+      if (noteNode) noteNode.textContent="Nossa equipe confirmará preços e condições antes de apresentar qualquer proposta.";
+      if (errorNode) errorNode.hidden=true;
+      return;
+    }
     const percent = applicableTier(quantity);
     if (discountNode) discountNode.textContent = `${(percent/100).toLocaleString("pt-BR")}%`;
     const subtotal = lines.reduce((sum,line)=>sum+(prices.get(line.productId)?.unitPriceCents??0)*line.quantity,0);
@@ -113,11 +121,15 @@ import SiteLayout from "../layouts/SiteLayout.astro";
   async function load() {
     try {
       const [catalogResponse, pricingResponse] = await Promise.all([fetch("/api/catalog"),fetch("/api/commercial/catalog")]);
-      if(!catalogResponse.ok||!pricingResponse.ok)throw new Error("Os preços ou o catálogo estão temporariamente indisponíveis.");
-      const catalog=await catalogResponse.json();const pricing=await pricingResponse.json();
+      if (!catalogResponse.ok) throw new Error("O catálogo está temporariamente indisponível.");
+      const catalog=await catalogResponse.json();
       products=new Map((catalog.products as Product[]).map((product)=>[product.id,product]));
-      prices=new Map((pricing.products as Price[]).map((price)=>[price.productId,price]));tiers=pricing.policy.tiers as Tier[];
-      const lines=readCart().filter((line)=>products.has(line.productId)&&prices.has(line.productId));
+      if (pricingResponse.ok) {
+        const pricing=await pricingResponse.json();
+        prices=new Map((pricing.products as Price[]).map((price)=>[price.productId,price]));
+        tiers=pricing.policy.tiers as Tier[];
+      } else { prices.clear(); tiers=[]; }
+      const lines=readCart().filter((line)=>products.has(line.productId));
       const normalized=JSON.stringify(lines);
       if(normalized!==localStorage.getItem(key))save(lines);else render();
     } catch(error) { if(errorNode){errorNode.textContent=error instanceof Error?error.message:"Falha ao carregar o carrinho.";errorNode.hidden=false;} }

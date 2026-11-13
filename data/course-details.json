@@ -1,0 +1,1893 @@
+{
+  "schemaVersion": 1,
+  "source": "official Vivaion public course pages",
+  "generatedAt": "2026-11-11T14:40:28.017134+00:00",
+  "courses": {
+    "pos:cmna": {
+      "modules": [
+        {
+          "title": "Neurodesenvolvimento, comunicação e prática baseada em evidências",
+          "description": "Compreender a comunicação multimodal como eixo transversal para diferentes perfis do neurodesenvolvimento."
+        },
+        {
+          "title": "Avaliação interdisciplinar e perfis de comunicação e aprendizagem",
+          "description": "Organizar a leitura interdisciplinar do caso, com responsabilidades profissionais claras."
+        },
+        {
+          "title": "Comunicação além da fala: funções, linguagem e autonomia",
+          "description": "Analisar a comunicação funcional para além da quantidade de palavras faladas."
+        },
+        {
+          "title": "CAA individualizada: acesso, recursos e planejamento",
+          "description": "Escolher, implementar e acompanhar recursos de comunicação alternativa com critério."
+        },
+        {
+          "title": "Intervenções naturalísticas, brincadeira e aprendizagem em interação",
+          "description": "Aplicar princípios de interação e aprendizagem em atividades significativas."
+        },
+        {
+          "title": "Ecolalia, fala roteirizada e compreensão da linguagem",
+          "description": "Analisar linguagem em contexto com rigor clínico e científico."
+        },
+        {
+          "title": "Libras, gestos e sinais na comunicação multimodal",
+          "description": "Diferenciar língua, gestos, sinais manuais e outros recursos de comunicação."
+        },
+        {
+          "title": "Mediação multimodal em histórias, brincadeiras e rotinas",
+          "description": "Construir experiências acessíveis por diferentes canais de comunicação e aprendizagem."
+        },
+        {
+          "title": "Regulação, comportamento e barreiras à participação",
+          "description": "Relacionar comportamento, comunicação, contexto e regulação sem simplificações."
+        },
+        {
+          "title": "Avaliação da aprendizagem e acessibilidade das respostas",
+          "description": "Avaliar a aprendizagem respeitando os limites da atuação pedagógica e psicopedagógica."
+        },
+        {
+          "title": "Alfabetização e letramento com necessidades complexas de comunicação",
+          "description": "Planejar práticas de leitura e escrita com acessibilidade comunicacional."
+        },
+        {
+          "title": "PEI, currículo e avaliação: do documento à aprendizagem",
+          "description": "Transformar avaliação em planejamento educacional individualizado e acompanhável."
+        },
+        {
+          "title": "Escola acessível: comunicação na sala, no recreio e no AEE",
+          "description": "Identificar e reduzir barreiras comunicacionais nos diversos espaços da escola."
+        },
+        {
+          "title": "Famílias e parceiros de comunicação: da orientação ao cotidiano",
+          "description": "Qualificar a parceria com famílias e interlocutores na implementação da comunicação."
+        },
+        {
+          "title": "Adolescência, autonomia e participação social",
+          "description": "Ampliar a comunicação e a participação nas demandas próprias da adolescência."
+        },
+        {
+          "title": "Tecnologias assistivas e IA para recursos acessíveis",
+          "description": "Utilizar tecnologias contemporâneas com acessibilidade, critério e ética."
+        },
+        {
+          "title": "Integração clínica-escola-família e avaliação de resultados",
+          "description": "Integrar os eixos do curso em planos compartilhados e avaliações de resultado."
+        }
+      ],
+      "professors": [
+        {
+          "name": "Fábio dos Santos Oliveira"
+        },
+        {
+          "name": "Janaine Santos de Assis Souza"
+        },
+        {
+          "name": "Rômulo Porto da Silva"
+        }
+      ]
+    },
+    "pos:cali": {
+      "modules": [
+        {
+          "title": "Fundamentos Contemporâneos da CAA",
+          "description": "Objetivo do módulo Aprofundar fundamentos contemporâneos da caa com raciocínio clínico, leitura do perfil comunicativo e decisões orientadas à participação."
+        },
+        {
+          "title": "Avaliação em CAA e Feature Matching",
+          "description": "Objetivo do módulo Aprofundar avaliação em caa e feature matching com raciocínio clínico, leitura do perfil comunicativo e decisões orientadas à participação."
+        },
+        {
+          "title": "Sistemas Robustos, Vocabulário e Organização da Linguagem",
+          "description": "Objetivo do módulo Aprofundar sistemas robustos, vocabulário e organização da linguagem com raciocínio clínico, leitura do perfil comunicativo e decisões orientadas à participação."
+        },
+        {
+          "title": "Ecolalia, Processamento Gestalt e Analítico e CAA",
+          "description": "Objetivo do módulo Aprofundar ecolalia, processamento gestalt e analítico e caa com raciocínio clínico, leitura do perfil comunicativo e decisões orientadas à participação."
+        },
+        {
+          "title": "Bases da CAA com foco em Modelagem",
+          "description": "Objetivo do módulo Aprofundar bases da caa com foco em modelagem com raciocínio clínico, leitura do perfil comunicativo e decisões orientadas à participação."
+        },
+        {
+          "title": "Acesso Motor, Visual e Tecnologias em CAA",
+          "description": "Objetivo do módulo Aprofundar acesso motor, visual e tecnologias em caa com raciocínio clínico, leitura do perfil comunicativo e decisões orientadas à participação."
+        },
+        {
+          "title": "CAA, Alfabetização, Participação e Autonomia",
+          "description": "Objetivo do módulo Aprofundar caa, alfabetização, participação e autonomia com raciocínio clínico, leitura do perfil comunicativo e decisões orientadas à participação."
+        },
+        {
+          "title": "Família, Parceiros de Comunicação, Escola e Generalização",
+          "description": "Objetivo do módulo Aprofundar família, parceiros de comunicação, escola e generalização com raciocínio clínico, leitura do perfil comunicativo e decisões orientadas à participação."
+        },
+        {
+          "title": "CAA Além do Autismo: Casos Complexos e CAA na Vida Adulta",
+          "description": "Objetivo do módulo Aprofundar caa além do autismo: casos complexos e caa na vida adulta com raciocínio clínico, leitura do perfil comunicativo e decisões orientadas à participação."
+        },
+        {
+          "title": "Clínica Avançada em CAA: Resultados, Reavaliação e Grand Rounds",
+          "description": "Objetivo do módulo Aprofundar clínica avançada em caa: resultados, reavaliação e grand rounds com raciocínio clínico, leitura do perfil comunicativo e decisões orientadas à participação."
+        }
+      ],
+      "professors": [
+        {
+          "name": "Juliana Rocha"
+        },
+        {
+          "name": "Ana Maria Philipps dos Santos"
+        },
+        {
+          "name": "Claudiane Marques de Campos"
+        },
+        {
+          "name": "Deyse Cardoso de Oliveira Braga"
+        },
+        {
+          "name": "Michelle Apellanis Borges"
+        },
+        {
+          "name": "Renato Lyuiti Kinoshita"
+        }
+      ]
+    },
+    "pos:saude-mental-riscos-psicossociais": {
+      "modules": [
+        {
+          "title": "Trabalho, Saúde Mental e Comportamento Organizacional Contemporâneo",
+          "description": "Objetivo do módulo Compreender as relações entre trabalho, saúde mental e comportamento organizacional no contexto contemporâneo."
+        },
+        {
+          "title": "NR-1, NR-17, GRO e PGR: Fundamentos Regulatórios",
+          "description": "Objetivo do módulo Situar os fundamentos regulatórios que orientam a gestão de riscos relacionados ao trabalho."
+        },
+        {
+          "title": "Modelos Científicos de Riscos Psicossociais",
+          "description": "Objetivo do módulo Analisar modelos científicos para leitura de fatores psicossociais relacionados ao trabalho."
+        },
+        {
+          "title": "Diagnóstico Organizacional e Avaliação de Fatores Psicossociais",
+          "description": "Objetivo do módulo Organizar uma leitura diagnóstica que combine fontes, métodos e contexto organizacional."
+        },
+        {
+          "title": "Avaliação de Riscos, Inventário e Plano de Ação",
+          "description": "Objetivo do módulo Relacionar achados à priorização de riscos, inventários e planos de ação responsáveis."
+        },
+        {
+          "title": "Liderança, Segurança Psicológica e Relações de Trabalho",
+          "description": "Objetivo do módulo Examinar como liderança, comunicação e relações de trabalho podem proteger ou ampliar riscos."
+        },
+        {
+          "title": "Ciência do Comportamento e OBM nas Organizações",
+          "description": "Objetivo do módulo Aplicar princípios da ciência do comportamento à análise de práticas e sistemas organizacionais."
+        },
+        {
+          "title": "Intervenções Organizacionais e Programas de Saúde Mental",
+          "description": "Objetivo do módulo Planejar respostas organizacionais coerentes com os riscos identificados e as evidências disponíveis."
+        },
+        {
+          "title": "Indicadores, Governança, Ética e Consultoria Organizacional",
+          "description": "Objetivo do módulo Utilizar indicadores, princípios de governança e limites éticos para qualificar decisões."
+        },
+        {
+          "title": "Futuro do Trabalho e Aplicação Integrada",
+          "description": "Objetivo do módulo Integrar os conteúdos em situações do trabalho contemporâneo e em decisões tecnicamente fundamentadas."
+        },
+        {
+          "title": "Gestão Estratégica de Pessoas e Riscos Psicossociais",
+          "description": "Objetivo do módulo Conectar gestão de pessoas, prevenção e riscos psicossociais em uma perspectiva estratégica."
+        }
+      ],
+      "professors": [
+        {
+          "name": "Ana Clara dos Santos Costa"
+        },
+        {
+          "name": "Flávia Ribeiro Nunes da Costa"
+        },
+        {
+          "name": "Daiani Barboza"
+        },
+        {
+          "name": "Jonas Laercio Graffunder"
+        },
+        {
+          "name": "Marcela Bento Ferreira"
+        },
+        {
+          "name": "Gisele Rosa Julião Silva"
+        },
+        {
+          "name": "Fernanda Motta d'Avila"
+        },
+        {
+          "name": "Cristiane Westrup"
+        }
+      ]
+    },
+    "pos:especializacao-caa-grv": {
+      "modules": [
+        {
+          "title": "Fundamentos da Comunicação Aumentativa e Alternativa (CAA)"
+        },
+        {
+          "title": "Princípios Básicos da Clínica de Comunicação"
+        },
+        {
+          "title": "Avaliação em CAA"
+        },
+        {
+          "title": "Processadores Analíticos e Processadores Gestalt de Linguagem"
+        },
+        {
+          "title": "Processadores Gestalt de Linguagem e Processo de Planejamento com Família"
+        },
+        {
+          "title": "Planejamento Individualizado e Adaptado para CAA"
+        },
+        {
+          "title": "Suporte de CAA para Doenças Neurodegenerativas"
+        },
+        {
+          "title": "CAA e Treino de Habilidades Sociais"
+        },
+        {
+          "title": "Avaliação e Intervenção em Perfis Gestálticos"
+        },
+        {
+          "title": "Implementação de Sistemas de CAA em Contexto Clínico e Educacional"
+        },
+        {
+          "title": "Autismo e Estrutura Diagnóstica"
+        },
+        {
+          "title": "Intervenção em CAA para Pacientes com TEA"
+        },
+        {
+          "title": "CAA para Transtornos de Desenvolvimento da Linguagem"
+        },
+        {
+          "title": "Treinamento de Parceiros da Comunicação"
+        },
+        {
+          "title": "Expansão da Linguagem e Aplicação Clínica"
+        },
+        {
+          "title": "Intervenção em Pacientes com Paralisia Cerebral (PC)"
+        },
+        {
+          "title": "CAA em Deficiência Intelectual e Múltipla"
+        },
+        {
+          "title": "Intervenção em Afasia e Distúrbios Pós-AVC"
+        },
+        {
+          "title": "Metodologia de Pesquisa: Olhar Científico e Investigativo"
+        },
+        {
+          "title": "Bônus — Uso da Libras como Recurso de Comunicação e na CAA"
+        }
+      ],
+      "professors": [
+        {
+          "name": "Karla Andrea Corrente de França"
+        },
+        {
+          "name": "Caroline Peres"
+        },
+        {
+          "name": "Fernanda Segala"
+        },
+        {
+          "name": "Ana Maria Philipps dos Santos"
+        },
+        {
+          "name": "Juliana Fernandes Araújo Rocha"
+        },
+        {
+          "name": "Carla Vidal Abrão"
+        },
+        {
+          "name": "Géssica Peres"
+        },
+        {
+          "name": "Jaqueline Oliveira"
+        },
+        {
+          "name": "Sonia Cristina Poltronieri Mendonça"
+        },
+        {
+          "name": "Janaine Santos de Assis Souza"
+        }
+      ]
+    },
+    "pos:tccm": {
+      "modules": [
+        {
+          "title": "TCC contemporânea e prática baseada em evidências",
+          "description": "Objetivo do módulo Atualizar os fundamentos e os principais movimentos contemporâneos da TCC, integrando prática baseada em evidências, protocolos, abordagens transdiagnósticas, terapias contextuais, formulação baseada em processos e tomada de decisão clínica."
+        },
+        {
+          "title": "Avaliação, diagnóstico diferencial e formulação de casos",
+          "description": "Objetivo do módulo Desenvolver avaliação clínica orientada por hipóteses, diagnóstico diferencial, análise de risco, formulação cognitiva e funcional, definição de metas e plano terapêutico."
+        },
+        {
+          "title": "Intervenções fundamentais da TCC",
+          "description": "Objetivo do módulo Desenvolver competências nucleares da TCC e selecionar intervenções comportamentais, cognitivas, contextuais e relacionais a partir da formulação clínica."
+        },
+        {
+          "title": "Processos transdiagnósticos, mensuração e casos complexos",
+          "description": "Objetivo do módulo Reconhecer processos transdiagnósticos, acompanhar sintomas e funcionamento, utilizar medidas para tomada de decisão e reformular tratamentos diante de não resposta ou deterioração."
+        },
+        {
+          "title": "Ansiedade, depressão, autocobrança e sobrecarga na clínica com mulheres",
+          "description": "Objetivo do módulo Aplicar a TCC às apresentações contemporâneas de ansiedade, depressão, ruminação, perfeccionismo, culpa, esgotamento e sobrecarga, integrando fatores individuais, ocupacionais, familiares e sociais."
+        },
+        {
+          "title": "Relacionamentos, violência, controle coercitivo e trauma",
+          "description": "Objetivo do módulo Desenvolver avaliação e intervenção em relações abusivas, controle coercitivo, diferentes formas de violência e trauma, com atenção à segurança, autonomia, documentação, rede de proteção e tratamentos focados em trauma."
+        },
+        {
+          "title": "Ciclo menstrual, fertilidade e saúde mental perinatal",
+          "description": "Objetivo do módulo Compreender as relações entre ciclo menstrual, saúde reprodutiva e saúde mental e desenvolver avaliação, diagnóstico diferencial e intervenções cognitivo-comportamentais adaptadas ao período reprodutivo e perinatal."
+        },
+        {
+          "title": "Menopausa, sono, sexualidade e meia-idade",
+          "description": "Objetivo do módulo Integrar uma compreensão biopsicossocial da perimenopausa, menopausa e meia-idade com intervenções relacionadas a sono, sintomas vasomotores, humor, sexualidade, identidade e transições de papel."
+        },
+        {
+          "title": "Neurodivergência, corpo e vida contemporânea das mulheres",
+          "description": "Objetivo do módulo Reconhecer apresentações de TDAH e autismo frequentemente subidentificadas em mulheres, desenvolver adaptações neuroafirmativas da TCC e integrar demandas relacionadas ao corpo, alimentação, redes sociais, sexualidade e dor."
+        },
+        {
+          "title": "Integração da clínica cognitivo-comportamental com mulheres",
+          "description": "Objetivo do módulo Integrar avaliação, diagnóstico diferencial, formulação, risco, intervenções, mensuração, ética, tecnologia e cuidado multiprofissional na condução de casos complexos."
+        }
+      ],
+      "professors": [
+        {
+          "name": "Maria Verônica Zink"
+        },
+        {
+          "name": "Ilana Luiz Fermann"
+        },
+        {
+          "name": "Camila Lima de Carvalho"
+        },
+        {
+          "name": "Rafael Lopes"
+        },
+        {
+          "name": "Priscila de Camargo Palma"
+        },
+        {
+          "name": "Fernanda Martins Pereira Hildebrandt"
+        },
+        {
+          "name": "Malu Gouveia"
+        }
+      ]
+    },
+    "pos:p-fala": {
+      "modules": [
+        {
+          "title": "Bases Neuroanatômicas e Motoras da Fala"
+        },
+        {
+          "title": "Avaliação Fonológica"
+        },
+        {
+          "title": "Fala e Motricidade Orofacial"
+        },
+        {
+          "title": "Fissura Labiopalatina e Disfunção Velofaríngea"
+        },
+        {
+          "title": "Transtornos da Fluência"
+        },
+        {
+          "title": "Transtornos dos Sons da Fala"
+        },
+        {
+          "title": "Transtornos Motores de Fala e Apraxia de Fala na Infância"
+        },
+        {
+          "title": "Disartria"
+        },
+        {
+          "title": "Intervenção Baseada em Evidência I: DTTC"
+        },
+        {
+          "title": "Intervenção Baseada em Evidência II: ReST"
+        },
+        {
+          "title": "Intervenção Baseada em Evidência III: Ultrassonografia"
+        },
+        {
+          "title": "CAA Além do Autismo"
+        },
+        {
+          "title": "Pesquisas e Avanços Científicos"
+        },
+        {
+          "title": "Tecnologias e Teleatendimento"
+        },
+        {
+          "title": "Liderança, Empreendedorismo e Marketing em Fonoaudiologia"
+        },
+        {
+          "title": "Metodologia de Pesquisa: Olhar Científico e Investigativo"
+        }
+      ],
+      "professors": [
+        {
+          "name": "Aline Mara"
+        },
+        {
+          "name": "Flora Taube Manicardi"
+        },
+        {
+          "name": "Maria Gabriela Cavalheiro"
+        },
+        {
+          "name": "Cássio Esperandino"
+        },
+        {
+          "name": "Izabelle Veríssimo"
+        },
+        {
+          "name": "Juliana Lupo"
+        },
+        {
+          "name": "Ana Philips"
+        },
+        {
+          "name": "Tamiris Silva Akbart Melandes"
+        },
+        {
+          "name": "Melina Whitaker"
+        },
+        {
+          "name": "Sonia Cristina P. Mendonça"
+        }
+      ]
+    },
+    "pos:adpt": {
+      "modules": [
+        {
+          "title": "Primeiros 1.000 Dias e Construção da Alimentação",
+          "description": "Objetivo do módulo Compreender o desenvolvimento da alimentação infantil e construir raciocínio clínico diferencial entre variações típicas, seletividade alimentar, Distúrbio Alimentar Pediátrico (PFD/DAP), disfagia e suspeita de TARE."
+        },
+        {
+          "title": "Diagnóstico Diferencial: Distúrbios Comportamentais, Psicogênicos e Sensoriais",
+          "description": "Objetivo do módulo Diferenciar os principais distúrbios comportamentais, psicogênicos e sensoriais relacionados à alimentação pediátrica, reconhecendo critérios clínicos, sobreposições, sinais de alerta e necessidades de encaminhamento."
+        },
+        {
+          "title": "Avaliação Clínica 360 Graus: Orofacial, Sensorial, Funcional",
+          "description": "Objetivo do módulo Desenvolver uma avaliação abrangente, mensurável e orientada por hipóteses, integrando domínios médicos, nutricionais, habilidades alimentares e aspectos psicossociais."
+        },
+        {
+          "title": "Psiquiatria em Distúrbios de Alimentação Pediátricos",
+          "description": "Objetivo do módulo Compreender a contribuição da psiquiatria para diagnóstico e manejo dos distúrbios de alimentação pediátricos, reconhecendo comorbidades, critérios de gravidade, possibilidades farmacológicas e limites de atuação profissional."
+        },
+        {
+          "title": "Distúrbios Médicos Associados: DRGE, Alergias e Intolerâncias",
+          "description": "Objetivo do módulo Reconhecer sinais de alerta médicos que podem sustentar recusa, medo ou seletividade e estruturar encaminhamentos e atuação interdisciplinar de forma segura."
+        },
+        {
+          "title": "Avaliação Estrutural e Funcional: Respiração, Oclusão e Instrumentação",
+          "description": "Objetivo do módulo Integrar avaliação estrutural e funcional dos sistemas respiratório, orofacial e oclusal aos métodos instrumentais relevantes para investigação de alimentação e deglutição pediátricas."
+        },
+        {
+          "title": "Disfagia Pediátrica: Diagnóstico, Classificação e Terapia Avançada",
+          "description": "Objetivo do módulo Aprofundar diagnóstico, classificação e tratamento da disfagia pediátrica, integrando segurança, eficiência, exames instrumentais e planejamento terapêutico avançado."
+        },
+        {
+          "title": "Neurodivergência e Distúrbios de Alimentação: Mecanismos, Diagnóstico e Regulação",
+          "description": "Objetivo do módulo Compreender os mecanismos que relacionam neurodivergência e distúrbios de alimentação, integrando achados sensoriais, motores, comportamentais, comunicacionais e regulatórios."
+        },
+        {
+          "title": "Distúrbios Comportamentais e Traumáticos: Diagnóstico e Terapia Integrada",
+          "description": "Objetivo do módulo Diferenciar distúrbios comportamentais e traumáticos relacionados à alimentação, integrando diagnóstico, mecanismos de medo e esquiva e estratégias terapêuticas multiprofissionais."
+        },
+        {
+          "title": "Manejo Clínico Avançado: Estratégias Multiprofissionais e Integradas",
+          "description": "Objetivo do módulo Integrar estratégias avançadas de manejo clínico a partir da contribuição de diferentes profissões, selecionando intervenções de acordo com o mecanismo do problema e os objetivos funcionais do paciente e da família."
+        },
+        {
+          "title": "Alimentação Alternativa em Distúrbios Graves: Sonda, Gastrostomia e Prognóstico",
+          "description": "Objetivo do módulo Desenvolver raciocínio clínico para pacientes pediátricos dependentes de alimentação enteral ou com distúrbios graves, integrando segurança, prognóstico, prontidão e possibilidades de transição para via oral."
+        },
+        {
+          "title": "Grand Rounds: Raciocínio Clínico Integrado, Comunicação e Ética",
+          "description": "Objetivo do módulo Consolidar o raciocínio clínico integrado por meio de casos complexos, articulando diagnóstico, priorização, comunicação interdisciplinar, ética e tomada de decisão compartilhada."
+        }
+      ],
+      "professors": [
+        {
+          "name": "Ana Koerich"
+        },
+        {
+          "name": "Fernanda Ferreira Correa"
+        },
+        {
+          "name": "Aline Rosler Grings Manfro"
+        },
+        {
+          "name": "Melissa Pascoal"
+        }
+      ]
+    },
+    "pos:posdqdc": {
+      "modules": [
+        {
+          "title": "Fundamentos da Dependência Química"
+        },
+        {
+          "title": "Avaliação Clínica e Diagnóstico"
+        },
+        {
+          "title": "Comorbidades Psiquiátricas"
+        },
+        {
+          "title": "Abordagem Motivacional e Intervenções Breves"
+        },
+        {
+          "title": "Ferramentas Práticas de Manejo"
+        },
+        {
+          "title": "Dependências Comportamentais"
+        },
+        {
+          "title": "Atenção Psicossocial e Redes de Cuidado"
+        },
+        {
+          "title": "Projeto Terapêutico Singular e Reabilitação Psicossocial"
+        },
+        {
+          "title": "Trabalho com Famílias e Comunidades"
+        },
+        {
+          "title": "Ética, Direitos Humanos e Mentorias Clínicas"
+        }
+      ],
+      "professors": [
+        {
+          "name": "Richard Alecsander Reichert"
+        },
+        {
+          "name": "Daisy Cristina Rodrigues"
+        },
+        {
+          "name": "Angélica Abril"
+        },
+        {
+          "name": "Fabiana da Costa Oliveira"
+        },
+        {
+          "name": "Simone Martin Oliani"
+        },
+        {
+          "name": "Caroline Defaveri"
+        },
+        {
+          "name": "Viviane Cristina de Oliveira Gramagol"
+        }
+      ]
+    },
+    "pos:vdmo-2": {
+      "modules": [
+        {
+          "title": "Fundamentos e Disfagia"
+        },
+        {
+          "title": "Motricidade Orofacial"
+        },
+        {
+          "title": "Voz e Expressividade"
+        },
+        {
+          "title": "Integração e Metodologia"
+        },
+        {
+          "title": "Fundamentos e Interrelações em Voz, Motricidade Orofacial e Deglutição",
+          "description": "Objetivo do módulo Compreender fundamentos teóricos, anatomia, fisiologia, avaliação e intervenção em voz, motricidade orofacial e deglutição, analisando as interrelações entre esses sistemas para uma prática clínica integrada."
+        },
+        {
+          "title": "Fundamentos e Avaliação da Disfagia",
+          "description": "Objetivo do módulo Aprofundar fundamentos dos distúrbios da deglutição e desenvolver raciocínio clínico para avaliação e definição de condutas terapêuticas em disfagia."
+        },
+        {
+          "title": "Disfagia Pediátrica na Prática Clínica - Avaliação, Conduta e Interdisciplinaridade",
+          "description": "Objetivo do módulo Compreender a disfagia pediátrica de forma ampla e baseada em evidências, do reconhecimento clínico ao planejamento terapêutico centrado na criança e em sua família."
+        },
+        {
+          "title": "Reabilitação em Disfagia",
+          "description": "Objetivo do módulo Aplicar estratégias terapêuticas e reabilitadoras baseadas em evidências para diferentes tipos de disfagia e contextos de cuidado, incluindo cenários hospitalares, neurológicos, oncológicos, traqueostomia e cuidados paliativos."
+        },
+        {
+          "title": "Teoria em Motricidade Orofacial (I)",
+          "description": "Objetivo do módulo Aprofundar o estudo das funções miofuncionais orofaciais, dos protocolos de avaliação, do desenvolvimento craniofacial e da intervenção nos distúrbios miofuncionais orofaciais."
+        },
+        {
+          "title": "Avaliação e Manejo dos Freios Orais",
+          "description": "Objetivo do módulo Compreender anatomia e fisiologia da língua e do frênulo lingual, analisar protocolos de avaliação da anquiloglossia e discutir manejo clínico com fundamentação científica e visão interdisciplinar."
+        },
+        {
+          "title": "Teoria em Motricidade Orofacial (II)",
+          "description": "Objetivo do módulo Aprofundar os conceitos relacionados à fala e à motricidade orofacial, com ênfase em terapia de fala, fissura labiopalatina, raciocínio clínico e intervenção baseada em evidências."
+        },
+        {
+          "title": "Avaliação e Intervenção em Motricidade Orofacial (I)",
+          "description": "Objetivo do módulo Aprofundar avaliação e intervenção em motricidade orofacial em condições como distúrbios respiratórios do sono e paralisia facial, articulando protocolos, raciocínio clínico e interdisciplinaridade."
+        },
+        {
+          "title": "Avaliação e Intervenção em Motricidade Orofacial (II)",
+          "description": "Objetivo do módulo Aprofundar a atuação fonoaudiológica em estética facial, disfunções temporomandibulares e cirurgias ortognáticas, relacionando avaliação, fisiologia do exercício e reabilitação das funções orofaciais."
+        },
+        {
+          "title": "Tecnologias e Inovação Aplicadas à Motricidade Orofacial",
+          "description": "Objetivo do módulo Compreender técnicas, tecnologias e inovações aplicadas à avaliação, intervenção e monitoramento em motricidade orofacial, com leitura crítica das evidências disponíveis."
+        },
+        {
+          "title": "Avaliação e Intervenção das Disfonias",
+          "description": "Objetivo do módulo Aprofundar os fundamentos da produção vocal, a avaliação multidimensional e a intervenção nas disfonias comportamentais, orgânicas e neurológicas, integrando análise clínica e instrumental."
+        },
+        {
+          "title": "Distúrbios da Voz e Intervenções",
+          "description": "Objetivo do módulo Aprofundar alterações vocais e estratégias terapêuticas para reabilitação, relacionando diagnóstico laríngeo, qualidade vocal, fisiologia do exercício e diferentes contextos de atuação."
+        },
+        {
+          "title": "Comunicação, psicodinâmica vocal e expressividade: da avaliação à intervenção clínica",
+          "description": "Objetivo do módulo Integrar psicodinâmica vocal, comunicação humana e expressividade à prática clínica, desenvolvendo avaliação, planejamento terapêutico e intervenção sobre identidade vocal, prosódia, emoção e fatores psicossociais."
+        },
+        {
+          "title": "Abordagens Integradas e Casos Clínicos",
+          "description": "Objetivo do módulo Compreender a atuação interdisciplinar nos cuidados com voz, motricidade orofacial e disfagia, articulando raciocínio clínico e interfaces com outras especialidades."
+        },
+        {
+          "title": "Integrando Especialidades",
+          "description": "Objetivo do módulo Integrar as áreas de voz, motricidade orofacial e disfagia para desenvolver raciocínio clínico abrangente, análise de casos complexos e definição colaborativa de condutas e encaminhamentos."
+        },
+        {
+          "title": "Metodologia de Pesquisa: Olhar Científico e Investigativo",
+          "description": "Objetivo do módulo Desenvolver competências para produção de conhecimento científico em saúde, com foco em método científico, análise crítica e ética dos dados e elaboração de trabalhos acadêmicos."
+        }
+      ],
+      "professors": [
+        {
+          "name": "Ana Luiza da Rosa Koerich"
+        },
+        {
+          "name": "Flora Taube Manicardi"
+        },
+        {
+          "name": "Nathani Cristina da Silva"
+        },
+        {
+          "name": "Lauanda Barbosa dos Santos"
+        },
+        {
+          "name": "Vanessa Cristina de Godoi"
+        },
+        {
+          "name": "Adriana Tessitore"
+        },
+        {
+          "name": "Marieli Timpani Bussi"
+        },
+        {
+          "name": "Evelyn Alves Spazzapan Mazzin"
+        },
+        {
+          "name": "Ana Lúcia Spina"
+        },
+        {
+          "name": "Maria Cecilia Bayer Pereira"
+        },
+        {
+          "name": "Sonia Cristina Poltronieri Mendonça"
+        }
+      ]
+    },
+    "pos:posfati": {
+      "modules": [
+        {
+          "title": "Bases Neuroanatômicas e Motoras da Fala"
+        },
+        {
+          "title": "Avaliação Fonológica"
+        },
+        {
+          "title": "Transtornos dos Sons da Fala"
+        },
+        {
+          "title": "Transtornos Motores de Fala e Apraxia de Fala na Infância"
+        },
+        {
+          "title": "Disartria"
+        },
+        {
+          "title": "Intervenção Baseada em Evidências I: DTTC"
+        },
+        {
+          "title": "Intervenção Baseada em Evidências II: ReST"
+        },
+        {
+          "title": "Intervenção Baseada em Evidências III: Ultrassonografia"
+        },
+        {
+          "title": "CAA Além do Autismo"
+        },
+        {
+          "title": "Tecnologias e Teleatendimento"
+        },
+        {
+          "title": "Liderança, Empreendedorismo e Marketing em Fonoaudiologia"
+        },
+        {
+          "title": "Metodologia de Pesquisa: Olhar Científico e Investigativo"
+        }
+      ],
+      "professors": [
+        {
+          "name": "Aline Mara de Oliveira"
+        },
+        {
+          "name": "Ana Maria Philipps dos Santos"
+        },
+        {
+          "name": "Cássio Eduardo Esperandino da Silva"
+        },
+        {
+          "name": "Izabelle Thaís Gonçalves Veríssimo da Costa"
+        },
+        {
+          "name": "Maria Gabriela Cavalheiro"
+        },
+        {
+          "name": "Matheus Francoy Alpes"
+        },
+        {
+          "name": "Sonia Cristina Poltronieri Mendonça"
+        },
+        {
+          "name": "Tamiris Silva Akbart Melandes"
+        }
+      ]
+    },
+    "pos:proc": {
+      "modules": [
+        {
+          "title": "Fundamentos e observação"
+        },
+        {
+          "title": "Autorregulação e desenvolvimento"
+        },
+        {
+          "title": "Contextos de participação"
+        },
+        {
+          "title": "Evidências e implementação"
+        },
+        {
+          "title": "Fundamentos do Processamento Sensorial, Participação e Escopo Profissional",
+          "description": "Objetivo do módulo Compreender diferenças sensoriais, participação cotidiana e os limites éticos de atuação de cada profissão."
+        },
+        {
+          "title": "Neurociência dos Sistemas Sensoriais, Interocepção e Neuroplasticidade",
+          "description": "Objetivo do módulo Relacionar os sistemas sensoriais, a interocepção e a neuroplasticidade à experiência e à participação da pessoa."
+        },
+        {
+          "title": "Observação Funcional, Perfis Sensoriais e Encaminhamento Interprofissional",
+          "description": "Objetivo do módulo Organizar a observação funcional, reconhecer perfis sensoriais e identificar situações que exigem cuidado compartilhado ou encaminhamento."
+        },
+        {
+          "title": "Autorregulação, Corregulação, Emoção e Funções Executivas",
+          "description": "Objetivo do módulo Analisar autorregulação, corregulação, emoção e funções executivas em situações reais de vida diária."
+        },
+        {
+          "title": "Processamento Sensorial no Neurodesenvolvimento e ao Longo da Vida",
+          "description": "Objetivo do módulo Compreender manifestações do processamento sensorial no neurodesenvolvimento e em diferentes etapas da vida."
+        },
+        {
+          "title": "Acomodações Sensoriais, Aprendizagem e Educação Inclusiva",
+          "description": "Objetivo do módulo Planejar acomodações sensoriais que ampliem acesso, aprendizagem e participação em contextos educacionais inclusivos."
+        },
+        {
+          "title": "Saúde, Família, Sono, Autocuidado e Comunidade",
+          "description": "Objetivo do módulo Integrar saúde, família, sono, autocuidado e comunidade na leitura das necessidades sensoriais e das rotinas."
+        },
+        {
+          "title": "Alimentação, Comunicação e Participação Cotidiana",
+          "description": "Objetivo do módulo Explorar relações entre alimentação, comunicação e participação cotidiana com uma perspectiva multiprofissional."
+        },
+        {
+          "title": "Prática Baseada em Evidências, Mensuração, Ética e Controvérsias",
+          "description": "Objetivo do módulo Usar evidências, mensuração e reflexão ética para qualificar decisões, comunicar limites e lidar com controvérsias."
+        },
+        {
+          "title": "Tecnologia, Implementação, Monitoramento e Integração de Estratégias",
+          "description": "Objetivo do módulo Planejar, implementar e monitorar estratégias de acomodação com apoio de tecnologia e trabalho colaborativo."
+        }
+      ],
+      "professors": [
+        {
+          "name": "Daniel Gustavo de Sousa Carleto"
+        },
+        {
+          "name": "Johel Giarola de Paiva Ávila"
+        },
+        {
+          "name": "Roberta Giampá Roiz"
+        },
+        {
+          "name": "Arlete Giarola de Paiva Avila"
+        }
+      ]
+    },
+    "pos:posnacc": {
+      "modules": [
+        {
+          "title": "Neurociência Afetiva"
+        },
+        {
+          "title": "Sistemas Afetivos"
+        },
+        {
+          "title": "Fundamentos da Dependência Química"
+        },
+        {
+          "title": "Dependências Comportamentais e Novos Padrões de Adoecimento"
+        },
+        {
+          "title": "Avaliação Clínica e Diagnóstico em Dependência Química"
+        },
+        {
+          "title": "Comorbidades Psiquiátricas Associadas ao Uso de Substâncias"
+        },
+        {
+          "title": "Abordagem Motivacional para Adesão ao Tratamento e Intervenções Breves"
+        },
+        {
+          "title": "Intervenção: Ferramentas Práticas de Manejo"
+        },
+        {
+          "title": "Neuropsicanálise"
+        },
+        {
+          "title": "Psicanálise e Neuropsicanálise"
+        },
+        {
+          "title": "Neuropsicanálise na Prática Clínica"
+        },
+        {
+          "title": "Atenção Psicossocial e Redes de Cuidado Multidisciplinar"
+        },
+        {
+          "title": "Projeto Terapêutico Singular e Reabilitação Psicossocial"
+        },
+        {
+          "title": "Trabalho com Famílias e Comunidades"
+        },
+        {
+          "title": "Ética, Direitos Humanos e Mentorias Clínicas Supervisionadas"
+        }
+      ],
+      "professors": [
+        {
+          "name": "Simone Martin Oliani"
+        },
+        {
+          "name": "Richard Alecsander Reichert"
+        },
+        {
+          "name": "Angélica Abril"
+        },
+        {
+          "name": "Bruna de Assis Almeida"
+        },
+        {
+          "name": "Daisy Cristina Rodrigues"
+        },
+        {
+          "name": "Caroline Defaveri"
+        },
+        {
+          "name": "Eduardo dos Anjos Schmidt"
+        },
+        {
+          "name": "Fabiana da Costa Oliveira"
+        },
+        {
+          "name": "Viviane Cristina de Oliveira Gramagol"
+        },
+        {
+          "name": "Adriana Eulálio de Souza Quintano"
+        }
+      ]
+    },
+    "pos:smed": {
+      "modules": [
+        {
+          "title": "Fundamentos Biopsicossociais da Saúde Mental",
+          "description": "Objetivo do módulo Compreender os fundamentos biopsicossociais da saúde mental, seus determinantes e os principais modelos contemporâneos de promoção, prevenção e cuidado."
+        },
+        {
+          "title": "Neurociências do Comportamento Humano",
+          "description": "Objetivo do módulo Compreender fundamentos das neurociências relacionados ao comportamento humano e discutir os impactos das tecnologias digitais sobre processos neurocognitivos."
+        },
+        {
+          "title": "Sociedade, Cultura Digital e Subjetividade",
+          "description": "Objetivo do módulo Compreender as transformações sociais e culturais da Era Digital e analisar seus impactos sobre subjetividade, identidade, relações sociais e saúde mental."
+        },
+        {
+          "title": "Construção Psíquica e Desenvolvimento Humano na Era Digital",
+          "description": "Objetivo do módulo Analisar como as tecnologias digitais atravessam a construção psíquica, a identidade e o desenvolvimento humano ao longo do ciclo de vida."
+        },
+        {
+          "title": "Emoções, Comportamento e Sofrimento Psíquico Contemporâneo",
+          "description": "Objetivo do módulo Analisar transformações emocionais e comportamentais relacionadas à Era Digital, identificando fatores de risco, proteção e possibilidades de promoção da saúde mental."
+        },
+        {
+          "title": "Humanização, Ética e Tecnologias do Cuidado",
+          "description": "Objetivo do módulo Compreender fundamentos éticos e humanísticos do cuidado e analisar desafios relacionados a tecnologias digitais, inteligência artificial, privacidade e proteção de dados."
+        },
+        {
+          "title": "Inteligência Artificial Aplicada à Saúde Mental",
+          "description": "Objetivo do módulo Compreender fundamentos e aplicações da inteligência artificial em saúde mental, analisando potencialidades, limitações, evidências e responsabilidades profissionais."
+        },
+        {
+          "title": "Algoritmos, Redes Sociais e Economia da Atenção",
+          "description": "Objetivo do módulo Compreender o funcionamento de algoritmos e plataformas digitais e analisar os efeitos da economia da atenção e das redes sociais sobre comportamento e saúde mental."
+        },
+        {
+          "title": "Tecnologias Digitais, Dados e Saúde Mental",
+          "description": "Objetivo do módulo Compreender o papel das tecnologias e dos dados na transformação da saúde mental, incluindo privacidade, segurança da informação, governança e inovação."
+        },
+        {
+          "title": "Infância, Adolescência e Desenvolvimento na Era Digital",
+          "description": "Objetivo do módulo Analisar os impactos das tecnologias digitais sobre o desenvolvimento cognitivo, emocional e social de crianças e adolescentes, reconhecendo fatores de risco e proteção."
+        },
+        {
+          "title": "Dependência Digital, Jogos Eletrônicos e Bets",
+          "description": "Objetivo do módulo Compreender dependências comportamentais relacionadas às tecnologias digitais, jogos eletrônicos e apostas online e discutir estratégias de prevenção, avaliação e intervenção."
+        },
+        {
+          "title": "Saúde Mental, Trabalho e Burnout na Era Digital",
+          "description": "Objetivo do módulo Compreender os impactos da Era Digital sobre o trabalho, o Burnout, o tecnoestresse e a promoção de saúde mental nas organizações."
+        },
+        {
+          "title": "Violência Digital, Cyberbullying e Proteção Psicossocial",
+          "description": "Objetivo do módulo Compreender formas de violência digital e seus impactos psicossociais, discutindo estratégias de prevenção, proteção, intervenção e aspectos legais."
+        },
+        {
+          "title": "Família, Educação e Saúde Mental na Sociedade Conectada",
+          "description": "Objetivo do módulo Compreender o papel da família e da escola na promoção da saúde mental e desenvolver estratégias de orientação e cuidado em contextos educativos e comunitários."
+        },
+        {
+          "title": "Avaliação em Saúde Mental na Era Digital",
+          "description": "Objetivo do módulo Compreender princípios de avaliação em saúde mental e analisar estratégias de rastreamento, monitoramento e uso responsável de tecnologias no processo avaliativo."
+        },
+        {
+          "title": "Telessaúde, Intervenções Digitais e Tecnologias do Cuidado",
+          "description": "Objetivo do módulo Compreender fundamentos da telessaúde e das intervenções digitais, incluindo tecnologias do cuidado, boas práticas e aspectos éticos, técnicos e legais."
+        },
+        {
+          "title": "Ética, Legislação e Governança em Saúde Digital",
+          "description": "Objetivo do módulo Compreender fundamentos éticos e legais da saúde digital e analisar proteção de dados, governança da informação, inteligência artificial e responsabilidade profissional."
+        },
+        {
+          "title": "Promoção da Saúde Mental e Políticas Públicas",
+          "description": "Objetivo do módulo Compreender fundamentos de promoção da saúde mental e políticas públicas e planejar ações preventivas baseadas em evidências diante dos desafios da Era Digital."
+        },
+        {
+          "title": "Metodologia Científica, Inteligência Artificial e Produção do Conhecimento",
+          "description": "Objetivo do módulo Desenvolver competências para leitura crítica, pesquisa científica e uso ético da inteligência artificial na produção e comunicação do conhecimento."
+        },
+        {
+          "title": "Gestão, Inovação e Liderança em Saúde Mental",
+          "description": "Objetivo do módulo Compreender princípios de gestão, liderança e inovação em saúde mental e desenvolver propostas voltadas a serviços, programas e projetos."
+        },
+        {
+          "title": "Laboratório de Inovação em Saúde Mental (LabSM Digital) (Mentoria)",
+          "description": "Objetivo do módulo Integrar os conhecimentos da pós-graduação na elaboração de um projeto aplicado voltado à solução de problemas reais em saúde mental, com fundamentação científica, tecnologias digitais e princípios éticos."
+        }
+      ],
+      "professors": [
+        {
+          "name": "Géssica Peres"
+        },
+        {
+          "name": "Matheus Lira"
+        },
+        {
+          "name": "Adriana Chaves Moraes"
+        },
+        {
+          "name": "Luiz Felipe Sausen de Freitas"
+        },
+        {
+          "name": "Gabriel Fernandes Camargo Rosa"
+        },
+        {
+          "name": "Antoni Furlani Rosa"
+        },
+        {
+          "name": "Jamir João Sardá Junior"
+        }
+      ]
+    },
+    "pos:poscnei": {
+      "modules": [
+        {
+          "title": "Fundamentos do Neurodesenvolvimento Infantil"
+        },
+        {
+          "title": "Desenvolvimento da Comunicação e da Linguagem"
+        },
+        {
+          "title": "Fundamentos da Comunicação Aumentativa e Alternativa (CAA)"
+        },
+        {
+          "title": "Princípios Básicos da Clínica de Comunicação"
+        },
+        {
+          "title": "Sinais de Alerta em Comunicação, Linguagem e Desenvolvimento"
+        },
+        {
+          "title": "TEA e Comunicação Social"
+        },
+        {
+          "title": "Autismo e Estrutura Diagnóstica"
+        },
+        {
+          "title": "Intervenção em CAA para Pacientes com TEA"
+        },
+        {
+          "title": "TDL, Atrasos de Linguagem e Impactos no Desenvolvimento"
+        },
+        {
+          "title": "CAA para Transtornos de Desenvolvimento da Linguagem"
+        },
+        {
+          "title": "Comunicação Funcional, Comportamento e Regulação Emocional"
+        },
+        {
+          "title": "CAA e Treino de Habilidades Sociais"
+        },
+        {
+          "title": "Família, Orientação Parental e Rotina Comunicativa"
+        },
+        {
+          "title": "Treinamento de Parceiros da Comunicação"
+        },
+        {
+          "title": "Planejamento Individualizado e Adaptado para CAA"
+        },
+        {
+          "title": "Implementação de Sistemas de CAA em Contexto Clínico e Educacional"
+        },
+        {
+          "title": "Escola, Inclusão e Linguagem na Aprendizagem"
+        },
+        {
+          "title": "Atuação Interdisciplinar, Encaminhamentos e Limites Profissionais"
+        }
+      ],
+      "professors": [
+        {
+          "name": "Maria Gabriela Cavalheiro"
+        },
+        {
+          "name": "Bruna de Assis Almeida"
+        },
+        {
+          "name": "Tamiris Silva Akbart Melandes"
+        },
+        {
+          "name": "Giliane Aparecida Schmitz"
+        },
+        {
+          "name": "Bianca dos Santos"
+        },
+        {
+          "name": "Géssica Peres"
+        },
+        {
+          "name": "Laura Faustino Gonçalves"
+        },
+        {
+          "name": "Ana Maria Philipps dos Santos"
+        },
+        {
+          "name": "Fernanda Segala"
+        },
+        {
+          "name": "Karla Andrea Corrente de França"
+        }
+      ]
+    },
+    "pos:posmdef": {
+      "modules": [
+        {
+          "title": "Fundamentos e Interrelações em Voz, Motricidade Orofacial e Deglutição"
+        },
+        {
+          "title": "Teoria em Motricidade Orofacial (I)"
+        },
+        {
+          "title": "Avaliação e Manejo dos Freios Orais"
+        },
+        {
+          "title": "Teoria em Motricidade Orofacial (II)"
+        },
+        {
+          "title": "Avaliação e Intervenção em Motricidade Orofacial (I)"
+        },
+        {
+          "title": "Avaliação e Intervenção em Motricidade Orofacial (II)"
+        },
+        {
+          "title": "Tecnologias e Inovação Aplicadas à Motricidade Orofacial"
+        },
+        {
+          "title": "Abordagens Integradas e Casos Clínicos"
+        },
+        {
+          "title": "Liderança, Empreendedorismo e Marketing em Fonoaudiologia"
+        },
+        {
+          "title": "Metodologia de Pesquisa: Olhar Científico e Investigativo"
+        }
+      ],
+      "professors": [
+        {
+          "name": "Adriana Tessitore"
+        },
+        {
+          "name": "Flora Taube Manicardi"
+        },
+        {
+          "name": "Izabelle Thaís Gonçalves Veríssimo da Costa"
+        },
+        {
+          "name": "Marieli Timpani Bussi"
+        },
+        {
+          "name": "Nathani Cristina da Silva"
+        },
+        {
+          "name": "Nise Alonso Manicardi"
+        },
+        {
+          "name": "Sonia Cristina Poltronieri Mendonça"
+        },
+        {
+          "name": "Vanessa Cristina de Godoi"
+        }
+      ]
+    },
+    "pos:posdiac": {
+      "modules": [
+        {
+          "title": "Fundamentos e interrelações em voz, motricidade orofacial e deglutição"
+        },
+        {
+          "title": "Fundamentos e avaliação da disfagia"
+        },
+        {
+          "title": "Reabilitação em disfagia"
+        },
+        {
+          "title": "Disfagia pediátrica na prática clínica: avaliação, conduta e interdisciplinaridade"
+        },
+        {
+          "title": "Teoria em motricidade orofacial (II)"
+        },
+        {
+          "title": "Tecnologias e inovação aplicadas à motricidade orofacial"
+        },
+        {
+          "title": "Tecnologias e inovação aplicadas à disfagia orofaríngea"
+        },
+        {
+          "title": "Neuromodulação aplicada à disfagia orofaríngea"
+        },
+        {
+          "title": "Disfagia avançada (I)"
+        },
+        {
+          "title": "Disfagia avançada (II)"
+        },
+        {
+          "title": "Disfagia em UTI e pós-extubação"
+        },
+        {
+          "title": "Paciente traqueostomizado: avaliação e manejo clínico"
+        },
+        {
+          "title": "IDDSI, segurança do paciente e protocolos institucionais"
+        },
+        {
+          "title": "Comunicação estratégica: captação, fidelização e paliativos"
+        },
+        {
+          "title": "Metodologia de pesquisa: olhar científico e investigativo"
+        }
+      ],
+      "professors": [
+        {
+          "name": "Flora Taube Manicardi"
+        },
+        {
+          "name": "Thaís Coelho Alves"
+        },
+        {
+          "name": "Lauanda Barbosa dos Santos"
+        },
+        {
+          "name": "Luana Altran Picoloto"
+        },
+        {
+          "name": "Ana Luiza da Rosa Koerich"
+        },
+        {
+          "name": "Nayra Neri da Silva"
+        },
+        {
+          "name": "Juliana Wanderley Cidreira Neves"
+        },
+        {
+          "name": "Nathani Cristina da Silva"
+        },
+        {
+          "name": "Sonia Cristina Poltronieri Mendonça"
+        }
+      ]
+    },
+    "pos:posduci": {
+      "modules": [
+        {
+          "title": "Fundamentos e Interrelações em Voz, Motricidade Orofacial e Deglutição"
+        },
+        {
+          "title": "Fundamentos e Avaliação da Disfagia"
+        },
+        {
+          "title": "Reabilitação em Disfagia"
+        },
+        {
+          "title": "Tecnologias e Inovação Aplicadas à Disfagia Orofaríngea"
+        },
+        {
+          "title": "Neuromodulação Aplicada à Disfagia Orofaríngea"
+        },
+        {
+          "title": "Disfagia Avançada (I)"
+        },
+        {
+          "title": "Disfagia Avançada (II)"
+        },
+        {
+          "title": "Disfagia em UTI e Pós-Extubação"
+        },
+        {
+          "title": "Paciente Traqueostomizado: Avaliação e Manejo Clínico"
+        },
+        {
+          "title": "IDDSI, Segurança do Paciente e Protocolos Institucionais"
+        },
+        {
+          "title": "Metodologia de Pesquisa: Olhar Científico e Investigativo"
+        },
+        {
+          "title": "Suporte de CAA para Doenças Neurodegenerativas"
+        },
+        {
+          "title": "Intervenção em Afasia e Distúrbios Pós-AVC"
+        }
+      ],
+      "professors": [
+        {
+          "name": "Nathani Cristina da Silva"
+        },
+        {
+          "name": "Lauanda Barbosa dos Santos"
+        },
+        {
+          "name": "Thaís Coelho Alves"
+        },
+        {
+          "name": "Ana Luiza da Rosa Koerich"
+        },
+        {
+          "name": "Nayra Neri da Silva"
+        },
+        {
+          "name": "Juliana Wanderley Cidreira Neves"
+        },
+        {
+          "name": "Luana Altran Picoloto"
+        },
+        {
+          "name": "Sonia Cristina Poltronieri Mendonça"
+        },
+        {
+          "name": "Karla Andrea Corrente de França"
+        }
+      ]
+    },
+    "pos:vdmo": {
+      "modules": [
+        {
+          "title": "Fundamentos e Interrelações em Voz, Motricidade Orofacial e Deglutição"
+        },
+        {
+          "title": "Fundamentos e Avaliação da Disfagia"
+        },
+        {
+          "title": "Reabilitação em Disfagia"
+        },
+        {
+          "title": "Disfagia Pediátrica na Prática Clínica - Avaliação, Conduta e Interdisciplinaridade"
+        },
+        {
+          "title": "Teoria em Motricidade Orofacial I"
+        },
+        {
+          "title": "Avaliação e Manejo dos Freios Orais"
+        },
+        {
+          "title": "Teoria em Motricidade Orofacial II"
+        },
+        {
+          "title": "Avaliação e Intervenção em Motricidade Orofacial I"
+        },
+        {
+          "title": "Avaliação e Intervenção em Motricidade Orofacial II"
+        },
+        {
+          "title": "Tecnologias e Inovação Aplicadas à Motricidade Orofacial"
+        },
+        {
+          "title": "Avaliação e Intervenção das Disfonias"
+        },
+        {
+          "title": "Distúrbios da Voz e Intervenções"
+        },
+        {
+          "title": "Abordagens Integradas e Casos Clínicos"
+        },
+        {
+          "title": "Integrando Especialidades"
+        },
+        {
+          "title": "Metodologia de Pesquisa: Olhar Científico e Investigativo"
+        }
+      ],
+      "professors": [
+        {
+          "name": "Flora Taube Manicardi"
+        },
+        {
+          "name": "Nathani Cristina da Silva"
+        },
+        {
+          "name": "Lauanda Barbosa dos Santos"
+        },
+        {
+          "name": "Ana Luiza da Rosa Koerich"
+        },
+        {
+          "name": "Vanessa Cristina de Godoi"
+        },
+        {
+          "name": "Marieli Timpani Bussi"
+        },
+        {
+          "name": "Adriana Tessitore"
+        },
+        {
+          "name": "Evelyn Alves Spazzapan Mazzin"
+        },
+        {
+          "name": "Ana Lúcia Spina"
+        },
+        {
+          "name": "Nise Alonso Manicardi"
+        },
+        {
+          "name": "Geísa Pereira Rufino"
+        },
+        {
+          "name": "Carolina Maria Mugnol dos Santos"
+        },
+        {
+          "name": "Sonia Cristina Poltronieri Mendonça"
+        }
+      ]
+    },
+    "pos:posclni": {
+      "modules": [
+        {
+          "title": "Fundamentos do Neurodesenvolvimento Infantil"
+        },
+        {
+          "title": "Comunicação e Linguagem Antes da Fala"
+        },
+        {
+          "title": "Sinais de Alerta em Comunicação, Linguagem e Desenvolvimento"
+        },
+        {
+          "title": "TEA, Comunicação Social e Interação"
+        },
+        {
+          "title": "TDL, Atrasos de Linguagem e Impactos na Aprendizagem"
+        },
+        {
+          "title": "Comunicação Funcional, Comportamento e Regulação"
+        },
+        {
+          "title": "Família, Orientação Parental e Rotina Comunicativa"
+        },
+        {
+          "title": "Escola, Inclusão e Linguagem na Aprendizagem"
+        },
+        {
+          "title": "Atuação Interdisciplinar, Encaminhamentos e Ética Profissional"
+        },
+        {
+          "title": "Prática Integrada e Discussão de Casos"
+        }
+      ],
+      "professors": [
+        {
+          "name": "Maria Gabriela Cavalheiro"
+        },
+        {
+          "name": "Ana Maria Philipps dos Santos"
+        },
+        {
+          "name": "Bianca dos Santos"
+        },
+        {
+          "name": "Bruna de Assis Almeida"
+        },
+        {
+          "name": "Giliane Aparecida Schmitz"
+        },
+        {
+          "name": "Laura Faustino Gonçalves"
+        }
+      ]
+    },
+    "pos:nctp": {
+      "modules": [
+        {
+          "title": "Neurociência Afetiva"
+        },
+        {
+          "title": "Sistemas Afetivos"
+        },
+        {
+          "title": "Neuropsicanálise"
+        },
+        {
+          "title": "Psicanálise e Neuropsicanálise"
+        },
+        {
+          "title": "Neuropsicanálise na Prática Clínica"
+        }
+      ],
+      "professors": [
+        {
+          "name": "Eduardo dos Anjos Schmidt"
+        },
+        {
+          "name": "Bruna de Assis Almeida"
+        },
+        {
+          "name": "Adriana Eulálio de Souza Quintano"
+        }
+      ]
+    },
+    "pos:poscora": {
+      "modules": [
+        {
+          "title": "Fundamentos da Comunicação Humana e da Oratória"
+        },
+        {
+          "title": "Bases Anatômicas e Fisiológicas da Voz Aplicadas à Comunicação"
+        },
+        {
+          "title": "Avaliação Fonoaudiológica da Comunicação e da Oratória"
+        },
+        {
+          "title": "Expressividade Vocal e Corporal"
+        },
+        {
+          "title": "Oratória Profissional e Comunicação de Alta Performance"
+        },
+        {
+          "title": "Treinamento Comunicativo Individual e em Grupo"
+        },
+        {
+          "title": "Comunicação Persuasiva, Retórica e Storytelling"
+        },
+        {
+          "title": "Ansiedade Comunicativa, Medo de Falar em Público e Intervenções"
+        },
+        {
+          "title": "Comunicação, Posicionamento e Autoridade Profissional"
+        },
+        {
+          "title": "Comunicação em Ambientes Digitais e Redes Sociais"
+        },
+        {
+          "title": "Comunicação Aplicada à Docência, Liderança e Empreendedorismo"
+        },
+        {
+          "title": "Casos Clínicos e Prática Supervisionada em Comunicação e Oratória"
+        }
+      ],
+      "professors": [
+        {
+          "name": "Lauanda Barbosa dos Santos"
+        },
+        {
+          "name": "Luciana Dall’Agnol Siqueira Slobodticov"
+        },
+        {
+          "name": "Moara Karoline Silveira Malheiros"
+        },
+        {
+          "name": "Maysa Andrade Santos"
+        },
+        {
+          "name": "Bruna Santos"
+        },
+        {
+          "name": "Betina Carneiro de Rezende Alves"
+        }
+      ]
+    },
+    "curso-livre:iddsi-na-pratica": {
+      "modules": [],
+      "professors": [
+        {
+          "name": "Juliana Wanderley Cidreira Neves"
+        }
+      ]
+    },
+    "formacao:dttc-na-pratica-clinica": {
+      "modules": [],
+      "professors": [
+        {
+          "name": "Matheus Francoy Alpes"
+        }
+      ]
+    },
+    "curso-livre:sinais-de-alerta-no-neurodesenvolvimento-infantil": {
+      "modules": [],
+      "professors": [
+        {
+          "name": "Laura Faustino Gonçalves"
+        }
+      ]
+    },
+    "curso-livre:dependencias-comportamentais-na-atualidade": {
+      "modules": [],
+      "professors": [
+        {
+          "name": "Simone Martin Oliani"
+        }
+      ]
+    },
+    "formacao:ansiedade-comunicativa-e-medo-de-falar-em-publico": {
+      "modules": [],
+      "professors": [
+        {
+          "name": "Bruna de Jesus Santos"
+        }
+      ]
+    },
+    "formacao:fundamentos-da-comunicacao-humana-e-da-oratoria": {
+      "modules": [],
+      "professors": [
+        {
+          "name": "Lauanda Santos"
+        }
+      ]
+    },
+    "formacao:expressividade-vocal-e-corporal": {
+      "modules": [],
+      "professors": [
+        {
+          "name": "Luciana Dall’Agnol Siqueira Slobodticov"
+        }
+      ]
+    },
+    "formacao:transtornos-motores-de-fala-e-apraxia-de-fala-na-infancia": {
+      "modules": [],
+      "professors": [
+        {
+          "name": "Tamiris Silva Akbart Melandes"
+        }
+      ]
+    },
+    "formacao:intervencao-baseada-em-evidencias-iii-ultrassonografia": {
+      "modules": [],
+      "professors": [
+        {
+          "name": "Cássio Eduardo Esperandino da Silva"
+        }
+      ]
+    },
+    "formacao:tdl-atrasos-de-linguagem-e-impactos-no-desenvolvimento": {
+      "modules": [],
+      "professors": [
+        {
+          "name": "Maria Gabriela Cavalheiro"
+        }
+      ]
+    },
+    "formacao:disfagia-pediatrica-na-pratica-clinica": {
+      "modules": [],
+      "professors": [
+        {
+          "name": "Ana Luiza da Rosa Koerich"
+        }
+      ]
+    },
+    "formacao:raciocinio-clinico-avancado-e-planejamento-terapeutico-em-caa": {
+      "modules": [],
+      "professors": [
+        {
+          "name": "Caroline Peres"
+        }
+      ]
+    },
+    "formacao:avaliacao-e-intervencao-em-motricidade-orofacial-i": {
+      "modules": [],
+      "professors": [
+        {
+          "name": "Adriana Tessitore"
+        },
+        {
+          "name": "Marieli Timpani Bussi"
+        }
+      ]
+    },
+    "formacao:casos-clinicos-e-pratica-supervisionada-em-comunicacao-e-oratoria": {
+      "modules": [],
+      "professors": [
+        {
+          "name": "Moara Karoline Silveira Malheiros"
+        }
+      ]
+    },
+    "formacao:neurociencia-afetiva-basica": {
+      "modules": [],
+      "professors": []
+    },
+    "formacao:neurociencia-afetiva": {
+      "modules": [
+        {
+          "title": "Neurociência Afetiva",
+          "description": "Fundamentos da neurociência afetiva e sua importância para compreender emoção, mente/cérebro e a contribuição de Jaak Panksepp."
+        },
+        {
+          "title": "Sistemas Afetivos",
+          "description": "Aprofundamento dos sistemas emocionais primários e de suas manifestações clínicas na leitura do sofrimento."
+        }
+      ],
+      "professors": [
+        {
+          "name": "Eduardo dos Anjos Schmidt"
+        }
+      ]
+    },
+    "formacao:fco": {
+      "modules": [],
+      "professors": [
+        {
+          "name": "a. Dra. Lauanda Santos"
+        },
+        {
+          "name": "Betina Rezende"
+        }
+      ]
+    },
+    "formacao:sistemas-afetivos": {
+      "modules": [],
+      "professors": [
+        {
+          "name": "Psicanalista Eduardo Schimidt"
+        }
+      ]
+    },
+    "curso-livre:desenvolvimento-normal-da-linguagem": {
+      "modules": [
+        {
+          "title": "É possível medir a linguagem?"
+        },
+        {
+          "title": "Linguagem e fala são a mesma coisa?"
+        },
+        {
+          "title": "O que vem antes da fala?"
+        },
+        {
+          "title": "Alertas da fase pré-verbal?"
+        },
+        {
+          "title": "Linguagem: 1 ano e 4 meses até 2 anos?"
+        },
+        {
+          "title": "Linguagem: 2 a 3 anos?"
+        },
+        {
+          "title": "Linguagem: 3 a 4 anos?"
+        },
+        {
+          "title": "Linguagem: 4 a 5 anos?"
+        }
+      ],
+      "professors": [
+        {
+          "name": "Deborah Demenech"
+        }
+      ]
+    },
+    "formacao:avaliacao-e-intervencao-em-perfis-gestalticos": {
+      "modules": [
+        {
+          "title": "Fundamentos do PGL",
+          "description": "Entenda o que é o Processamento Gestáltico da Linguagem e como ele se diferencia da abordagem analítica."
+        },
+        {
+          "title": "Estágios do Desenvolvimento Gestáltico",
+          "description": "Reconheça os seis estágios do desenvolvimento gestáltico e aprenda a identificar cada um nos seus pacientes."
+        },
+        {
+          "title": "Estratégias de Intervenção",
+          "description": "Aprenda a aplicar recursos clínicos alinhados ao perfil gestáltico, com foco em desenvolvimento comunicativo e emocional."
+        }
+      ],
+      "professors": [
+        {
+          "name": "Carla Abrão"
+        }
+      ]
+    },
+    "formacao:disfagia-base-conceitual-e-pratica": {
+      "modules": [
+        {
+          "title": "Fundamentos e Avaliação da Disfagia",
+          "description": "Conceitos centrais da disfagia e estruturação da base para avaliar quadros clínicos com precisão."
+        },
+        {
+          "title": "Reabilitação em Disfagia",
+          "description": "Manejo terapêutico com foco em populações específicas, ética e discussão aplicada de casos."
+        },
+        {
+          "title": "Disfagia Pediátrica na Prática Clínica",
+          "description": "Enfoque em avaliação, conduta e interdisciplinaridade no atendimento infantil."
+        }
+      ],
+      "professors": [
+        {
+          "name": "Lauanda Barbosa dos Santos"
+        },
+        {
+          "name": "Ana Luiza da Rosa Koerich"
+        }
+      ]
+    },
+    "formacao:disfagia-avancada": {
+      "modules": [
+        {
+          "title": "Disfagia Avançada (I)",
+          "description": "Foco em mecanismos fisiopatológicos, raciocínio clínico e tomada de decisão em quadros complexos, com destaque para alterações mecânicas e oncológicas."
+        },
+        {
+          "title": "Disfagia Avançada (II)",
+          "description": "Aprofunda a compreensão da disfagia neurogênica, avaliação, intervenção e interfaces funcionais para condutas mais seguras em cenários clínicos complexos."
+        }
+      ],
+      "professors": [
+        {
+          "name": "Nayra Neri da Silva"
+        },
+        {
+          "name": "Juliana Wanderley Cidreira Neves"
+        }
+      ]
+    },
+    "formacao:disturbios-da-voz-avaliacao-e-intervencao": {
+      "modules": [],
+      "professors": [
+        {
+          "name": "Evelyn Alves Spazzapan"
+        },
+        {
+          "name": "Ana Lúcia Spina"
+        }
+      ]
+    },
+    "formacao:motricidade-orofacial-ciencia-na-atualidade": {
+      "modules": [
+        {
+          "title": "Teoria em Motricidade Orofacial (I)",
+          "description": "Introduz os fundamentos essenciais da motricidade orofacial com foco em anatomofisiologia, desenvolvimento craniofacial e avaliação clínica."
+        },
+        {
+          "title": "Teoria em Motricidade Orofacial (II)",
+          "description": "Aprofunda a interface entre fala e motricidade orofacial, incluindo aspectos clínicos ligados à fissura labiopalatina e à intervenção fonoaudiológica."
+        },
+        {
+          "title": "Tecnologias e Inovação Aplicadas à Motricidade Orofacial",
+          "description": "Módulo voltado à atualização profissional, apresentando recursos, tecnologias e interfaces contemporâneas aplicadas à motricidade orofacial."
+        }
+      ],
+      "professors": [
+        {
+          "name": "Flora Taube Manicardi"
+        }
+      ]
+    },
+    "formacao:neurociencia-aplicada-no-tea": {
+      "modules": [
+        {
+          "title": "Fundamentos da Neurociência",
+          "description": "Compreenda os processos neurais que sustentam comportamento, cognição, aprendizagem e desenvolvimento infantil."
+        },
+        {
+          "title": "Autismo e Neurociência",
+          "description": "Entenda as bases neurobiológicas do TEA e suas implicações para diagnóstico, intervenção e acompanhamento."
+        },
+        {
+          "title": "Aplicação Prática e Evidências",
+          "description": "Desenvolva projetos terapêuticos e educacionais alinhados às necessidades individuais, com base científica."
+        }
+      ],
+      "professors": [
+        {
+          "name": "Géssica Peres"
+        },
+        {
+          "name": "Melissa Talita Wiprich"
+        },
+        {
+          "name": "Cláudia Gonçalves"
+        },
+        {
+          "name": "Jaqueline Oliveira"
+        },
+        {
+          "name": "Darlan Gusso"
+        }
+      ]
+    }
+  }
+}

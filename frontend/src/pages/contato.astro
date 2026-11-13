@@ -1,16 +1,17 @@
 ---
 import SiteLayout from "../layouts/SiteLayout.astro";
+const isLive = import.meta.env.PUBLIC_SITE_LIVE === "true";
 ---
 <SiteLayout title="Contato empresarial" description="Fale com a equipe da Vivaion sobre capacitação e propostas para sua organização.">
   <section class="page-hero"><div class="container"><span class="eyebrow eyebrow--light">Relacionamento corporativo</span><h1>Conte-nos sobre seus objetivos.</h1><p>Um primeiro contato para encontrar caminhos de formação alinhados ao momento da sua equipe.</p></div></section>
-  <section class="section"><div class="container auth-layout"><div class="auth-aside"><span class="eyebrow">Converse com a Vivaion</span><h2>Uma proposta começa com uma boa conversa.</h2><p>Informe sua necessidade, área de atuação e quantidade aproximada de participantes. A equipe avaliará possibilidades sem compromisso comercial automático.</p><ul class="check-list"><li>Seleção de cursos por área de conhecimento.</li><li>Orientação sobre elegibilidade e modalidades.</li><li>Condições comerciais conforme análise.</li></ul></div><div class="form-panel"><h2>Solicitar contato</h2><p>O envio depende da disponibilidade da API de atendimento.</p><form class="form-grid" id="contact-form">
+  <section class="section"><div class="container auth-layout"><div class="auth-aside"><span class="eyebrow">Converse com a Vivaion</span><h2>Uma proposta começa com uma boa conversa.</h2><p>Informe sua necessidade, área de atuação e quantidade aproximada de participantes. A equipe avaliará possibilidades sem compromisso comercial automático.</p><ul class="check-list"><li>Seleção de cursos por área de conhecimento.</li><li>Orientação sobre elegibilidade e modalidades.</li><li>Condições comerciais conforme análise.</li></ul></div><div class="form-panel"><h2>Solicitar contato</h2><p>{isLive ? "Informe os dados para que a equipe possa retornar." : "Conte à equipe o que sua organização precisa. Você revisará a mensagem no WhatsApp antes de enviá-la."}</p><form class="form-grid" id="contact-form">
     <label class="field field--wide">Seu nome<input name="name" required minlength="3" maxlength="140" autocomplete="name" /></label>
     <label class="field field--wide">Seu e-mail<input name="email" type="email" required maxlength="254" autocomplete="email" /></label>
     <label class="field field--wide">Empresa<input name="company" required minlength="2" maxlength="180" autocomplete="organization" /></label>
     <label class="field field--wide">Qual é a necessidade?<textarea name="message" required minlength="15" maxlength="3000" placeholder="Conte-nos sobre a equipe, os temas de interesse e a necessidade de capacitação."></textarea></label>
     <div class="field field--wide" aria-hidden="true" style="position:absolute;left:-10000px"><label>Deixe em branco<input name="website" tabindex="-1" autocomplete="off" /></label></div>
     <div id="contact-feedback" class="form-feedback" role="status" aria-live="polite"></div>
-    <div class="form-submit"><small>Seus dados serão utilizados para responder esta solicitação. Leia o <a href="/privacidade/" class="inline-link">aviso de privacidade</a>.</small><button type="submit" class="button button--primary">Enviar mensagem →</button></div>
+    <div class="form-submit"><small>{isLive ? "Seus dados serão utilizados para responder esta solicitação." : "A mensagem só será enviada depois que você confirmar no WhatsApp."} Leia o <a href="/privacidade/" class="inline-link">aviso de privacidade</a>.</small><button type="submit" class="button button--primary">{isLive ? "Enviar mensagem →" : "Continuar para WhatsApp →"}</button></div>
   </form></div></div></section>
 </SiteLayout>
 <script>
@@ -22,6 +23,14 @@ import SiteLayout from "../layouts/SiteLayout.astro";
     const values = Object.fromEntries(new FormData(form));
     const submit = form.querySelector<HTMLButtonElement>('button[type="submit"]');
     if (submit) submit.disabled = true;
+    if (document.body.dataset.siteLive !== "true") {
+      const message = "Olá! Gostaria de conversar sobre capacitação corporativa. Nome: " + values.name + ". E-mail: " + values.email + ". Empresa: " + values.company + ". Necessidade: " + values.message;
+      window.open("https://wa.me/554588042562?text=" + encodeURIComponent(message), "_blank", "noopener,noreferrer");
+      feedback.textContent = "WhatsApp aberto para revisar e enviar sua mensagem. Nada foi enviado automaticamente.";
+      feedback.dataset.state = "info";
+      if (submit) submit.disabled = false;
+      return;
+    }
     feedback.textContent = "Registrando solicitação…";
     feedback.dataset.state = "info";
     try {

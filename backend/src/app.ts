@@ -4,6 +4,7 @@ import { rateLimit } from "express-rate-limit";
 import { config } from "./config.js";
 import { authRouter } from "./auth.js";
 import { apiRouter } from "./api.js";
+import { publicLeadsRouter } from "./publicLeads.js";
 
 export const app = express();
 // Apache or equivalent reverse proxy can be trusted only on the loopback interface.
@@ -31,6 +32,7 @@ const authLimiter = rateLimit({ windowMs: 15 * 60_000, limit: 20, standardHeader
 app.use("/api", generalLimiter);
 app.use("/api/auth", authLimiter, authRouter);
 app.use("/api", apiRouter);
+app.use("/api", publicLeadsRouter);
 app.use("/api", (_req, res) => res.status(404).json({ error: "not_found" }));
 const onError: ErrorRequestHandler = (error, _req, res, _next) => {
   console.error("[vivaion-empresas-api]", error instanceof Error ? error.message : "unhandled_error");

@@ -113,7 +113,6 @@ import SiteLayout from "../layouts/SiteLayout.astro";
       if(totalNode)totalNode.textContent=money(data.totalCents);
       if(discountNode)discountNode.textContent=`${(data.discountBps/100).toLocaleString("pt-BR")}%`;
       if(errorNode)errorNode.hidden=true;
-      const productsText = lines.map((line)=>`${line.quantity}x ${products.get(line.productId)?.title??line.productId}`).join(", ");
       // A proposta formal registra os itens no backend, sem envio automático ao WhatsApp.
       if (proposalLink) proposalLink.href="/solicitar-proposta/";
     } catch(error) { if (token === quoteToken && errorNode){errorNode.textContent=error instanceof Error?error.message:"Não foi possível confirmar os preços.";errorNode.hidden=false;} }

@@ -2,7 +2,7 @@ import { request } from "node:https";
 import { config } from "./config.js";
 import { validateRelayDestination, resolvePublicRelayAddress } from "./domain/mailRelaySecurity.js";
 
-type Purpose = "verify_email" | "reset_password";
+type Purpose = "verify_email" | "reset_password" | "staff_access";
 type MailMessage = { to: string; purpose: Purpose; token: string; url: string };
 const testMessages: MailMessage[] = [];
 
@@ -31,14 +31,16 @@ export function mailConfigured(): boolean {
  * No live provider is configured until the operator explicitly provisions one.
  */
 export async function sendActionMail(to: string, purpose: Purpose, token: string): Promise<void> {
-  const path = purpose === "verify_email" ? "/confirmar-email/" : "/redefinir-senha/";
+  const path = purpose === "verify_email" ? "/confirmar-email/" : purpose === "staff_access" ? "/operacao/" : "/redefinir-senha/";
   const link = new URL(path, config.appOrigin);
-  link.searchParams.set("token", token);
+  if (purpose === "staff_access") link.hash = "token=" + encodeURIComponent(token);
+  else link.searchParams.set("token", token);
   const subject = purpose === "verify_email"
     ? "Confirme seu e-mail | Vivaion Empresas"
-    : "Redefinição de senha | Vivaion Empresas";
+    : purpose === "staff_access" ? "Acesso institucional | Vivaion Empresas" : "Redefinição de senha | Vivaion Empresas";
   const text = purpose === "verify_email"
     ? "Confirme seu e-mail para acessar o portal Vivaion Empresas. O link vence em 24 horas:\n" + link.toString() + "\nSe você não solicitou este cadastro, ignore esta mensagem."
+    : purpose === "staff_access" ? "Acesso temporario ao painel interno, valido por 15 minutos:\n" + link.toString() + "\nSe voce nao solicitou este acesso, ignore esta mensagem."
     : "Para redefinir sua senha, utilize o link abaixo em até 30 minutos:\n" + link.toString() + "\nSe você não solicitou a redefinição, ignore esta mensagem.";
 
   if (config.nodeEnv === "test") {
@@ -55,7 +57,7 @@ export async function sendActionMail(to: string, purpose: Purpose, token: string
     to,
     subject,
     text,
-    category: purpose === "verify_email" ? "account-verification" : "password-recovery"
+    category: purpose === "verify_email" ? "account-verification" : purpose === "staff_access" ? "staff-access" : "password-recovery"
   });
   await new Promise<void>((resolve, reject) => {
     const req = request({

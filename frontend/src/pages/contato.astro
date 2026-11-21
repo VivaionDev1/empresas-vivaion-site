@@ -10,6 +10,7 @@ const isLive = import.meta.env.PUBLIC_SITE_LIVE === "true";
     <label class="field field--wide">Empresa<input name="company" required minlength="2" maxlength="180" autocomplete="organization" /></label>
     <label class="field field--wide">Qual é a necessidade?<textarea name="message" required minlength="15" maxlength="3000" placeholder="Conte-nos sobre a equipe, os temas de interesse e a necessidade de capacitação."></textarea></label>
     <div class="field field--wide" aria-hidden="true" style="position:absolute;left:-10000px"><label>Deixe em branco<input name="website" tabindex="-1" autocomplete="off" /></label></div>
+    <label class="field field--wide" style="display:flex;gap:12px;align-items:start"><input type="checkbox" name="privacyAcknowledged" required style="width:auto;min-height:auto" /><span>Li o <a href="/privacidade/" class="inline-link" target="_blank" rel="noopener noreferrer">aviso de privacidade</a> e estou ciente do uso dos meus dados para responder este contato.</span></label>
     <div id="contact-feedback" class="form-feedback" role="status" aria-live="polite"></div>
     <div class="form-submit"><small>{isLive ? "Seus dados serão utilizados para responder esta solicitação." : "A mensagem só será enviada depois que você confirmar no WhatsApp."} Leia o <a href="/privacidade/" class="inline-link">aviso de privacidade</a>.</small><button type="submit" class="button button--primary">{isLive ? "Enviar mensagem →" : "Continuar para WhatsApp →"}</button></div>
   </form></div></div></section>
@@ -17,6 +18,7 @@ const isLive = import.meta.env.PUBLIC_SITE_LIVE === "true";
 <script>
   const form = document.querySelector<HTMLFormElement>("#contact-form");
   const feedback = document.querySelector<HTMLElement>("#contact-feedback");
+  let requestKey=crypto.randomUUID();
   form?.addEventListener("submit", async (event) => {
     event.preventDefault();
     if (!form || !feedback) return;
@@ -34,12 +36,17 @@ const isLive = import.meta.env.PUBLIC_SITE_LIVE === "true";
     feedback.textContent = "Registrando solicitação…";
     feedback.dataset.state = "info";
     try {
-      const res = await fetch("/api/contact", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(values) });
+      const res = await fetch("/api/contact", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({
+        ...values, requestKey, privacyAcknowledged:values.privacyAcknowledged==="on"
+      }) });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.message ?? "O envio não foi concluído.");
-      feedback.textContent = "Mensagem registrada. A equipe entrará em contato pelos canais informados.";
+      feedback.textContent = data.reference
+        ? "Mensagem registrada. Protocolo: "+data.reference+". A equipe entrará em contato."
+        : "Mensagem registrada. A equipe entrará em contato.";
       feedback.dataset.state = "success";
       form.reset();
+      requestKey=crypto.randomUUID();
     } catch (error) {
       feedback.textContent = error instanceof Error ? error.message : "Falha de comunicação. Tente novamente.";
       feedback.dataset.state = "error";

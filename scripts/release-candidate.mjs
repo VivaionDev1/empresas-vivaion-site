@@ -160,7 +160,7 @@ async function verify(input, allowDirty = false) {
         throw new Error("Noindex missing in " + page.path);
       }
     }
-    for (const required of ["backend/dist/src/server.js", "frontend/dist/index.html", "package-lock.json", "backend/migrations/006_commercial_leads.sql"]) {
+    for (const required of ["backend/dist/src/server.js", "frontend/dist/index.html", "package-lock.json", "backend/migrations/006_commercial_leads.sql", "backend/migrations/007_staff_operations.sql", "backend/migrations/008_commercial_notifications.sql", "backend/migrations/009_privacy_retention.sql", "backend/migrations/010_cancel_stale_notifications.sql", "backend/migrations/011_staff_followups.sql", "backend/migrations/012_contact_inbox.sql"]) {
       if (!currentFiles.some((file) => file.path === required)) throw new Error("Missing required HML file: " + required);
     }
     console.log(JSON.stringify({ status: "verified", sourceSha: manifest.sourceSha, sourceClean: manifest.sourceClean, files: currentFiles.length, archiveSha256: expected }, null, 2));

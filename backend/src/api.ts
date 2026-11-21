@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { createHash } from "node:crypto";
 import { rateLimit } from "express-rate-limit";
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
@@ -9,7 +10,8 @@ import { requireAuth, requireRoles, type AuthRequest } from "./auth.js";
 import { calculateQuote } from "./domain/pricing.js";
 
 export const apiRouter = Router();
-const contactLimiter = rateLimit({ windowMs: 15 * 60_000, limit: 5, standardHeaders: "draft-8", legacyHeaders: false });
+const contactLimiter = rateLimit({ windowMs: 15 * 60_000, limit: 5, standardHeaders: "draft-8", legacyHeaders: false,
+  skip: () => process.env.NODE_ENV === "test" });
 const pricingPreviewLimiter = rateLimit({ windowMs: 15 * 60_000, limit: 60, standardHeaders: "draft-8", legacyHeaders: false });
 const courseDetailsFile = [resolve(process.cwd(), "data/course-details.json"), resolve(process.cwd(), "../data/course-details.json")].find(existsSync);
 if (!courseDetailsFile) throw new Error("Course details snapshot missing");
@@ -104,22 +106,53 @@ apiRouter.get("/courses/:kind/:slug", async (req, res, next) => {
 });
 
 const contactSchema = z.object({
+  requestKey:z.uuid(),
   name: z.string().trim().min(3).max(140),
   email: z.string().trim().email().max(254).transform((v) => v.toLowerCase()),
   company: z.string().trim().min(2).max(180),
   message: z.string().trim().min(15).max(3000),
+  privacyAcknowledged:z.literal(true),
   website: z.string().max(200).optional()
 }).strict();
 
 apiRouter.post("/contact", contactLimiter, async (req, res, next) => {
-  const input = contactSchema.safeParse(req.body);
-  if (!input.success) { res.status(400).json({ error: "invalid_data", message: "Confira os campos do formulário." }); return; }
-  if (input.data.website) { res.status(202).json({ accepted: true }); return; }
+  const parsed=contactSchema.safeParse(req.body);
+  if (!parsed.success) { res.status(400).json({ error: "invalid_data", message: "Confira os campos e a ciência de privacidade." }); return; }
+  const input=parsed.data;
+  // Do not store spam or mint an internal reference for bot honeypots.
+  if (input.website) { res.status(202).json({ accepted: true }); return; }
+  const fingerprint=createHash("sha256").update(JSON.stringify({
+    name:input.name,email:input.email,company:input.company,message:input.message
+  })).digest("hex");
+  const client=await pool.connect();
   try {
-    await pool.query("INSERT INTO contact_requests(contact_name,email,company_name,message) VALUES($1,$2,$3,$4)",
-      [input.data.name, input.data.email, input.data.company, input.data.message]);
-    res.status(202).json({ accepted: true });
-  } catch (error) { next(error); }
+    await client.query("BEGIN");
+    const inserted=await client.query<{id:string}>(
+      "INSERT INTO contact_requests(contact_name,email,company_name,message,request_key,payload_sha256,privacy_acknowledged_at) "+
+      "VALUES($1,$2,$3,$4,$5,$6,NOW()) ON CONFLICT(request_key) WHERE request_key IS NOT NULL DO NOTHING RETURNING id",
+      [input.name,input.email,input.company,input.message,input.requestKey,fingerprint]);
+    let reference=inserted.rows[0]?.id;
+    if(reference){
+      await client.query("INSERT INTO contact_request_events(contact_id,event_type) VALUES($1,'received')",[reference]);
+    }else{
+      const existing=await client.query<{id:string;payload_sha256:string|null}>(
+        "SELECT id,payload_sha256 FROM contact_requests WHERE request_key=$1",[input.requestKey]);
+      if(existing.rows[0]?.payload_sha256!==fingerprint){
+        await client.query("ROLLBACK");
+        res.status(409).json({error:"request_key_conflict",message:"O protocolo já foi utilizado com dados diferentes. Recarregue o formulário."});
+        return;
+      }
+      reference=existing.rows[0]?.id;
+    }
+    await client.query("COMMIT");
+    res.status(inserted.rows.length?202:200).json({
+      accepted:true,reference,
+      message:"Mensagem registrada. A equipe entrará em contato pelos canais informados."
+    });
+  }catch(e){
+    try{await client.query("ROLLBACK");}catch{/* no-op on closed connection */}
+    next(e);
+  }finally{client.release();}
 });
 
 apiRouter.get("/companies/me", requireAuth, async (req, res, next) => {

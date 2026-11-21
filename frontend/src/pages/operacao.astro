@@ -21,6 +21,7 @@ import SiteLayout from "../layouts/SiteLayout.astro";
         </div>
         <div id="staff-overview" class="dashboard-stats" aria-live="polite"></div>
         <p class="section-intro">O alerta de 48 horas é indicativo até a equipe aprovar um SLA oficial.</p>
+        <p id="staff-notification-health" class="section-intro" role="status" hidden></p>
       </div>
       <div class="dashboard-panel" style="margin-bottom:24px">
         <h2>Solicitações recebidas</h2>
@@ -34,7 +35,7 @@ import SiteLayout from "../layouts/SiteLayout.astro";
           </select>
         </label>
         <button type="button" id="staff-reload" class="button button--outline">Atualizar lista</button>
-        <div id="staff-leads" aria-live="polite" style="margin-top:18px"></div>
+        <div id="staff-leads" aria-live="polite" style="margin-top:18px"></div><button type="button" id="staff-more" class="button button--outline" style="margin-top:15px" hidden>Carregar mais solicitações</button>
       </div>
       <section id="staff-detail" class="dashboard-panel" hidden>
         <h2>Detalhes e atendimento</h2>
@@ -68,6 +69,8 @@ const notice=document.querySelector<HTMLElement>("#staff-notice")!;
 const panel=document.querySelector<HTMLElement>("#staff-panel")!;
 const login=document.querySelector<HTMLElement>("#staff-login")!;
 const list=document.querySelector<HTMLElement>("#staff-leads")!;
+const more=document.querySelector<HTMLButtonElement>("#staff-more")!;
+let nextCursor:string|null=null;
 const detail=document.querySelector<HTMLElement>("#staff-detail")!;
 let staff:Staff|null=null;
 let selected:Lead|null=null;
@@ -87,11 +90,16 @@ function formatDate(s:string){return new Intl.DateTimeFormat("pt-BR",{dateStyle:
 function addRow(parent:Element,label:string,value:unknown){
   const p=document.createElement("p");const b=document.createElement("strong");b.textContent=label+": ";p.append(b,document.createTextNode(String(value??"—")));parent.append(p);
 }
-async function reload(){
+async function reload(append=false){
   const filter=(document.querySelector<HTMLSelectElement>("#staff-filter")!).value;
-  const data=await api("/leads"+(filter?"?status="+encodeURIComponent(filter):""));
-  list.replaceChildren();
-  if(!data.leads.length){list.textContent="Não há solicitações para este filtro.";return;}
+  if(!append){list.replaceChildren();nextCursor=null;}
+  const query=new URLSearchParams();
+  if(filter)query.set("status",filter);
+  if(append&&nextCursor)query.set("cursor",nextCursor);
+  const data=await api("/leads"+(query.size?"?"+query.toString():""));
+  if(!data.leads.length&&!append){list.textContent="Não há solicitações para este filtro.";}
+  nextCursor=typeof data.nextCursor==="string"?data.nextCursor:null;
+  more.hidden=!nextCursor;
   for(const lead of data.leads as Lead[]){
     const row=document.createElement("div");row.style.cssText="padding:14px 0;border-bottom:1px solid var(--line);display:flex;flex-wrap:wrap;gap:14px;justify-content:space-between;align-items:center";
     const info=document.createElement("div");
@@ -140,6 +148,13 @@ async function load(){
       const select=document.querySelector<HTMLSelectElement>("#staff-assignee")!;
       for(const person of team){const opt=document.createElement("option");opt.value=person.id;opt.textContent=person.full_name;select.append(opt);}
       document.querySelector<HTMLElement>("#staff-assignee-label")!.hidden=false;
+      try{
+        const health=await api("/notifications/status");
+        const line=document.querySelector<HTMLElement>("#staff-notification-health")!;
+        line.textContent="Notificações: "+health.counts.pending+" pendentes; "+health.counts.dead+" com falha definitiva. "+
+          (health.deliveryEnabled?"Entrega autorizada no ambiente.":"Entrega automática ainda desativada.");
+        line.hidden=false;
+      }catch{/* status is advisory, not required to view leads */}
     }
     await Promise.all([overview(),reload()]);
     message("Acesso restrito autenticado. Não compartilhe dados de solicitações fora dos canais autorizados.");
@@ -169,6 +184,7 @@ document.querySelector<HTMLButtonElement>("#staff-logout")!.addEventListener("cl
   location.assign("/operacao/");
 });
 document.querySelector<HTMLButtonElement>("#staff-reload")!.addEventListener("click",()=>reload().catch(()=>message("Falha ao atualizar",true)));
+more.addEventListener("click",()=>reload(true).catch(()=>message("Falha ao carregar mais solicitações",true)));
 document.querySelector<HTMLSelectElement>("#staff-filter")!.addEventListener("change",()=>reload().catch(()=>message("Falha ao filtrar",true)));
 (async()=>{
   const token=new URLSearchParams(location.hash.slice(1)).get("token") ?? new URLSearchParams(location.search).get("token");

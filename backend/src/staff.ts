@@ -66,8 +66,13 @@ staffRouter.post("/request-access",rateLimit({windowMs:15*60_000,limit:5,standar
       let token:string|null=null;
       try{
         await client.query("BEGIN");
+        // Serialize access issuance against revocation and concurrent requests.
+        const locked=await client.query<{id:string}>(
+          "SELECT id FROM staff_users WHERE id=$1 AND active=TRUE FOR UPDATE",[staffId]);
+        if(!locked.rows[0]){await client.query("COMMIT");res.status(202).json({
+          message:"Se seu acesso estiver habilitado, um link sera enviado ao e-mail institucional."});return;}
         const recent=await client.query<{recent:boolean}>(
-          "SELECT EXISTS(SELECT 1 FROM staff_login_tokens WHERE staff_id=$1 AND created_at>NOW()-INTERVAL '60 seconds') AS recent",
+          "SELECT EXISTS(SELECT 1 FROM staff_login_tokens WHERE staff_id=$1 AND consumed_at IS NULL AND created_at>NOW()-INTERVAL '60 seconds') AS recent",
           [staffId]);
         if(!recent.rows[0]?.recent){
           token=createSessionToken();
@@ -79,7 +84,12 @@ staffRouter.post("/request-access",rateLimit({windowMs:15*60_000,limit:5,standar
       finally{client.release();}
       if(token){
         try{await sendActionMail(parsed.data.email,"staff_access",token);}
-        catch{/* Response does not reveal whether a staff identity exists. */}
+        catch{
+          // Do not retain an undelivered login credential or block an immediate retry.
+          await pool.query(
+            "UPDATE staff_login_tokens SET consumed_at=NOW() WHERE staff_id=$1 AND token_hash=$2 AND consumed_at IS NULL",
+            [staffId,hashSessionToken(token)]);
+        }
       }
     }
     res.status(202).json({message:"Se seu acesso estiver habilitado, um link sera enviado ao e-mail institucional."});
@@ -91,6 +101,12 @@ staffRouter.post("/verify-access",rateLimit({windowMs:15*60_000,limit:10,standar
   const client=await pool.connect();
   try{
     await client.query("BEGIN");
+    // Lock the identity itself before consuming a token. Concurrent revocation
+    // must either wait and remove the new session or win and block this login.
+    const identity=await client.query<{staff_id:string}>(
+      "SELECT u.id AS staff_id FROM staff_users u JOIN staff_login_tokens t ON t.staff_id=u.id WHERE t.token_hash=$1 AND t.consumed_at IS NULL AND t.expires_at>NOW() AND u.active=TRUE FOR UPDATE OF u",
+      [hashSessionToken(parsed.data.token)]);
+    if(!identity.rows[0]){await client.query("ROLLBACK");res.status(401).json({error:"invalid_or_expired_token"});return;}
     const found=await client.query<{staff_id:string}>(
       "UPDATE staff_login_tokens SET consumed_at=NOW() WHERE token_hash=$1 AND consumed_at IS NULL AND expires_at>NOW() AND staff_id IN (SELECT id FROM staff_users WHERE active=TRUE) RETURNING staff_id",
       [hashSessionToken(parsed.data.token)]);
@@ -122,20 +138,54 @@ staffRouter.get("/overview",requireStaff,async(req,res,next)=>{
   const staff=(req as StaffRequest).staff!;
   try{
     const result=await pool.query<{status:string;total:number;overdue:number}>(
-      "SELECT status,COUNT(*)::integer AS total,COUNT(*) FILTER(WHERE status IN ('received','assigned') AND created_at<NOW()-INTERVAL '48 hours')::integer AS overdue FROM commercial_leads WHERE ($1::boolean OR assigned_staff_id=$2) GROUP BY status ORDER BY status",
+      "SELECT status,COUNT(*)::integer AS total,COUNT(*) FILTER(WHERE status IN ('received','assigned') AND created_at<NOW()-INTERVAL '48 hours')::integer AS overdue FROM commercial_leads WHERE anonymized_at IS NULL AND ($1::boolean OR assigned_staff_id=$2) GROUP BY status ORDER BY status",
       [staff.role==="manager",staff.id]);
     res.json({statuses:result.rows,overdue:result.rows.reduce((n,r)=>n+r.overdue,0),slaBasis:"indicative_48_calendar_hours"});
+  }catch(e){next(e);}
+});
+const leadCursorSchema=z.object({t:z.string().datetime({offset:true}),id:z.uuid()}).strict();
+staffRouter.get("/notifications/status",requireStaff,managerOnly,async(_req,res,next)=>{
+  try{
+    const result=await pool.query<{state:string;total:number}>(
+      "SELECT state,COUNT(*)::integer AS total FROM commercial_notification_outbox GROUP BY state");
+    const counts={pending:0,sent:0,dead:0};
+    for(const row of result.rows)if(row.state in counts)
+      counts[row.state as keyof typeof counts]=row.total;
+    res.json({counts,deliveryEnabled:process.env.NOTIFICATION_DELIVERY_ENABLED==="true",relayConfigured:mailConfigured()});
   }catch(e){next(e);}
 });
 staffRouter.get("/leads",requireStaff,async(req,res,next)=>{
   const state=req.query.status===undefined?null:z.enum(statuses).safeParse(req.query.status);
   if(state!==null&&!state.success){res.status(400).json({error:"invalid_status"});return;}
+  let cursor:{t:string;id:string}|null=null;
+  if(req.query.cursor!==undefined){
+    if(typeof req.query.cursor!=="string"||req.query.cursor.length>256){
+      res.status(400).json({error:"invalid_cursor"});return;
+    }
+    try{
+      const parsed=leadCursorSchema.parse(JSON.parse(Buffer.from(req.query.cursor,"base64url").toString("utf8")));
+      cursor=parsed;
+    }catch{res.status(400).json({error:"invalid_cursor"});return;}
+  }
   const staff=(req as StaffRequest).staff!;
   try{
-    const result=await pool.query(
-      "SELECT l.id,l.company_name,l.contact_name,l.contact_email,l.contact_phone,l.status,l.created_at,l.updated_at,l.assigned_staff_id,u.full_name AS assigned_staff_name,jsonb_array_length(l.items)::integer AS courses FROM commercial_leads l LEFT JOIN staff_users u ON u.id=l.assigned_staff_id WHERE ($1::text IS NULL OR l.status=$1) AND ($2::boolean OR l.assigned_staff_id=$3) ORDER BY l.created_at DESC,l.id DESC LIMIT 50",
-      [state===null?null:state.data,staff.role==="manager",staff.id]);
-    res.json({leads:result.rows,limit:50});
+    const result=await pool.query<{
+      id:string;created_at:string;company_name:string;contact_name:string;
+      contact_email:string;contact_phone:string|null;status:Status;
+      updated_at:string;assigned_staff_id:string|null;assigned_staff_name:string|null;courses:number
+    }>(
+      "SELECT l.id,l.company_name,l.contact_name,l.contact_email,l.contact_phone,l.status,l.created_at,l.updated_at,l.assigned_staff_id,u.full_name AS assigned_staff_name,jsonb_array_length(l.items)::integer AS courses "+
+      "FROM commercial_leads l LEFT JOIN staff_users u ON u.id=l.assigned_staff_id "+
+      "WHERE l.anonymized_at IS NULL AND ($1::text IS NULL OR l.status=$1) AND ($2::boolean OR l.assigned_staff_id=$3) "+
+      "AND ($4::timestamptz IS NULL OR (l.created_at,l.id) < ($4::timestamptz,$5::uuid)) "+
+      "ORDER BY l.created_at DESC,l.id DESC LIMIT 51",
+      [state===null?null:state.data,staff.role==="manager",staff.id,cursor?.t??null,cursor?.id??null]);
+    const leads=result.rows.slice(0,50);
+    const last=leads.at(-1);
+    const nextCursor=result.rows.length>50&&last
+      ?Buffer.from(JSON.stringify({t:new Date(last.created_at).toISOString(),id:last.id})).toString("base64url")
+      :null;
+    res.json({leads,limit:50,nextCursor});
   }catch(e){next(e);}
 });
 staffRouter.get("/leads/:id",requireStaff,async(req,res,next)=>{
@@ -144,7 +194,7 @@ staffRouter.get("/leads/:id",requireStaff,async(req,res,next)=>{
   const staff=(req as StaffRequest).staff!;
   try{
     const found=await pool.query(
-      "SELECT id,company_name,contact_name,contact_email,contact_phone,message,items,status,created_at,updated_at,assigned_staff_id FROM commercial_leads WHERE id=$1 AND ($2::boolean OR assigned_staff_id=$3)",
+      "SELECT id,company_name,contact_name,contact_email,contact_phone,message,items,status,created_at,updated_at,assigned_staff_id FROM commercial_leads WHERE id=$1 AND anonymized_at IS NULL AND ($2::boolean OR assigned_staff_id=$3)",
       [id.data,staff.role==="manager",staff.id]);
     if(!found.rows[0]){res.status(404).json({error:"lead_not_found"});return;}
     const events=await pool.query("SELECT event_type,created_at,metadata FROM commercial_lead_events WHERE lead_id=$1 ORDER BY id DESC LIMIT 100",[id.data]);
@@ -160,7 +210,14 @@ staffRouter.patch("/leads/:id",requireStaff,async(req,res,next)=>{
   const client=await pool.connect();
   try{
     await client.query("BEGIN");
-    const found=await client.query<{status:Status;assigned_staff_id:string|null}>("SELECT status,assigned_staff_id FROM commercial_leads WHERE id=$1 FOR UPDATE",[id.data]);
+    // Serialize role/access changes with the staff action; stale sessions cannot
+    // continue writing after a concurrent grant/revoke transaction commits.
+    const identity=await client.query<{active:boolean;role:Role}>(
+      "SELECT active,role FROM staff_users WHERE id=$1 FOR SHARE",[staff.id]);
+    if(!identity.rows[0]?.active||identity.rows[0].role!==staff.role){
+      await client.query("ROLLBACK");res.status(401).json({error:"staff_session_revoked"});return;
+    }
+    const found=await client.query<{status:Status;assigned_staff_id:string|null}>("SELECT status,assigned_staff_id FROM commercial_leads WHERE id=$1 AND anonymized_at IS NULL FOR UPDATE",[id.data]);
     const lead=found.rows[0];
     if(!lead||(staff.role!=="manager"&&lead.assigned_staff_id!==staff.id)){
       await client.query("ROLLBACK");res.status(404).json({error:"lead_not_found"});return;
@@ -181,9 +238,15 @@ staffRouter.patch("/leads/:id",requireStaff,async(req,res,next)=>{
       if(!active.rows[0]){await client.query("ROLLBACK");res.status(409).json({error:"invalid_assignee"});return;}
     }
     await client.query("UPDATE commercial_leads SET status=$1,assigned_staff_id=$2,updated_at=NOW() WHERE id=$3",[newStatus,newAssignee,id.data]);
-    await client.query(
-      "INSERT INTO commercial_lead_events(lead_id,event_type,actor_staff_id,metadata) VALUES($1,'staff_update',$2,$3::jsonb)",
+    const event=await client.query<{id:string}>(
+      "INSERT INTO commercial_lead_events(lead_id,event_type,actor_staff_id,metadata) VALUES($1,'staff_update',$2,$3::jsonb) RETURNING id::text",
       [id.data,staff.id,JSON.stringify({from:lead.status,to:newStatus,assignedStaffId:newAssignee,reason:parsed.data.reason})]);
+    if(newAssignee&&newAssignee!==lead.assigned_staff_id){
+      await client.query(
+        "INSERT INTO commercial_notification_outbox(lead_id,recipient_staff_id,kind,dedupe_key) "+
+        "VALUES($1,$2,'assigned',$3) ON CONFLICT(dedupe_key) DO NOTHING",
+        [id.data,newAssignee,"assigned:"+id.data+":"+event.rows[0]!.id]);
+    }
     await client.query("COMMIT");
     res.json({id:id.data,status:newStatus,assignedStaffId:newAssignee});
   }catch(e){await client.query("ROLLBACK");next(e);}

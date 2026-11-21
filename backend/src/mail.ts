@@ -5,6 +5,21 @@ import { validateRelayDestination, resolvePublicRelayAddress } from "./domain/ma
 type Purpose = "verify_email" | "reset_password" | "staff_access";
 type MailMessage = { to: string; purpose: Purpose; token: string; url: string };
 const testMessages: MailMessage[] = [];
+const testOperationalMessages: Array<{to:string;kind:"received"|"assigned"|"overdue"}> = [];
+const failTestMailOnceKeys = new Set<string>();
+
+export function failNextTestActionMail(to:string, purpose:Purpose):void{
+  if(config.nodeEnv!=="test")throw new Error("Test mail fault injection unavailable");
+  failTestMailOnceKeys.add(purpose+":"+to);
+}
+export function getTestOperationalMail(to:string){
+  if(config.nodeEnv!=="test")throw new Error("Test mailbox unavailable");
+  return testOperationalMessages.filter(m=>m.to===to);
+}
+export function failNextTestOperationalMail(to:string):void{
+  if(config.nodeEnv!=="test")throw Error("Test mail fault injection unavailable");
+  failTestMailOnceKeys.add("operational:"+to);
+}
 
 /**
  * Only the automated test process may inspect tokens. This is not an HTTP endpoint,
@@ -44,9 +59,31 @@ export async function sendActionMail(to: string, purpose: Purpose, token: string
     : "Para redefinir sua senha, utilize o link abaixo em até 30 minutos:\n" + link.toString() + "\nSe você não solicitou a redefinição, ignore esta mensagem.";
 
   if (config.nodeEnv === "test") {
+    if(failTestMailOnceKeys.delete(purpose+":"+to))throw new Error("test_relay_unavailable");
     testMessages.push({ to, purpose, token, url: link.toString() });
     return;
   }
+  await deliverRelayMail(to,subject,text,purpose === "verify_email" ? "account-verification" : purpose === "staff_access" ? "staff-access" : "password-recovery");
+}
+
+export async function sendOperationalMail(to:string,kind:"received"|"assigned"|"overdue"):Promise<void>{
+  const subject = kind==="received" ? "Nova solicitacao corporativa | Vivaion Empresas"
+    : kind==="assigned" ? "Solicitacao atribuida | Vivaion Empresas"
+    : "Solicitacao precisa de acompanhamento | Vivaion Empresas";
+  // No customer name, telephone, email, course or message is sent through notification email.
+  const explanation = kind==="received" ? "Uma nova solicitacao aguarda triagem no painel restrito."
+    : kind==="assigned" ? "Uma solicitacao foi atribuida a voce no painel restrito."
+    : "Uma solicitacao permanece sem atendimento registrado ha mais de 48 horas. Indicador operacional, nao SLA contratual.";
+  const text=explanation+"\n"+new URL("/operacao/",config.appOrigin).toString()+"\nNao encaminhe informacoes de clientes por email.";
+  if(config.nodeEnv==="test"){
+    if(failTestMailOnceKeys.delete("operational:"+to))throw new Error("test_relay_unavailable");
+    testOperationalMessages.push({to,kind});
+    return;
+  }
+  await deliverRelayMail(to,subject,text,"commercial-notification");
+}
+
+async function deliverRelayMail(to:string,subject:string,text:string,category:string):Promise<void>{
   if (!mailConfigured()) throw new Error("mail_not_configured");
   const url = validateRelayDestination(config.mailRelayUrl, config.mailRelayAllowedHost);
   // All DNS answers must be routable; the returned IP is pinned into the
@@ -57,7 +94,7 @@ export async function sendActionMail(to: string, purpose: Purpose, token: string
     to,
     subject,
     text,
-    category: purpose === "verify_email" ? "account-verification" : purpose === "staff_access" ? "staff-access" : "password-recovery"
+    category
   });
   await new Promise<void>((resolve, reject) => {
     const req = request({

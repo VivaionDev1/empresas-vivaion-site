@@ -304,3 +304,6 @@ h1 em,h2 em{font-style:normal;color:var(--orange)}
 .catalog-results-bar{align-items:flex-start}
 @media(max-width:600px){.catalog-results-bar{flex-direction:column;gap:2px}.catalog-pills{gap:7px}.catalog-pill{padding:9px 12px;font-size:.74rem}.catalog-search{max-width:none}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+/* Enforce native hidden behavior even on display:flex components. */
+[hidden]{display:none!important}

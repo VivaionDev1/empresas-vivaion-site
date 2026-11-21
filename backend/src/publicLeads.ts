@@ -73,6 +73,12 @@ publicLeadsRouter.post("/public-proposals", limiter, async (req, res, next) => {
     let reference=inserted.rows[0]?.id;
     if(reference){
       await client.query("INSERT INTO commercial_lead_events(lead_id,event_type) VALUES($1,'received')",[reference]);
+      // Insert notification intents in the same transaction; no relay calls in HTTP.
+      await client.query(
+        "INSERT INTO commercial_notification_outbox(lead_id,recipient_staff_id,kind,dedupe_key) "+
+        "SELECT $1::uuid,id,'received','received:'||($1::uuid)::text||':'||id::text FROM staff_users "+
+        "WHERE active=TRUE AND role='manager' ON CONFLICT(dedupe_key) DO NOTHING",
+        [reference]);
     }else{
       const existing=await client.query<{id:string;payload_sha256:string}>(
         "SELECT id,payload_sha256 FROM commercial_leads WHERE request_key=$1",[input.requestKey]);

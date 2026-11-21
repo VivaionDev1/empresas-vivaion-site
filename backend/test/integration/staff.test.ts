@@ -38,6 +38,9 @@ test("staff-only portal: invitation, authorization, assignment, audit and isolat
     const list=await manager.get("/api/staff/leads").set("Cookie",cookie);
     assert.equal(list.status,200);
     assert.ok(list.body.leads.some((l:{id:string})=>l.id===leadId));
+    const notificationStatus=await manager.get("/api/staff/notifications/status").set("Cookie",cookie);
+    assert.equal(notificationStatus.status,200);
+    assert.equal(typeof notificationStatus.body.counts.pending,"number");
     const missingReason=await manager.patch("/api/staff/leads/"+leadId).set("Cookie",cookie).set("Origin",origin).send({status:"assigned",assignedStaffId:sellerId,reason:"short"});
     assert.equal(missingReason.status,400);
     const change=await manager.patch("/api/staff/leads/"+leadId).set("Cookie",cookie).set("Origin",origin).send({
@@ -66,6 +69,8 @@ test("staff-only portal: invitation, authorization, assignment, audit and isolat
     assert.equal(otherDetail.status,404);
     const sellerTeam=await request(app).get("/api/staff/team").set("Cookie",sellerCookie);
     assert.equal(sellerTeam.status,403);
+    const sellerNotificationStatus=await request(app).get("/api/staff/notifications/status").set("Cookie",sellerCookie);
+    assert.equal(sellerNotificationStatus.status,403);
     const unauthorizedAssignment=await request(app).patch("/api/staff/leads/"+leadId).set("Cookie",sellerCookie).set("Origin",origin).send({
       assignedStaffId:managerId,reason:"Tentativa de atribuir lead fora da permissao."
     });

@@ -332,3 +332,126 @@ staffRouter.post("/leads/:id/activities",requireStaff,async(req,res,next)=>{
   }catch(e){await client.query("ROLLBACK");next(e);}
   finally{client.release();}
 });
+
+// General contact inbox. Customer messages do not automatically become
+// course-specific leads or paid enrollments. Managers perform all actions.
+const contactStatusSchema=z.enum(["new","responded","archived"]);
+const contactChangeSchema=z.object({
+  status:z.enum(["responded","archived"]),
+  reason:z.string().trim().min(10).max(1000)
+}).strict();
+const contactActivitySchema=z.object({
+  kind:z.enum(["call","email","note"]),
+  note:z.string().trim().min(10).max(1000)
+}).strict();
+const contactTransitions:Record<string,readonly string[]>={
+  new:["responded","archived"],responded:["archived"],archived:[]
+};
+
+staffRouter.get("/contacts",requireStaff,managerOnly,async(req,res,next)=>{
+  const status=req.query.status===undefined?null:contactStatusSchema.safeParse(req.query.status);
+  if(status!==null&&!status.success){res.status(400).json({error:"invalid_contact_status"});return;}
+  let cursor:{t:string;id:string}|null=null;
+  if(req.query.cursor!==undefined){
+    if(typeof req.query.cursor!=="string"||req.query.cursor.length>256){
+      res.status(400).json({error:"invalid_cursor"});return;
+    }
+    try{
+      cursor=leadCursorSchema.parse(JSON.parse(Buffer.from(req.query.cursor,"base64url").toString("utf8")));
+    }catch{res.status(400).json({error:"invalid_cursor"});return;}
+  }
+  try{
+    const result=await pool.query<{
+      id:string;contact_name:string;company_name:string;status:string;created_at:string
+    }>(
+      "SELECT id,contact_name,company_name,status,"+
+      "to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.US\"Z\"') AS created_at "+
+      "FROM contact_requests WHERE anonymized_at IS NULL AND ($1::text IS NULL OR status=$1) "+
+      "AND ($2::timestamptz IS NULL OR (created_at,id) < ($2::timestamptz,$3::uuid)) "+
+      "ORDER BY created_at DESC,id DESC LIMIT 51",
+      [status===null?null:status.data,cursor?.t??null,cursor?.id??null]);
+    const contacts=result.rows.slice(0,50);
+    const last=contacts.at(-1);
+    res.json({contacts,limit:50,nextCursor:result.rows.length>50&&last?
+      Buffer.from(JSON.stringify({t:last.created_at,id:last.id})).toString("base64url"):null});
+  }catch(e){next(e);}
+});
+staffRouter.get("/contacts/overview",requireStaff,managerOnly,async(_req,res,next)=>{
+  try{
+    const result=await pool.query<{status:string;total:number}>(
+      "SELECT status,COUNT(*)::integer AS total FROM contact_requests "+
+      "WHERE anonymized_at IS NULL GROUP BY status ORDER BY status");
+    res.json({statuses:result.rows});
+  }catch(e){next(e);}
+});
+staffRouter.get("/contacts/:id",requireStaff,managerOnly,async(req,res,next)=>{
+  const id=z.uuid().safeParse(req.params.id);
+  if(!id.success){res.status(400).json({error:"invalid_contact_id"});return;}
+  try{
+    const contact=await pool.query(
+      "SELECT id,contact_name,email,company_name,message,status,created_at,updated_at,privacy_acknowledged_at "+
+      "FROM contact_requests WHERE id=$1 AND anonymized_at IS NULL",[id.data]);
+    if(!contact.rows[0]){res.status(404).json({error:"contact_not_found"});return;}
+    const events=await pool.query(
+      "SELECT event_type,created_at,metadata FROM contact_request_events "+
+      "WHERE contact_id=$1 ORDER BY id DESC LIMIT 100",[id.data]);
+    res.json({contact:contact.rows[0],events:events.rows});
+  }catch(e){next(e);}
+});
+staffRouter.patch("/contacts/:id",requireStaff,managerOnly,async(req,res,next)=>{
+  const id=z.uuid().safeParse(req.params.id);
+  const input=contactChangeSchema.safeParse(req.body);
+  if(!id.success||!input.success){res.status(400).json({error:"invalid_contact_change"});return;}
+  const staff=(req as StaffRequest).staff!;
+  const client=await pool.connect();
+  try{
+    await client.query("BEGIN");
+    const identity=await client.query<{role:Role}>(
+      "SELECT role FROM staff_users WHERE id=$1 AND active=TRUE FOR SHARE",[staff.id]);
+    if(identity.rows[0]?.role!=="manager"){
+      await client.query("ROLLBACK");res.status(401).json({error:"staff_session_revoked"});return;
+    }
+    const result=await client.query<{status:string}>(
+      "SELECT status FROM contact_requests WHERE id=$1 AND anonymized_at IS NULL FOR UPDATE",[id.data]);
+    const existing=result.rows[0]?.status;
+    if(!existing){await client.query("ROLLBACK");res.status(404).json({error:"contact_not_found"});return;}
+    if(!contactTransitions[existing]?.includes(input.data.status)){
+      await client.query("ROLLBACK");res.status(409).json({error:"invalid_contact_transition"});return;
+    }
+    await client.query("UPDATE contact_requests SET status=$1,updated_at=NOW() WHERE id=$2",
+      [input.data.status,id.data]);
+    await client.query(
+      "INSERT INTO contact_request_events(contact_id,event_type,actor_staff_id,metadata) "+
+      "VALUES($1,'staff_update',$2,$3::jsonb)",
+      [id.data,staff.id,JSON.stringify({from:existing,to:input.data.status,reason:input.data.reason})]);
+    await client.query("COMMIT");
+    res.json({id:id.data,status:input.data.status});
+  }catch(e){await client.query("ROLLBACK");next(e);}
+  finally{client.release();}
+});
+staffRouter.post("/contacts/:id/activities",requireStaff,managerOnly,async(req,res,next)=>{
+  const id=z.uuid().safeParse(req.params.id);
+  const input=contactActivitySchema.safeParse(req.body);
+  if(!id.success||!input.success){res.status(400).json({error:"invalid_contact_activity"});return;}
+  const staff=(req as StaffRequest).staff!;
+  const client=await pool.connect();
+  try{
+    await client.query("BEGIN");
+    const identity=await client.query<{role:Role}>(
+      "SELECT role FROM staff_users WHERE id=$1 AND active=TRUE FOR SHARE",[staff.id]);
+    if(identity.rows[0]?.role!=="manager"){
+      await client.query("ROLLBACK");res.status(401).json({error:"staff_session_revoked"});return;
+    }
+    const contact=await client.query(
+      "SELECT id FROM contact_requests WHERE id=$1 AND anonymized_at IS NULL FOR UPDATE",[id.data]);
+    if(!contact.rows[0]){await client.query("ROLLBACK");res.status(404).json({error:"contact_not_found"});return;}
+    await client.query("UPDATE contact_requests SET updated_at=NOW() WHERE id=$1",[id.data]);
+    const event=await client.query<{id:string}>(
+      "INSERT INTO contact_request_events(contact_id,event_type,actor_staff_id,metadata) "+
+      "VALUES($1,'staff_activity',$2,$3::jsonb) RETURNING id::text",
+      [id.data,staff.id,JSON.stringify({kind:input.data.kind,note:input.data.note})]);
+    await client.query("COMMIT");
+    res.status(201).json({id:event.rows[0]!.id});
+  }catch(e){await client.query("ROLLBACK");next(e);}
+  finally{client.release();}
+});

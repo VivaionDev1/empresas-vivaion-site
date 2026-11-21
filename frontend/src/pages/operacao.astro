@@ -92,6 +92,52 @@ import SiteLayout from "../layouts/SiteLayout.astro";
         </section>
         <h3>Histórico de ações</h3><div id="staff-events"></div>
       </section>
+      <section id="staff-contact-panel" hidden>
+        <div class="dashboard-panel" style="margin-top:24px">
+          <h2>Mensagens gerais de contato</h2>
+          <p class="section-intro">Caixa de entrada restrita a gestores. Estas mensagens não são pedidos de pagamento ou matrículas.</p>
+          <div id="staff-contact-overview" class="dashboard-stats" aria-live="polite"></div>
+          <label class="field">Situação do contato
+            <select id="staff-contact-filter">
+              <option value="">Todas</option><option value="new">Novas</option>
+              <option value="responded">Respondidas</option><option value="archived">Arquivadas</option>
+            </select>
+          </label>
+          <button type="button" id="staff-contact-reload" class="button button--outline">Atualizar contatos</button>
+          <div id="staff-contacts" aria-live="polite" style="margin-top:16px"></div>
+          <button type="button" id="staff-contact-more" class="button button--outline" hidden>Carregar mais contatos</button>
+        </div>
+        <section class="dashboard-panel" id="staff-contact-detail" hidden style="margin-top:24px">
+          <h3>Atendimento de contato</h3>
+          <div id="staff-contact-data"></div>
+          <form id="staff-contact-status-form" class="form-grid">
+            <label class="field">Nova situação
+              <select id="staff-contact-status" name="status" required>
+                <option value="responded">Respondida</option>
+                <option value="archived">Arquivada</option>
+              </select>
+            </label>
+            <label class="field field--wide">Justificativa do andamento
+              <textarea name="reason" required minlength="10" maxlength="1000" placeholder="Registre a resposta ou o motivo do arquivamento."></textarea>
+            </label>
+            <div class="form-submit"><button type="submit" class="button button--primary">Salvar situação</button></div>
+          </form>
+          <form id="staff-contact-activity-form" class="form-grid" style="margin-top:20px">
+            <label class="field">Registro do contato
+              <select name="kind" required>
+                <option value="note">Anotação interna</option>
+                <option value="call">Ligação</option>
+                <option value="email">E-mail</option>
+              </select>
+            </label>
+            <label class="field field--wide">Descrição
+              <textarea name="note" required minlength="10" maxlength="1000" placeholder="Registre uma tentativa de contato sem alterar sua situação."></textarea>
+            </label>
+            <div class="form-submit"><button type="submit" class="button button--outline">Registrar contato</button></div>
+          </form>
+          <h3>Histórico do contato</h3><div id="staff-contact-events"></div>
+        </section>
+      </section>
     </div>
   </div></section>
 </SiteLayout>
@@ -107,6 +153,12 @@ let nextCursor:string|null=null;
 const detail=document.querySelector<HTMLElement>("#staff-detail")!;
 let staff:Staff|null=null;
 let selected:Lead|null=null;
+let selectedContactId:string|null=null;
+let nextContactCursor:string|null=null;
+const contactList=document.querySelector<HTMLElement>("#staff-contacts")!;
+const contactMore=document.querySelector<HTMLButtonElement>("#staff-contact-more")!;
+const contactDetail=document.querySelector<HTMLElement>("#staff-contact-detail")!;
+const contactLabels:Record<string,string>={new:"Nova",responded:"Respondida",archived:"Arquivada"};
 let team:Array<{id:string;full_name:string;role:string}>=[];
 const labels:Record<string,string>={received:"Recebida",assigned:"Atribuída",contacted:"Contatada",proposal_sent:"Proposta enviada",negotiating:"Em negociação",won:"Concluída",lost:"Não convertida",closed:"Arquivada"};
 const activityLabels:Record<string,string>={call:"Ligação",email:"E-mail",meeting:"Reunião",note:"Anotação interna"};
@@ -198,6 +250,67 @@ async function openLead(id:string){
   document.querySelector<HTMLSelectElement>("#staff-new-status")!.value="";
   detail.scrollIntoView({behavior:"smooth",block:"start"});
 }
+async function contactOverview(){
+  const result=await api("/contacts/overview");
+  const overview=document.querySelector<HTMLElement>("#staff-contact-overview")!;
+  overview.replaceChildren();
+  for(const item of result.statuses as Array<{status:string;total:number}>){
+    const cell=document.createElement("div");
+    cell.className="dashboard-stat";
+    cell.append(text("strong",item.total),text("small",contactLabels[item.status]??item.status));
+    overview.append(cell);
+  }
+}
+async function loadContacts(append=false){
+  const status=document.querySelector<HTMLSelectElement>("#staff-contact-filter")!.value;
+  if(!append){contactList.replaceChildren();nextContactCursor=null;}
+  const query=new URLSearchParams();
+  if(status)query.set("status",status);
+  if(append&&nextContactCursor)query.set("cursor",nextContactCursor);
+  const result=await api("/contacts"+(query.size?"?"+query.toString():""));
+  if(!result.contacts.length&&!append)contactList.textContent="Nenhum contato para este filtro.";
+  nextContactCursor=typeof result.nextCursor==="string"?result.nextCursor:null;
+  contactMore.hidden=!nextContactCursor;
+  for(const contact of result.contacts as Array<{id:string;contact_name:string;company_name:string;created_at:string;status:string}>){
+    const row=document.createElement("div");
+    row.style.cssText="padding:14px 0;border-bottom:1px solid var(--line);display:flex;gap:14px;justify-content:space-between;align-items:center;flex-wrap:wrap";
+    const label=document.createElement("div");
+    label.append(text("strong",contact.company_name),text("p",contactLabels[contact.status]??contact.status));
+    label.append(text("small",contact.contact_name+" · "+formatDate(contact.created_at)));
+    const button=document.createElement("button");button.type="button";button.className="button button--outline";button.textContent="Examinar contato";
+    button.addEventListener("click",()=>openContact(contact.id).catch(()=>message("Não foi possível abrir o contato.",true)));
+    row.append(label,button);contactList.append(row);
+  }
+}
+async function openContact(id:string){
+  const data=await api("/contacts/"+encodeURIComponent(id));
+  const contact=data.contact as {id:string;contact_name:string;company_name:string;email:string;message:string;status:string;created_at:string};
+  selectedContactId=contact.id;
+  contactDetail.hidden=false;
+  const container=document.querySelector<HTMLElement>("#staff-contact-data")!;container.replaceChildren();
+  addRow(container,"Empresa",contact.company_name);addRow(container,"Nome",contact.contact_name);
+  addRow(container,"E-mail",contact.email);addRow(container,"Mensagem",contact.message);
+  addRow(container,"Situação",contactLabels[contact.status]??contact.status);
+  addRow(container,"Recebida em",formatDate(contact.created_at));
+  const statusForm=document.querySelector<HTMLFormElement>("#staff-contact-status-form")!;
+  statusForm.hidden=contact.status==="archived";
+  const next=document.querySelector<HTMLSelectElement>("#staff-contact-status")!;
+  next.replaceChildren();
+  for(const status of contact.status==="new"?["responded","archived"]:contact.status==="responded"?["archived"]:[]){
+    const option=document.createElement("option");option.value=status;option.textContent=contactLabels[status]??status;
+    next.append(option);
+  }
+  const events=document.querySelector<HTMLElement>("#staff-contact-events")!;events.replaceChildren();
+  for(const event of data.events as Array<{event_type:string;created_at:string;metadata?:{kind?:string;note?:string;from?:string;to?:string;reason?:string}}>){
+    const title=event.event_type==="staff_activity"?(activityLabels[event.metadata?.kind??""]??"Atividade"):event.event_type;
+    const row=document.createElement("p");row.append(text("strong",formatDate(event.created_at)+" · "+title));
+    if(event.metadata?.to)row.append(text("span"," · "+(contactLabels[event.metadata.from??""]??event.metadata.from)+" → "+(contactLabels[event.metadata.to]??event.metadata.to)));
+    if(event.metadata?.reason)row.append(text("span"," · "+event.metadata.reason));
+    if(event.metadata?.note)row.append(text("span"," · "+event.metadata.note));
+    events.append(row);
+  }
+  contactDetail.scrollIntoView({behavior:"smooth",block:"start"});
+}
 async function load(){
   try{
     const auth=await api("/me");staff=auth.staff;login.hidden=true;panel.hidden=false;
@@ -207,6 +320,8 @@ async function load(){
       const select=document.querySelector<HTMLSelectElement>("#staff-assignee")!;
       for(const person of team){const opt=document.createElement("option");opt.value=person.id;opt.textContent=person.full_name;select.append(opt);}
       document.querySelector<HTMLElement>("#staff-assignee-label")!.hidden=false;
+      document.querySelector<HTMLElement>("#staff-contact-panel")!.hidden=false;
+      await Promise.all([loadContacts(),contactOverview()]).catch(()=>message("Falha ao carregar alguns contatos.",true));
       try{
         const health=await api("/notifications/status");
         const line=document.querySelector<HTMLElement>("#staff-notification-health")!;
@@ -280,6 +395,39 @@ clearFollowup.addEventListener("change",()=>{
 followupInput.addEventListener("input",()=>{
   if(followupInput.value)clearFollowup.checked=false;
 });
+document.querySelector<HTMLFormElement>("#staff-contact-status-form")!.addEventListener("submit",async event=>{
+  event.preventDefault();if(!selectedContactId)return;
+  const form=event.currentTarget as HTMLFormElement;
+  const values=new FormData(form);
+  const id=selectedContactId;const button=form.querySelector<HTMLButtonElement>('button[type="submit"]');
+  if(button)button.disabled=true;
+  try{
+    await api("/contacts/"+id,{method:"PATCH",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({status:values.get("status"),reason:values.get("reason")})});
+    form.reset();
+    await Promise.all([openContact(id),loadContacts(),contactOverview()]);
+    message("Contato atualizado e auditado.");
+  }catch(error){message(error instanceof Error?error.message:"Falha ao salvar situação",true);}
+  finally{if(button)button.disabled=false;}
+});
+document.querySelector<HTMLFormElement>("#staff-contact-activity-form")!.addEventListener("submit",async event=>{
+  event.preventDefault();if(!selectedContactId)return;
+  const form=event.currentTarget as HTMLFormElement;const values=new FormData(form);const id=selectedContactId;
+  const button=form.querySelector<HTMLButtonElement>('button[type="submit"]');if(button)button.disabled=true;
+  try{
+    await api("/contacts/"+id+"/activities",{method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({kind:values.get("kind"),note:values.get("note")})});
+    form.reset();await openContact(id);message("Atividade de contato registrada.");
+  }catch(error){message(error instanceof Error?error.message:"Falha ao registrar contato",true);}
+  finally{if(button)button.disabled=false;}
+});
+document.querySelector<HTMLSelectElement>("#staff-contact-filter")!.addEventListener("change",()=>{
+  loadContacts().catch(()=>message("Falha ao filtrar contatos",true));
+});
+document.querySelector<HTMLButtonElement>("#staff-contact-reload")!.addEventListener("click",()=>{
+  Promise.all([loadContacts(),contactOverview()]).catch(()=>message("Falha ao atualizar contatos",true));
+});
+contactMore.addEventListener("click",()=>loadContacts(true).catch(()=>message("Falha ao carregar mais contatos",true)));
 document.querySelector<HTMLButtonElement>("#staff-reload")!.addEventListener("click",()=>reload().catch(()=>message("Falha ao atualizar",true)));
 more.addEventListener("click",()=>reload(true).catch(()=>message("Falha ao carregar mais solicitações",true)));
 document.querySelector<HTMLSelectElement>("#staff-filter")!.addEventListener("change",()=>reload().catch(()=>message("Falha ao filtrar",true)));

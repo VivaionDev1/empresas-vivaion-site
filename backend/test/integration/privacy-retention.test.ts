@@ -25,6 +25,9 @@ test("retention is selective, erases PII including event metadata and retains au
       "VALUES($1,'Contato Identificado','private@example.test','Empresa Identificavel','Mensagem sensivel','responded',NOW()-INTERVAL '4000 days'),"+
       "($2,'Contato em Aberto','active@example.test','Empresa Ativa','Mensagem ativa','new',NOW()-INTERVAL '4000 days')",
       [answeredId,newId]);
+    await pool.query(
+      "INSERT INTO contact_request_events(contact_id,actor_staff_id,event_type,metadata) VALUES($1,$2,'staff_update',$3::jsonb)",
+      [answeredId,staffId,JSON.stringify({reason:"Dados particulares do titular a eliminar"})]);
     const before=await previewRetention(3650);
     assert.ok(before.leads>=1&&before.contacts>=1);
     const applied=await anonymizeEligibleRetention(3650,50);
@@ -49,6 +52,11 @@ test("retention is selective, erases PII including event metadata and retains au
     const contacts=await pool.query<{id:string;email:string;anonymized_at:string|null}>("SELECT id,email,anonymized_at FROM contact_requests WHERE id=ANY($1::uuid[]) ORDER BY id",[[answeredId,newId]]);
     assert.ok(contacts.rows.find(x=>x.id===answeredId)?.anonymized_at);
     assert.equal(contacts.rows.find(x=>x.id===newId)?.anonymized_at,null);
+    const contactEvents=await pool.query<{event_type:string;metadata:unknown;actor_staff_id:string|null}>(
+      "SELECT event_type,metadata,actor_staff_id FROM contact_request_events WHERE contact_id=$1 ORDER BY id",[answeredId]);
+    assert.deepEqual(contactEvents.rows[0]?.metadata,{});
+    assert.equal(contactEvents.rows[0]?.actor_staff_id,null);
+    assert.equal(contactEvents.rows.at(-1)?.event_type,"privacy.anonymized");
   }finally{
     await pool.query("DELETE FROM commercial_leads WHERE id=ANY($1::uuid[])",[[closedId,openId]]);
     await pool.query("DELETE FROM contact_requests WHERE id=ANY($1::uuid[])",[[answeredId,newId]]);

@@ -13,6 +13,7 @@ export const config = {
   databaseUrl: process.env.DATABASE_URL ?? "",
   catalogFeedUrl: process.env.CATALOG_FEED_URL ?? "https://vivaion.com.br/integracoes/empresas/catalogo/v1.json",
   allowLocalCatalog: process.env.ALLOW_LOCAL_CATALOG_FEED === "true",
+  staffPortalEnabled: process.env.STAFF_PORTAL_ENABLED === "true",
   corporatePricingEnabled: process.env.CORPORATE_PRICING_ENABLED === "true",
   mailRelayUrl: process.env.MAIL_RELAY_URL ?? "",
   mailRelayAllowedHost: process.env.MAIL_RELAY_ALLOWED_HOST ?? "",

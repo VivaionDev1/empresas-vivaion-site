@@ -41,6 +41,7 @@ test("staff-only portal: invitation, authorization, assignment, audit and isolat
     const notificationStatus=await manager.get("/api/staff/notifications/status").set("Cookie",cookie);
     assert.equal(notificationStatus.status,200);
     assert.equal(typeof notificationStatus.body.counts.pending,"number");
+    assert.equal(typeof notificationStatus.body.counts.cancelled,"number");
     const missingReason=await manager.patch("/api/staff/leads/"+leadId).set("Cookie",cookie).set("Origin",origin).send({status:"assigned",assignedStaffId:sellerId,reason:"short"});
     assert.equal(missingReason.status,400);
     const change=await manager.patch("/api/staff/leads/"+leadId).set("Cookie",cookie).set("Origin",origin).send({

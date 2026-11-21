@@ -36,6 +36,12 @@ try{
     staffId=result.rows[0]?.id;
   }
   if(staffId){
+    // Defense in depth: a previously revoked account must not inherit queued
+    // notifications when granted access again. The migration also enforces this
+    // for identity updates outside this CLI.
+    await client.query(
+      "UPDATE commercial_notification_outbox SET state='cancelled',cancelled_at=NOW() "+
+      "WHERE recipient_staff_id=$1 AND state='pending'",[staffId]);
     await client.query("DELETE FROM staff_sessions WHERE staff_id=$1",[staffId]);
     await client.query("UPDATE staff_login_tokens SET consumed_at=NOW() WHERE staff_id=$1 AND consumed_at IS NULL",[staffId]);
   }

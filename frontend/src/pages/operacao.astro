@@ -151,7 +151,8 @@ async function load(){
       try{
         const health=await api("/notifications/status");
         const line=document.querySelector<HTMLElement>("#staff-notification-health")!;
-        line.textContent="Notificações: "+health.counts.pending+" pendentes; "+health.counts.dead+" com falha definitiva. "+
+        line.textContent="Notificações: "+health.counts.pending+" pendentes; "+health.counts.dead+" com falha definitiva; "+
+          health.counts.cancelled+" canceladas. "+
           (health.deliveryEnabled?"Entrega autorizada no ambiente.":"Entrega automática ainda desativada.");
         line.hidden=false;
       }catch{/* status is advisory, not required to view leads */}

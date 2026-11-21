@@ -148,7 +148,7 @@ staffRouter.get("/notifications/status",requireStaff,managerOnly,async(_req,res,
   try{
     const result=await pool.query<{state:string;total:number}>(
       "SELECT state,COUNT(*)::integer AS total FROM commercial_notification_outbox GROUP BY state");
-    const counts={pending:0,sent:0,dead:0};
+    const counts={pending:0,sent:0,dead:0,cancelled:0};
     for(const row of result.rows)if(row.state in counts)
       counts[row.state as keyof typeof counts]=row.total;
     res.json({counts,deliveryEnabled:process.env.NOTIFICATION_DELIVERY_ENABLED==="true",relayConfigured:mailConfigured()});
@@ -174,7 +174,11 @@ staffRouter.get("/leads",requireStaff,async(req,res,next)=>{
       contact_email:string;contact_phone:string|null;status:Status;
       updated_at:string;assigned_staff_id:string|null;assigned_staff_name:string|null;courses:number
     }>(
-      "SELECT l.id,l.company_name,l.contact_name,l.contact_email,l.contact_phone,l.status,l.created_at,l.updated_at,l.assigned_staff_id,u.full_name AS assigned_staff_name,jsonb_array_length(l.items)::integer AS courses "+
+      // pg's default timestamp parser returns JS Date (millisecond precision).
+      // Serialize at the source to preserve the full six PostgreSQL digits.
+      "SELECT l.id,l.company_name,l.contact_name,l.contact_email,l.contact_phone,l.status,"+
+      "to_char(l.created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.US\"Z\"') AS created_at,"+
+      "l.updated_at,l.assigned_staff_id,u.full_name AS assigned_staff_name,jsonb_array_length(l.items)::integer AS courses "+
       "FROM commercial_leads l LEFT JOIN staff_users u ON u.id=l.assigned_staff_id "+
       "WHERE l.anonymized_at IS NULL AND ($1::text IS NULL OR l.status=$1) AND ($2::boolean OR l.assigned_staff_id=$3) "+
       "AND ($4::timestamptz IS NULL OR (l.created_at,l.id) < ($4::timestamptz,$5::uuid)) "+
@@ -183,7 +187,7 @@ staffRouter.get("/leads",requireStaff,async(req,res,next)=>{
     const leads=result.rows.slice(0,50);
     const last=leads.at(-1);
     const nextCursor=result.rows.length>50&&last
-      ?Buffer.from(JSON.stringify({t:new Date(last.created_at).toISOString(),id:last.id})).toString("base64url")
+      ?Buffer.from(JSON.stringify({t:last.created_at,id:last.id})).toString("base64url")
       :null;
     res.json({leads,limit:50,nextCursor});
   }catch(e){next(e);}

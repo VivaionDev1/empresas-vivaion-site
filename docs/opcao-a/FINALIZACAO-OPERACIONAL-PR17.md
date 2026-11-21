@@ -21,7 +21,7 @@ Data: 2026-11-21. Escopo: implementacao e teste rootless somente. Nao autoriza m
 Somente apos aprovacao de operacoes, juridico/LGPD e gestor de infra:
 
 - Configurar MAIL_RELAY_URL, MAIL_RELAY_ALLOWED_HOST, MAIL_RELAY_BEARER_TOKEN, MAIL_FROM e APP_ORIGIN via cofre institucional, nunca no repositorio.
-- Aplicar migracoes ate 009 em banco Vivaion Empresas HML exclusivo, apos backup e restauracao testada.
+- Aplicar migracoes ate 010 em banco Vivaion Empresas HML exclusivo, apos backup e restauracao testada.
 - Provisionar usuarios staff com o CLI backend/scripts/provision-staff.ts em ambiente autorizado.
 - Validar TLS, acesso segregado, roles, cookies, origem e entrega de link no navegador real.
 - Ativar STAFF_PORTAL_ENABLED=true e NOTIFICATION_DELIVERY_ENABLED=true separadamente; programar o worker com timer/cron somente pelo operador autorizado.
@@ -54,7 +54,7 @@ Aplicacao apenas com autorizacao documentada: PRIVACY_RETENTION_ENABLED=true npx
 1. Validar rede, DNS, HTTPS/TLS, Apache habilitado, firewall, headers, CSP, HSTS, integridade de certificados e bloqueio de HML a usuarios nao autorizados.
 2. Selecionar SHA aprovado. Usar artefato CI da propria PR com sourceClean:true, channel:hml, publicSiteLive:false, hashes e atestado. Rejeitar pacote local --allow-dirty.
 3. Fazer backup e restauracao REAL de banco HML exclusivo; preservar sistema anterior e testar rollback em release imutavel, sem sobrepor /srv/vivaion-empresas-preview.
-4. Aplicar migracoes ate 009 no ambiente HML sob janela de mudanca aprovada e plano de reversao.
+4. Aplicar migracoes ate 010 no ambiente HML sob janela de mudanca aprovada e plano de reversao.
 5. Validar API no loopback, proxy, readiness, catalogo, limites de abuso, 503 de precos nao aprovados, fluxo de proposta ficticia e remocao de seus dados.
 6. Testar cookies __Host em HTTPS real, relay falhando, revogacao concorrente, eventos de auditoria e notificacoes desativadas por padrao.
 7. Registrar evidencias com SHA, operador, horario e verificacao do rollback na issue #14.
@@ -66,3 +66,25 @@ Ainda dependem de autorizacao: politica comercial, LGPD, editorial e catalogo, e
 Testes locais necessarios: npm run check, npm run test, npm run db:migrate (somente DB isolado), npm run test:integration, npm run build, npm run test:e2e, E2E full-stack, suite adversarial do extrator e verificacao do pacote no SHA final.
 
 NO-GO mantido. Nenhuma operacao em producao decorre desta documentacao.
+
+
+## Correcao da revisao CHANGES_REQUESTED no commit 4b8e05aa (P1 / P2)
+
+P1: paginacao preserva microsegundos do PostgreSQL via to_char(... AT TIME ZONE UTC,
+YYYY-MM-DDTHH24:MI:SS.USZ). A mesma string exata segue no cursor base64url, sem
+Date.toISOString() nem arredondamento. Ordenacao e filtro SQL permanecem pelo par
+(created_at,id). Regressao: 123 leads com o MESMO timestamp e fracao de microsegundos
+.123456, distribuidos em 3 paginas (50/50/23) sem perda, repeticao ou cursor truncado.
+
+P2: migracao 010 introduz estado terminal cancelled e timestamp cancelled_at; trigger
+no PostgreSQL cancela pendencias na mudanca de status ativo ou papel do usuario,
+inclusive em SQL administrativo e antes de concluir reativacao. CLI grant/revoke
+tambem cancela pendencias e worker faz saneamento defensivo de filas de inativos.
+Mensagens canceladas nao sao reenviadas por retry/reabilitacao; o painel de gestores
+separa contagens pending/sent/dead/cancelled. Operacao de reversao nao recria alertas
+historicos: novos alertas requerem novos eventos, sujeitos a politica operacional.
+
+O teste de regressao cobre desativacao, reativacao e recuperacao de fila obsoleta
+com destinatario ficticio no banco isolado.
+
+Sem deploy, coleta real, aprovacao juridica ou mudanca do NO-GO.

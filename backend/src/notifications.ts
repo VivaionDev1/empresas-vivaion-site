@@ -9,8 +9,16 @@ type OutboxRow = {id:string;kind:Kind;email:string};
  * Delivery is at-least-once if the process stops after relay acceptance but before COMMIT.
  * Never logs recipient details, customer PII, tokens, or relay response bodies.
  */
-export async function deliverPendingNotifications(maxItems=20):Promise<{sent:number;failed:number;remaining:number}>{
+export async function deliverPendingNotifications(maxItems=20):Promise<{sent:number;failed:number;cancelled:number;remaining:number}>{
   if(!Number.isInteger(maxItems)||maxItems<1||maxItems>50)throw Error("invalid_batch_size");
+  // Safety net for previously queued mail if an identity was disabled by an
+  // out-of-band change. The database trigger also cancels on access/role changes.
+  // Terminal "cancelled" rows are never eligible for retry or reactivation.
+  const swept=await pool.query(
+    "UPDATE commercial_notification_outbox o SET state='cancelled',cancelled_at=NOW() "+
+    "WHERE o.state='pending' AND NOT EXISTS ("+
+    "SELECT 1 FROM staff_users u WHERE u.id=o.recipient_staff_id AND u.active=TRUE)");
+  const cancelled=swept.rowCount??0;
   if(!mailConfigured())throw Error("mail_relay_unavailable");
   let sent=0,failed=0;
   for(let i=0;i<maxItems;i++){
@@ -43,7 +51,7 @@ export async function deliverPendingNotifications(maxItems=20):Promise<{sent:num
   }
   const outstanding=await pool.query<{total:number}>(
     "SELECT COUNT(*)::integer AS total FROM commercial_notification_outbox WHERE state='pending'");
-  return {sent,failed,remaining:outstanding.rows[0]?.total??0};
+  return {sent,failed,cancelled,remaining:outstanding.rows[0]?.total??0};
 }
 
 /** One indicative 48-hour follow-up per overdue lead and active manager. */

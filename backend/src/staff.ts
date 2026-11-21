@@ -52,6 +52,11 @@ const changeSchema=z.object({
   assignedStaffId:z.uuid().nullable().optional(),
   reason:z.string().trim().min(10).max(1000)
 }).strict().refine(v=>v.status!==undefined||v.assignedStaffId!==undefined);
+const activitySchema=z.object({
+  kind:z.enum(["call","email","meeting","note"]),
+  note:z.string().trim().min(10).max(1000),
+  followUpAt:z.string().datetime({offset:true}).nullable().optional()
+}).strict();
 export const staffRouter=Router();
 staffRouter.use(enabled);
 staffRouter.post("/request-access",rateLimit({windowMs:15*60_000,limit:5,standardHeaders:"draft-8",legacyHeaders:false}),async(req,res,next)=>{
@@ -140,7 +145,15 @@ staffRouter.get("/overview",requireStaff,async(req,res,next)=>{
     const result=await pool.query<{status:string;total:number;overdue:number}>(
       "SELECT status,COUNT(*)::integer AS total,COUNT(*) FILTER(WHERE status IN ('received','assigned') AND created_at<NOW()-INTERVAL '48 hours')::integer AS overdue FROM commercial_leads WHERE anonymized_at IS NULL AND ($1::boolean OR assigned_staff_id=$2) GROUP BY status ORDER BY status",
       [staff.role==="manager",staff.id]);
-    res.json({statuses:result.rows,overdue:result.rows.reduce((n,r)=>n+r.overdue,0),slaBasis:"indicative_48_calendar_hours"});
+    const followups=await pool.query<{due:number;scheduled:number}>(
+      "SELECT COUNT(*) FILTER (WHERE next_followup_at<=NOW())::integer AS due,"+
+      "COUNT(*) FILTER (WHERE next_followup_at>NOW())::integer AS scheduled "+
+      "FROM commercial_leads WHERE anonymized_at IS NULL "+
+      "AND status NOT IN ('won','lost','closed') AND ($1::boolean OR assigned_staff_id=$2)",
+      [staff.role==="manager",staff.id]);
+    res.json({statuses:result.rows,overdue:result.rows.reduce((n,r)=>n+r.overdue,0),
+      dueFollowups:followups.rows[0]?.due??0,scheduledFollowups:followups.rows[0]?.scheduled??0,
+      slaBasis:"indicative_48_calendar_hours"});
   }catch(e){next(e);}
 });
 const leadCursorSchema=z.object({t:z.string().datetime({offset:true}),id:z.uuid()}).strict();
@@ -157,6 +170,8 @@ staffRouter.get("/notifications/status",requireStaff,managerOnly,async(_req,res,
 staffRouter.get("/leads",requireStaff,async(req,res,next)=>{
   const state=req.query.status===undefined?null:z.enum(statuses).safeParse(req.query.status);
   if(state!==null&&!state.success){res.status(400).json({error:"invalid_status"});return;}
+  const followup=req.query.followup===undefined?null:z.enum(["due","scheduled","none"]).safeParse(req.query.followup);
+  if(followup!==null&&!followup.success){res.status(400).json({error:"invalid_followup_filter"});return;}
   let cursor:{t:string;id:string}|null=null;
   if(req.query.cursor!==undefined){
     if(typeof req.query.cursor!=="string"||req.query.cursor.length>256){
@@ -172,18 +187,23 @@ staffRouter.get("/leads",requireStaff,async(req,res,next)=>{
     const result=await pool.query<{
       id:string;created_at:string;company_name:string;contact_name:string;
       contact_email:string;contact_phone:string|null;status:Status;
-      updated_at:string;assigned_staff_id:string|null;assigned_staff_name:string|null;courses:number
+      updated_at:string;next_followup_at:string|null;assigned_staff_id:string|null;
+      assigned_staff_name:string|null;courses:number
     }>(
       // pg's default timestamp parser returns JS Date (millisecond precision).
       // Serialize at the source to preserve the full six PostgreSQL digits.
       "SELECT l.id,l.company_name,l.contact_name,l.contact_email,l.contact_phone,l.status,"+
       "to_char(l.created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.US\"Z\"') AS created_at,"+
-      "l.updated_at,l.assigned_staff_id,u.full_name AS assigned_staff_name,jsonb_array_length(l.items)::integer AS courses "+
+      "l.updated_at,l.next_followup_at,l.assigned_staff_id,u.full_name AS assigned_staff_name,jsonb_array_length(l.items)::integer AS courses "+
       "FROM commercial_leads l LEFT JOIN staff_users u ON u.id=l.assigned_staff_id "+
       "WHERE l.anonymized_at IS NULL AND ($1::text IS NULL OR l.status=$1) AND ($2::boolean OR l.assigned_staff_id=$3) "+
       "AND ($4::timestamptz IS NULL OR (l.created_at,l.id) < ($4::timestamptz,$5::uuid)) "+
+      "AND ($6::text IS NULL OR ($6='due' AND l.next_followup_at<=NOW() AND l.status NOT IN ('won','lost','closed')) "+
+      "OR ($6='scheduled' AND l.next_followup_at>NOW() AND l.status NOT IN ('won','lost','closed')) "+
+      "OR ($6='none' AND l.next_followup_at IS NULL)) "+
       "ORDER BY l.created_at DESC,l.id DESC LIMIT 51",
-      [state===null?null:state.data,staff.role==="manager",staff.id,cursor?.t??null,cursor?.id??null]);
+      [state===null?null:state.data,staff.role==="manager",staff.id,cursor?.t??null,cursor?.id??null,
+        followup===null?null:followup.data]);
     const leads=result.rows.slice(0,50);
     const last=leads.at(-1);
     const nextCursor=result.rows.length>50&&last
@@ -198,7 +218,7 @@ staffRouter.get("/leads/:id",requireStaff,async(req,res,next)=>{
   const staff=(req as StaffRequest).staff!;
   try{
     const found=await pool.query(
-      "SELECT id,company_name,contact_name,contact_email,contact_phone,message,items,status,created_at,updated_at,assigned_staff_id FROM commercial_leads WHERE id=$1 AND anonymized_at IS NULL AND ($2::boolean OR assigned_staff_id=$3)",
+      "SELECT id,company_name,contact_name,contact_email,contact_phone,message,items,status,created_at,updated_at,next_followup_at,assigned_staff_id FROM commercial_leads WHERE id=$1 AND anonymized_at IS NULL AND ($2::boolean OR assigned_staff_id=$3)",
       [id.data,staff.role==="manager",staff.id]);
     if(!found.rows[0]){res.status(404).json({error:"lead_not_found"});return;}
     const events=await pool.query("SELECT event_type,created_at,metadata FROM commercial_lead_events WHERE lead_id=$1 ORDER BY id DESC LIMIT 100",[id.data]);
@@ -221,7 +241,7 @@ staffRouter.patch("/leads/:id",requireStaff,async(req,res,next)=>{
     if(!identity.rows[0]?.active||identity.rows[0].role!==staff.role){
       await client.query("ROLLBACK");res.status(401).json({error:"staff_session_revoked"});return;
     }
-    const found=await client.query<{status:Status;assigned_staff_id:string|null}>("SELECT status,assigned_staff_id FROM commercial_leads WHERE id=$1 AND anonymized_at IS NULL FOR UPDATE",[id.data]);
+    const found=await client.query<{status:Status;assigned_staff_id:string|null;next_followup_at:Date|null}>("SELECT status,assigned_staff_id,next_followup_at FROM commercial_leads WHERE id=$1 AND anonymized_at IS NULL FOR UPDATE",[id.data]);
     const lead=found.rows[0];
     if(!lead||(staff.role!=="manager"&&lead.assigned_staff_id!==staff.id)){
       await client.query("ROLLBACK");res.status(404).json({error:"lead_not_found"});return;
@@ -241,10 +261,14 @@ staffRouter.patch("/leads/:id",requireStaff,async(req,res,next)=>{
       const active=await client.query("SELECT id FROM staff_users WHERE id=$1 AND active=TRUE",[newAssignee]);
       if(!active.rows[0]){await client.query("ROLLBACK");res.status(409).json({error:"invalid_assignee"});return;}
     }
-    await client.query("UPDATE commercial_leads SET status=$1,assigned_staff_id=$2,updated_at=NOW() WHERE id=$3",[newStatus,newAssignee,id.data]);
+    await client.query(
+      "UPDATE commercial_leads SET status=$1,assigned_staff_id=$2,updated_at=NOW(),"+
+      "next_followup_at=CASE WHEN $1 IN ('won','lost','closed') THEN NULL ELSE next_followup_at END WHERE id=$3",
+      [newStatus,newAssignee,id.data]);
     const event=await client.query<{id:string}>(
       "INSERT INTO commercial_lead_events(lead_id,event_type,actor_staff_id,metadata) VALUES($1,'staff_update',$2,$3::jsonb) RETURNING id::text",
-      [id.data,staff.id,JSON.stringify({from:lead.status,to:newStatus,assignedStaffId:newAssignee,reason:parsed.data.reason})]);
+      [id.data,staff.id,JSON.stringify({from:lead.status,to:newStatus,assignedStaffId:newAssignee,
+        reason:parsed.data.reason,followupCleared:Boolean(lead.next_followup_at&&["won","lost","closed"].includes(newStatus))})]);
     if(newAssignee&&newAssignee!==lead.assigned_staff_id){
       await client.query(
         "INSERT INTO commercial_notification_outbox(lead_id,recipient_staff_id,kind,dedupe_key) "+
@@ -253,6 +277,58 @@ staffRouter.patch("/leads/:id",requireStaff,async(req,res,next)=>{
     }
     await client.query("COMMIT");
     res.json({id:id.data,status:newStatus,assignedStaffId:newAssignee});
+  }catch(e){await client.query("ROLLBACK");next(e);}
+  finally{client.release();}
+});
+
+// Record operational interactions independently of the sales pipeline status.
+// This makes multiple contact attempts and next actions auditable without fake transitions.
+staffRouter.post("/leads/:id/activities",requireStaff,async(req,res,next)=>{
+  const id=z.uuid().safeParse(req.params.id);
+  const parsed=activitySchema.safeParse(req.body);
+  if(!id.success||!parsed.success){res.status(400).json({error:"invalid_activity"});return;}
+  const requested=parsed.data.followUpAt;
+  if(requested){
+    const at=Date.parse(requested);
+    if(!Number.isFinite(at)||at<Date.now()-5*60_000||at>Date.now()+365*24*3600_000){
+      res.status(400).json({error:"invalid_followup_date"});return;
+    }
+  }
+  const staff=(req as StaffRequest).staff!;
+  const client=await pool.connect();
+  try{
+    await client.query("BEGIN");
+    const identity=await client.query<{role:Role}>(
+      "SELECT role FROM staff_users WHERE id=$1 AND active=TRUE FOR SHARE",[staff.id]);
+    if(!identity.rows[0]||identity.rows[0].role!==staff.role){
+      await client.query("ROLLBACK");res.status(401).json({error:"staff_session_revoked"});return;
+    }
+    const found=await client.query<{status:Status;assigned_staff_id:string|null;next_followup_at:Date|null}>(
+      "SELECT status,assigned_staff_id,next_followup_at FROM commercial_leads "+
+      "WHERE id=$1 AND anonymized_at IS NULL FOR UPDATE",[id.data]);
+    const lead=found.rows[0];
+    if(!lead||(staff.role!=="manager"&&lead.assigned_staff_id!==staff.id)){
+      await client.query("ROLLBACK");res.status(404).json({error:"lead_not_found"});return;
+    }
+    if(requested!==undefined&&requested!==null&&["won","lost","closed"].includes(lead.status)){
+      await client.query("ROLLBACK");res.status(409).json({error:"terminal_lead_followup"});return;
+    }
+    let nextFollowupAt=lead.next_followup_at?.toISOString()??null;
+    if(requested!==undefined){
+      const result=await client.query<{next_followup_at:Date|null}>(
+        "UPDATE commercial_leads SET next_followup_at=$1::timestamptz,updated_at=NOW() "+
+        "WHERE id=$2 RETURNING next_followup_at",[requested,id.data]);
+      nextFollowupAt=result.rows[0]?.next_followup_at?.toISOString()??null;
+    }else{
+      await client.query("UPDATE commercial_leads SET updated_at=NOW() WHERE id=$1",[id.data]);
+    }
+    const event=await client.query<{id:string}>(
+      "INSERT INTO commercial_lead_events(lead_id,event_type,actor_staff_id,metadata) "+
+      "VALUES($1,'staff_activity',$2,$3::jsonb) RETURNING id::text",
+      [id.data,staff.id,JSON.stringify({kind:parsed.data.kind,note:parsed.data.note,
+        ...(requested!==undefined?{followUpAt:nextFollowupAt}:{})})]);
+    await client.query("COMMIT");
+    res.status(201).json({id:event.rows[0]!.id,nextFollowupAt});
   }catch(e){await client.query("ROLLBACK");next(e);}
   finally{client.release();}
 });

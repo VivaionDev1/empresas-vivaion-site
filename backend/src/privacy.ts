@@ -35,7 +35,7 @@ export async function anonymizeEligibleRetention(days:number,limit=50):Promise<{
       await client.query(
         "UPDATE commercial_leads SET contact_name='Dados anonimizados',company_name='Empresa anonimizada',"+
         "contact_email='anon-'||id::text||'@invalid.local',contact_phone=NULL,message=NULL,"+
-        "items='[]'::jsonb,payload_sha256=repeat('0',64),assigned_staff_id=NULL,anonymized_at=NOW(),updated_at=NOW() "+
+        "items='[]'::jsonb,payload_sha256=repeat('0',64),assigned_staff_id=NULL,next_followup_at=NULL,anonymized_at=NOW(),updated_at=NOW() "+
         "WHERE id=$1",[item.id]);
       await client.query(
         "UPDATE commercial_lead_events SET actor_label=NULL,metadata='{}'::jsonb WHERE lead_id=$1",[item.id]);

@@ -2,9 +2,24 @@ import { request } from "node:https";
 import { config } from "./config.js";
 import { validateRelayDestination, resolvePublicRelayAddress } from "./domain/mailRelaySecurity.js";
 
-type Purpose = "verify_email" | "reset_password";
+type Purpose = "verify_email" | "reset_password" | "staff_access";
 type MailMessage = { to: string; purpose: Purpose; token: string; url: string };
 const testMessages: MailMessage[] = [];
+const testOperationalMessages: Array<{to:string;kind:"received"|"assigned"|"overdue"}> = [];
+const failTestMailOnceKeys = new Set<string>();
+
+export function failNextTestActionMail(to:string, purpose:Purpose):void{
+  if(config.nodeEnv!=="test")throw new Error("Test mail fault injection unavailable");
+  failTestMailOnceKeys.add(purpose+":"+to);
+}
+export function getTestOperationalMail(to:string){
+  if(config.nodeEnv!=="test")throw new Error("Test mailbox unavailable");
+  return testOperationalMessages.filter(m=>m.to===to);
+}
+export function failNextTestOperationalMail(to:string):void{
+  if(config.nodeEnv!=="test")throw Error("Test mail fault injection unavailable");
+  failTestMailOnceKeys.add("operational:"+to);
+}
 
 /**
  * Only the automated test process may inspect tokens. This is not an HTTP endpoint,
@@ -31,20 +46,44 @@ export function mailConfigured(): boolean {
  * No live provider is configured until the operator explicitly provisions one.
  */
 export async function sendActionMail(to: string, purpose: Purpose, token: string): Promise<void> {
-  const path = purpose === "verify_email" ? "/confirmar-email/" : "/redefinir-senha/";
+  const path = purpose === "verify_email" ? "/confirmar-email/" : purpose === "staff_access" ? "/operacao/" : "/redefinir-senha/";
   const link = new URL(path, config.appOrigin);
-  link.searchParams.set("token", token);
+  if (purpose === "staff_access") link.hash = "token=" + encodeURIComponent(token);
+  else link.searchParams.set("token", token);
   const subject = purpose === "verify_email"
     ? "Confirme seu e-mail | Vivaion Empresas"
-    : "Redefinição de senha | Vivaion Empresas";
+    : purpose === "staff_access" ? "Acesso institucional | Vivaion Empresas" : "Redefinição de senha | Vivaion Empresas";
   const text = purpose === "verify_email"
     ? "Confirme seu e-mail para acessar o portal Vivaion Empresas. O link vence em 24 horas:\n" + link.toString() + "\nSe você não solicitou este cadastro, ignore esta mensagem."
+    : purpose === "staff_access" ? "Acesso temporario ao painel interno, valido por 15 minutos:\n" + link.toString() + "\nSe voce nao solicitou este acesso, ignore esta mensagem."
     : "Para redefinir sua senha, utilize o link abaixo em até 30 minutos:\n" + link.toString() + "\nSe você não solicitou a redefinição, ignore esta mensagem.";
 
   if (config.nodeEnv === "test") {
+    if(failTestMailOnceKeys.delete(purpose+":"+to))throw new Error("test_relay_unavailable");
     testMessages.push({ to, purpose, token, url: link.toString() });
     return;
   }
+  await deliverRelayMail(to,subject,text,purpose === "verify_email" ? "account-verification" : purpose === "staff_access" ? "staff-access" : "password-recovery");
+}
+
+export async function sendOperationalMail(to:string,kind:"received"|"assigned"|"overdue"):Promise<void>{
+  const subject = kind==="received" ? "Nova solicitacao corporativa | Vivaion Empresas"
+    : kind==="assigned" ? "Solicitacao atribuida | Vivaion Empresas"
+    : "Solicitacao precisa de acompanhamento | Vivaion Empresas";
+  // No customer name, telephone, email, course or message is sent through notification email.
+  const explanation = kind==="received" ? "Uma nova solicitacao aguarda triagem no painel restrito."
+    : kind==="assigned" ? "Uma solicitacao foi atribuida a voce no painel restrito."
+    : "Uma solicitacao permanece sem atendimento registrado ha mais de 48 horas. Indicador operacional, nao SLA contratual.";
+  const text=explanation+"\n"+new URL("/operacao/",config.appOrigin).toString()+"\nNao encaminhe informacoes de clientes por email.";
+  if(config.nodeEnv==="test"){
+    if(failTestMailOnceKeys.delete("operational:"+to))throw new Error("test_relay_unavailable");
+    testOperationalMessages.push({to,kind});
+    return;
+  }
+  await deliverRelayMail(to,subject,text,"commercial-notification");
+}
+
+async function deliverRelayMail(to:string,subject:string,text:string,category:string):Promise<void>{
   if (!mailConfigured()) throw new Error("mail_not_configured");
   const url = validateRelayDestination(config.mailRelayUrl, config.mailRelayAllowedHost);
   // All DNS answers must be routable; the returned IP is pinned into the
@@ -55,7 +94,7 @@ export async function sendActionMail(to: string, purpose: Purpose, token: string
     to,
     subject,
     text,
-    category: purpose === "verify_email" ? "account-verification" : "password-recovery"
+    category
   });
   await new Promise<void>((resolve, reject) => {
     const req = request({
